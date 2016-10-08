@@ -1,6 +1,9 @@
-package com.example.tsleeve.myapplication;
+package com.example.tsleeve.swipeswap;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -13,7 +16,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.support.v4.app.FragmentManager;
+
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.ui.email.SignInActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.Calendar;
 
@@ -101,8 +108,16 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_slideshow) {
 
-        } else if (id == R.id.nav_manage) {
-
+        } else if (id == R.id.nav_signout) {
+            AuthUI.getInstance()
+                    .signOut(this)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        public void onComplete(@NonNull Task<Void> task) {
+                            // user is now signed out
+                            startActivity(new Intent(MainActivity.this, AuthUiActivity.class));
+                            finish();
+                        }
+                    });
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -119,5 +134,11 @@ public class MainActivity extends AppCompatActivity
         StringBuilder sb = new StringBuilder("");
         sb.append(day).append("/").append(month+1).append("/").append(year);
         dateButton.setText(sb.toString());
+    }
+
+    public static Intent createIntent(Context context) {
+        Intent in = new Intent();
+        in.setClass(context, MainActivity.class);
+        return in;
     }
 }

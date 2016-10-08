@@ -1,14 +1,12 @@
-package com.example.tsleeve.myapplication;
+package com.example.tsleeve.swipeswap;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.widget.DatePicker;
-import android.widget.Toast;
 
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by footb on 10/4/2016.

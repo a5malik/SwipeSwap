@@ -1,4 +1,4 @@
-package com.example.tsleeve.myapplication;
+package com.example.tsleeve.swipeswap;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

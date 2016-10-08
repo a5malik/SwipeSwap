@@ -1,4 +1,4 @@
-package com.example.tsleeve.myapplication;
+package com.example.tsleeve.swipeswap;
 
 import org.junit.Test;
 

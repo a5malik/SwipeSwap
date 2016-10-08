@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "743792912978",
+    "firebase_url": "https://swipeswap-9995f.firebaseio.com",
+    "project_id": "swipeswap-9995f",
+    "storage_bucket": "swipeswap-9995f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:743792912978:android:9baa10bbc9a698fd",
+        "android_client_info": {
+          "package_name": "com.example.tsleeve.swipeswap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "743792912978-2kngtph4m5luelk8rhs622pohf25tke0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tsleeve.swipeswap",
+            "certificate_hash": "322DC70468E62388C0FC13CBF5F32027D0F6C596"
+          }
+        },
+        {
+          "client_id": "743792912978-uocc1mrig32eop94jtia2ap26c7s55lg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJzriQWq5AShJNaM-yZIgCIdwD59aov50"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "743792912978-uocc1mrig32eop94jtia2ap26c7s55lg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
