@@ -29,6 +29,7 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity {
 
     //private Button dateButton;
+    private TabLayout tabLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,8 +50,16 @@ public class MainActivity extends AppCompatActivity {
         ViewPager viewPager = (ViewPager) findViewById(R.id.main_view_pager);
         viewPager.setAdapter(new MainFragmentPagerAdapter(getSupportFragmentManager(), MainActivity.this));
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tab_layout);
+        tabLayout = (TabLayout) findViewById(R.id.main_tab_layout);
         tabLayout.setupWithViewPager(viewPager);
+
+        setTabIcons();
+    }
+
+    private void setTabIcons() {
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_date_range_black_24dp);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_list_black_24dp);
+        tabLayout.getTabAt(2).setIcon(R.drawable.ic_account_box_black_24dp);
     }
 
     @Override
