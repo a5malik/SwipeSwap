@@ -11,7 +11,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 public class MainFragmentPagerAdapter extends FragmentPagerAdapter {
     final int PAGE_COUNT = 3;
-    private String tabTitles[] = new String[]{"Calendar", "Swipes", "Profile"};
+    private String tabTitles[] = new String[]{"Swipes", "Messages", "Profile"};
     private Context context;
 
     public MainFragmentPagerAdapter(FragmentManager fm, Context context) {
@@ -28,9 +28,9 @@ public class MainFragmentPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new CalendarFragment();
+                return new SwipesFragment();
             case 1:
-                return new SwipeListFragment();
+                return new MessageFragment();
             default:
                 return new ProfileFragment();
         }

@@ -12,7 +12,7 @@ import android.widget.TextView;
  * Created by footb on 10/18/2016.
  */
 
-public class SwipeListFragment extends Fragment {
+public class MessageFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,7 +23,7 @@ public class SwipeListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.swipe_list_fragment, container, false);
         TextView tv = (TextView) view.findViewById(R.id.textViewSwipeList);
-        tv.setText("SwipeList Fragment");
+        tv.setText("Message Fragment");
         return view;
     }
 }

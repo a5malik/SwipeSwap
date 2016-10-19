@@ -12,7 +12,7 @@ import android.widget.TextView;
  * Created by footb on 10/18/2016.
  */
 
-public class CalendarFragment extends Fragment {
+public class SwipesFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,9 +21,9 @@ public class CalendarFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.calendar_fragment, container, false);
+        View view = inflater.inflate(R.layout.swipes_fragment, container, false);
         TextView tv = (TextView) view.findViewById(R.id.textViewCalendar);
-        tv.setText("Calendar Fragment");
+        tv.setText("Swipes Fragment");
         return view;
     }
 }
