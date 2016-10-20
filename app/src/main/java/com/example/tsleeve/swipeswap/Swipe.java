@@ -1,36 +1,81 @@
 package com.example.tsleeve.swipeswap;
 
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by footb on 10/4/2016.
  */
 
 public class Swipe {
-    private int cost;
-    private Date date;
 
-    public void Swipe(int cost, Date date)
-    {
-        this.cost = cost;
-        this.date = date;
-    }
+    public Double price;
+    public Long startTime;
+    public Long endTime;
+    public String owner_ID;
+    public Integer diningHall;
 
-    public int getCost()
-    {
-        return cost;
-    }
-    public Date getDate()
-    {
-        return date;
+
+    public Swipe(Double price, Long startTime, Long endTime, String owner_ID, Integer diningHall) {
+        this.price = price;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.owner_ID = owner_ID;
+        this.diningHall = diningHall;
     }
 
-    public void setCost(int c)
-    {
-        cost = c;
+    public Swipe() {
+
     }
-    public void setDate(Date d)
-    {
-        date = d;
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
+
+    public void setStartTime(Long startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(Long endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setOwner_ID(String owner_ID) {
+        this.owner_ID = owner_ID;
+    }
+
+    public void setDiningHall(Integer diningHall) {
+        this.diningHall = diningHall;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public Long getStartTime() {
+        return startTime;
+    }
+
+    public Long getEndTime() {
+        return endTime;
+    }
+
+    public String getOwner_ID() {
+        return owner_ID;
+    }
+
+    public Integer getDiningHall() {
+        return diningHall;
+    }
+
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("price", price);
+        result.put("startTime", startTime);
+        result.put("endTime", endTime);
+        result.put("owner_ID", owner_ID);
+        result.put("diningHall", diningHall);
+        return result;
+    }
+
 }
