@@ -2,7 +2,9 @@ package com.example.tsleeve.swipeswap;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,8 @@ import android.widget.TextView;
  */
 
 public class SwipesFragment extends Fragment {
+    TabLayout tabLayout;
+    ViewPager viewPager;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,8 +26,11 @@ public class SwipesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.swipes_fragment, container, false);
-        TextView tv = (TextView) view.findViewById(R.id.textViewCalendar);
-        tv.setText("Swipes Fragment");
+        tabLayout = (TabLayout) view.findViewById(R.id.calendar_tab_layout);
+        viewPager = (ViewPager) view.findViewById(R.id.calendar_viewpager);
+        viewPager.setAdapter(new CalendarFragmentPagerAdapter(getChildFragmentManager(), getContext()));
+
+        tabLayout.setupWithViewPager(viewPager);
         return view;
     }
 }
