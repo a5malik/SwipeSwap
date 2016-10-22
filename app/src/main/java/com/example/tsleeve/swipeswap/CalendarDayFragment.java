@@ -14,8 +14,11 @@ import android.widget.TextView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import org.w3c.dom.Text;
+
+import java.util.Calendar;
 
 /**
  * Created by footb on 10/19/2016.
@@ -80,9 +83,21 @@ public class CalendarDayFragment extends Fragment {
         //recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        Long startTime = calendar.getTimeInMillis();
+
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        Long endTime = calendar.getTimeInMillis();
+
         mRef = FirebaseDatabase.getInstance().getReference().child("swipes");
+        Query query = mRef.orderByChild("startTime").startAt(startTime).endAt(endTime);
         mAdapter = new FirebaseRecyclerAdapter<Swipe, SwipeViewHolder>(Swipe.class, R.layout.swipe_view,
-                SwipeViewHolder.class, mRef) {
+                SwipeViewHolder.class, query) {
             @Override
             protected void populateViewHolder(SwipeViewHolder viewHolder, Swipe model, int position) {
                 viewHolder.setEverything(model, position);

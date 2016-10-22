@@ -43,8 +43,10 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseDatabase.getInstance().getReference().child("swipes").
-                        push().setValue(new Swipe(6.75, new Long(15), new Long(16), "1234", 2));
+                AddSwipeDialogFragment addSwipeDialogFragment = new AddSwipeDialogFragment();
+                addSwipeDialogFragment.show(getFragmentManager(), "ADD_SWIPE_FRAGMENT");
+                // FirebaseDatabase.getInstance().getReference().child("swipes").
+                //       push().setValue(new Swipe(6.75, Calendar.getInstance().getTimeInMillis(), Calendar.getInstance().getTimeInMillis(), "1234", 2));
             }
         });
 
