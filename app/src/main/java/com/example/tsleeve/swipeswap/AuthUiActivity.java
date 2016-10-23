@@ -23,6 +23,7 @@ import static com.firebase.ui.auth.ui.AcquireEmailHelper.RC_SIGN_IN;
 
 public class AuthUiActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 100;
+    private UserAuth uAuth = new UserAuth();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +32,8 @@ public class AuthUiActivity extends AppCompatActivity {
         setContentView(R.layout.auth_ui_layout);
         TextView header = (TextView) findViewById(R.id.header);
         header.setText("GotSwipes? ;)");
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        if (auth.getCurrentUser() != null) {
+
+        if (uAuth.validUser()) {
             startActivity(MainActivity.createIntent(this));
             finish();
         }
@@ -40,10 +41,10 @@ public class AuthUiActivity extends AppCompatActivity {
         //setContentView(R.layout.auth_ui_layout);
         //mRootView = findViewById(R.id.content_main);
 
-                startActivityForResult(
-                        AuthUI.getInstance().createSignInIntentBuilder()
-                                .build(),
-                        RC_SIGN_IN);
+        startActivityForResult(
+                AuthUI.getInstance().createSignInIntentBuilder()
+                        .build(),
+                RC_SIGN_IN);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -56,7 +57,7 @@ public class AuthUiActivity extends AppCompatActivity {
 
     private void handleSignInResponse(int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            final String uid = uAuth.uid();
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users");
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override

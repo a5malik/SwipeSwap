@@ -27,6 +27,8 @@ import java.util.Calendar;
 public class AddSwipeDialogFragment extends DialogFragment {
     private Calendar calendar;
     private EditText editTextSwipePrice, editTextSwipeDate, editTextSwipeTime;
+    private SwipeDataAuth db = new SwipeDataAuth();
+    private UserAuth uAuth = new UserAuth();
 
     @Nullable
     @Override
@@ -69,13 +71,11 @@ public class AddSwipeDialogFragment extends DialogFragment {
         Button btn = (Button) view.findViewById(R.id.buttonaddswipe);
         editTextSwipePrice = (EditText) view.findViewById(R.id.editTextswipeprice);
         editTextSwipePrice.setHint("Name your price");
-        final FirebaseAuth auth = FirebaseAuth.getInstance();
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseDatabase.getInstance().getReference().child("swipes").
-                        push().setValue(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(), calendar.getTimeInMillis(), auth.getCurrentUser().getUid(), 2));
+                db.addSwipe(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(), calendar.getTimeInMillis(), uAuth.uid(), 2));
                 dismiss();
             }
         });

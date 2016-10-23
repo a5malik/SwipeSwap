@@ -37,14 +37,17 @@ public class MainActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 100;
     //private Button dateButton;
     private TabLayout tabLayout;
+    private UserAuth uAuth = new UserAuth();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        if (auth.getCurrentUser() == null) {
+
+        if (!uAuth.validUser()) {
             Intent intent = AuthUiActivity.createIntent(this);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
