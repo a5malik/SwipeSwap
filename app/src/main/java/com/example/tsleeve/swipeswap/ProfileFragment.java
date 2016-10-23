@@ -33,6 +33,7 @@ public class ProfileFragment extends Fragment {
         TextView tv = (TextView) view.findViewById(R.id.textViewProfile);
         tv.setText("Profile Fragment");
         Button btnSignOut = (Button) view.findViewById(R.id.buttonSignOut);
+        btnSignOut.setText("Sign Out");
         btnSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
