@@ -12,9 +12,13 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
@@ -37,14 +41,14 @@ public class CalendarDayFragment extends Fragment {
             mView = itemView;
         }
 
-        public void setEverything(Swipe swipe, int position) {
+        public void setEverything(final Swipe swipe, int position) {
             TextView tvTitle = (TextView) mView.findViewById(R.id.textViewTitle);
             tvTitle.setText("Swipe " + Integer.toString(position));
 
             TextView tvprice = (TextView) mView.findViewById(R.id.textViewprice);
             tvprice.setText(Double.toString(swipe.getPrice()));
 
-            TextView tvownerid = (TextView) mView.findViewById(R.id.textViewowner_id);
+            final TextView tvownerid = (TextView) mView.findViewById(R.id.textViewowner_id);
             tvownerid.setText(swipe.getOwner_ID());
 
             TextView tvdininghall = (TextView) mView.findViewById(R.id.textViewdininghall);
@@ -55,6 +59,19 @@ public class CalendarDayFragment extends Fragment {
 
             TextView tvendtime = (TextView) mView.findViewById(R.id.textViewendtime);
             tvendtime.setText(Long.toString(swipe.getEndTime()));
+
+            final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users").child(swipe.getOwner_ID());
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    tvownerid.setText(dataSnapshot.child("username").getValue(String.class));
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
 
         }
     }

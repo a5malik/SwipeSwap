@@ -29,7 +29,7 @@ public class DatePickerFragment extends DialogFragment
     }
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
-        // Do something with the date chosen by the user
+        // Do something with the date chosen by the users
         mListener.setDateButton(year, month, day);
     }
 

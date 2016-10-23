@@ -23,12 +23,18 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ui.email.SignInActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int RC_SIGN_IN = 100;
     //private Button dateButton;
     private TabLayout tabLayout;
     @Override
@@ -37,7 +43,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() == null) {
+            Intent intent = AuthUiActivity.createIntent(this);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
+        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.main_fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -93,6 +105,23 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void handleSignInResponse(int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            Intent intent = getIntent();
+            finish();
+            startActivity(intent);
+            return;
+        }
+
+        if (resultCode == RESULT_CANCELED) {
+            startActivityForResult(
+                    AuthUI.getInstance().createSignInIntentBuilder()
+                            .build(),
+                    RC_SIGN_IN);
+            return;
+        }
+
+    }
 
     public static Intent createIntent(Context context) {
         Intent in = new Intent();

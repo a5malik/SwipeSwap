@@ -13,4 +13,13 @@
         android:layout_marginTop="230dp"
         android:id="@+id/textViewProfile"
         tools:text="Profile Fragment" />
+
+    <Button
+        android:text="Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewProfile"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="31dp"
+        android:id="@+id/buttonSignOut" />
 </RelativeLayout>
