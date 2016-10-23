@@ -32,7 +32,6 @@ public class ProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.profile_fragment, container, false);
         TextView tv = (TextView) view.findViewById(R.id.textViewProfile);
         tv.setText("Profile Fragment");
-        
         Button btnSignOut = (Button) view.findViewById(R.id.buttonSignOut);
         btnSignOut.setText("Sign Out");
         btnSignOut.setOnClickListener(new View.OnClickListener() {
