@@ -21,9 +21,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import static com.firebase.ui.auth.ui.AcquireEmailHelper.RC_SIGN_IN;
 
-public class AuthUiActivity extends AppCompatActivity {
+public class AuthUiActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int RC_SIGN_IN = 100;
-
+    ProgressBar spinner;
+    Button buttonSignIn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +32,11 @@ public class AuthUiActivity extends AppCompatActivity {
         setContentView(R.layout.auth_ui_layout);
         TextView header = (TextView) findViewById(R.id.header);
         header.setText("GotSwipes? ;)");
+
+        buttonSignIn = (Button) findViewById(R.id.buttonSignIn);
+        buttonSignIn.setOnClickListener(this);
+        buttonSignIn.setText("Sign In");
+        spinner = (ProgressBar) findViewById(R.id.progressBarheader);
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null) {
             startActivity(MainActivity.createIntent(this));
@@ -40,10 +46,7 @@ public class AuthUiActivity extends AppCompatActivity {
         //setContentView(R.layout.auth_ui_layout);
         //mRootView = findViewById(R.id.content_main);
 
-                startActivityForResult(
-                        AuthUI.getInstance().createSignInIntentBuilder()
-                                .build(),
-                        RC_SIGN_IN);
+
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -56,6 +59,7 @@ public class AuthUiActivity extends AppCompatActivity {
 
     private void handleSignInResponse(int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
+            spinner.setVisibility(View.VISIBLE);
             final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users");
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -63,10 +67,12 @@ public class AuthUiActivity extends AppCompatActivity {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (!dataSnapshot.hasChild(uid)) {
                         startActivity(new Intent(AuthUiActivity.this, RegisterActivity.class));
+                        spinner.setVisibility(View.INVISIBLE);
                         finish();
                     } else {
                         startActivity(MainActivity.createIntent(AuthUiActivity.this));
                         finish();
+                        spinner.setVisibility(View.INVISIBLE);
                     }
                 }
 
@@ -95,4 +101,12 @@ public class AuthUiActivity extends AppCompatActivity {
         return in;
     }
 
+    @Override
+    public void onClick(View v) {
+        startActivityForResult(
+                AuthUI.getInstance().createSignInIntentBuilder()
+                        .build(),
+                RC_SIGN_IN);
+        buttonSignIn.setVisibility(View.INVISIBLE);
+    }
 }

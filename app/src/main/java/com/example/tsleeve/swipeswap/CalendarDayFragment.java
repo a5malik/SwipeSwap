@@ -52,7 +52,19 @@ public class CalendarDayFragment extends Fragment {
             tvownerid.setText(swipe.getOwner_ID());
 
             TextView tvdininghall = (TextView) mView.findViewById(R.id.textViewdininghall);
-            tvdininghall.setText(Integer.toString(swipe.getDiningHall()));
+            String diningHallString = "";
+            int diningHall = swipe.getDiningHall();
+            if ((diningHall & 1) == 1)
+                diningHallString += "BPlate.";
+            if ((diningHall & 2) == 2)
+                diningHallString += "Covel.";
+            if ((diningHall & 4) == 4)
+                diningHallString += "DeNeve.";
+            if ((diningHall & 8) == 8)
+                diningHallString += "Feast.";
+            if (diningHallString.length() == 0)
+                diningHallString = "No Dining Halls Selected.";
+            tvdininghall.setText(diningHallString);
 
             TextView tvstarttime = (TextView) mView.findViewById(R.id.textViewstarttime);
             tvstarttime.setText(Long.toString(swipe.getStartTime()));

@@ -35,5 +35,6 @@ dependencies {
     compile 'com.android.support:support-v4:24.2.1'
     compile 'com.firebaseui:firebase-ui-database:0.6.1'
     testCompile 'junit:junit:4.12'
+    compile 'com.android.support:recyclerview-v7:24.2.1'
 }
 apply plugin: 'com.google.gms.google-services'
