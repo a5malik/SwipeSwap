@@ -28,6 +28,8 @@ import java.util.Calendar;
 public class AddSwipeDialogFragment extends DialogFragment implements View.OnClickListener {
     private Calendar calendar;
     private EditText editTextSwipePrice, editTextSwipeDate, editTextSwipeTime;
+    private SwipeDataAuth db = new SwipeDataAuth();
+    private UserAuth uAuth = new UserAuth();
 
     @Override
     public void onClick(View v) {
@@ -69,7 +71,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.add_swipe_dialog, container, false);
-
+        editTextSwipeDate = (EditText) view.findViewById(R.id.editTextswipedate);
         calendar = Calendar.getInstance();
 
         TextView textViewHeader = (TextView) view.findViewById(R.id.textViewAddSwipeHeader);
@@ -127,8 +129,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseDatabase.getInstance().getReference().child("swipes").
-                        push().setValue(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
+                db.addSwipe(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
                         calendar.getTimeInMillis(), auth.getCurrentUser().getUid(), diningHall));
                 dismiss();
             }

@@ -25,6 +25,8 @@ public class AuthUiActivity extends AppCompatActivity implements View.OnClickLis
     private static final int RC_SIGN_IN = 100;
     ProgressBar spinner;
     Button buttonSignIn;
+    private UserAuth uAuth = new UserAuth();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +40,7 @@ public class AuthUiActivity extends AppCompatActivity implements View.OnClickLis
         buttonSignIn.setText("Sign In");
         spinner = (ProgressBar) findViewById(R.id.progressBarheader);
         FirebaseAuth auth = FirebaseAuth.getInstance();
-        if (auth.getCurrentUser() != null) {
+        if (uAuth.validUser()) {
             startActivity(MainActivity.createIntent(this));
             finish();
         }
@@ -60,7 +62,7 @@ public class AuthUiActivity extends AppCompatActivity implements View.OnClickLis
     private void handleSignInResponse(int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             spinner.setVisibility(View.VISIBLE);
-            final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            final String uid = uAuth.uid();
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users");
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override

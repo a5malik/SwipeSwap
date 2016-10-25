@@ -14,7 +14,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterActivity extends AppCompatActivity {
-
+    private UserAuth uAuth = new UserAuth();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +27,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         final FirebaseAuth auth = FirebaseAuth.getInstance();
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users");
-        final String uid = auth.getCurrentUser().getUid();
+        final String uid = uAuth.uid();
         final EditText editTextusername = (EditText) findViewById(R.id.editTextaddusername);
         Button btn = (Button) findViewById(R.id.buttonsubmitregistration);
         btn.setText("Submit");
