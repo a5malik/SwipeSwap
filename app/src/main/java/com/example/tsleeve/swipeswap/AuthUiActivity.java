@@ -40,7 +40,7 @@ public class AuthUiActivity extends AppCompatActivity implements View.OnClickLis
         buttonSignIn.setText("Sign In");
         spinner = (ProgressBar) findViewById(R.id.progressBarheader);
         FirebaseAuth auth = FirebaseAuth.getInstance();
-        if (uAuth.validUser()) {
+        if (auth.getCurrentUser() != null) {
             startActivity(MainActivity.createIntent(this));
             finish();
         }
@@ -62,7 +62,7 @@ public class AuthUiActivity extends AppCompatActivity implements View.OnClickLis
     private void handleSignInResponse(int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             spinner.setVisibility(View.VISIBLE);
-            final String uid = uAuth.uid();
+            final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users");
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
