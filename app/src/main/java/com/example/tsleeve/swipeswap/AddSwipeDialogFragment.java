@@ -27,7 +27,8 @@ import java.util.Calendar;
 
 public class AddSwipeDialogFragment extends DialogFragment implements View.OnClickListener {
     private Calendar calendar;
-    private EditText editTextSwipePrice, editTextSwipeDate, editTextSwipeTime;
+    private EditText editTextSwipePrice;
+    Button btnSwipeDate, btnSwipeTime;
     private SwipeDataAuth db = new SwipeDataAuth();
     private UserAuth uAuth = new UserAuth();
 
@@ -71,15 +72,14 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.add_swipe_dialog, container, false);
-        editTextSwipeDate = (EditText) view.findViewById(R.id.editTextswipedate);
         calendar = Calendar.getInstance();
 
         TextView textViewHeader = (TextView) view.findViewById(R.id.textViewAddSwipeHeader);
         textViewHeader.setText("ADD A SWIPE");
-        editTextSwipeDate = (EditText) view.findViewById(R.id.editTextswipedate);
-        editTextSwipeDate.setHint("Click for date");
+        btnSwipeDate = (Button) view.findViewById(R.id.buttonSwipeDate);
+        btnSwipeDate.setHint("Click for date");
 
-        editTextSwipeDate.setOnClickListener(new View.OnClickListener() {
+        btnSwipeDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
@@ -88,7 +88,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
                         calendar.set(Calendar.YEAR, year);
                         calendar.set(Calendar.MONTH, month);
                         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        editTextSwipeDate.setText(Integer.toString(dayOfMonth) + "/" + Integer.toString(month) + "/" + Integer.toString(year));
+                        btnSwipeDate.setText(Integer.toString(dayOfMonth) + "/" + Integer.toString(month) + "/" + Integer.toString(year));
 
                     }
                 }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
@@ -96,9 +96,9 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
             }
         });
 
-        editTextSwipeTime = (EditText) view.findViewById(R.id.editTextswipetime);
-        editTextSwipeTime.setHint("Click for time");
-        editTextSwipeTime.setOnClickListener(new View.OnClickListener() {
+        btnSwipeTime = (Button) view.findViewById(R.id.buttonSwipeTime);
+        btnSwipeTime.setHint("Click for time");
+        btnSwipeTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
@@ -106,7 +106,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                         calendar.set(Calendar.MINUTE, minute);
-                        editTextSwipeTime.setText(Integer.toString(hourOfDay) + ":" + Integer.toString(minute));
+                        btnSwipeTime.setText(Integer.toString(hourOfDay) + ":" + Integer.toString(minute));
                     }
                 }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false);
                 timePickerDialog.show();
@@ -114,7 +114,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
         });
 
         editTextSwipePrice = (EditText) view.findViewById(R.id.editTextswipeprice);
-        editTextSwipePrice.setHint("Name your price");
+        editTextSwipePrice.setHint("Add price ");
 
         Covel = (CheckBox) view.findViewById(R.id.checkBoxCovel);
         Feast = (CheckBox) view.findViewById(R.id.checkBoxFeast);
@@ -129,6 +129,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //TODO: ADD VERIFICATION FOR DATA ENTERED
                 db.addSwipe(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
                         calendar.getTimeInMillis(), auth.getCurrentUser().getUid(), diningHall));
                 dismiss();
