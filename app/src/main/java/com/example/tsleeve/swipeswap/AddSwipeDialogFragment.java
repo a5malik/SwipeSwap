@@ -29,8 +29,8 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
     private Calendar calendar;
     private EditText editTextSwipePrice;
     Button btnSwipeDate, btnSwipeTime;
-    private SwipeDataAuth db = new SwipeDataAuth();
-    private UserAuth uAuth = new UserAuth();
+    private SwipeDataAuth mDb = new SwipeDataAuth();
+    private UserAuth mUAuth = new UserAuth();
 
     @Override
     public void onClick(View v) {
@@ -40,27 +40,27 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
         switch (v.getId()) {
             case R.id.checkBoxBPlate:
                 if (checked)
-                    diningHall |= 1;
+                    diningHall |= SwipeDataAuth.BPLATE_ID;
                 else
-                    diningHall &= (~1);
+                    diningHall &= (~SwipeDataAuth.BPLATE_ID);
                 break;
             case R.id.checkBoxCovel:
                 if (checked)
-                    diningHall |= 2;
+                    diningHall |= SwipeDataAuth.COVEL_ID;
                 else
-                    diningHall &= (~2);
+                    diningHall &= (~SwipeDataAuth.COVEL_ID);
                 break;
             case R.id.checkBoxDeNeve:
                 if (checked)
-                    diningHall |= 4;
+                    diningHall |= SwipeDataAuth.DENEVE_ID;
                 else
-                    diningHall &= (~4);
+                    diningHall &= (~SwipeDataAuth.DENEVE_ID);
                 break;
             case R.id.checkBoxFeast:
                 if (checked)
-                    diningHall |= 8;
+                    diningHall |= SwipeDataAuth.FEAST_ID;
                 else
-                    diningHall &= (~8);
+                    diningHall &= (~SwipeDataAuth.FEAST_ID);
                 break;
         }
     }
@@ -122,7 +122,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
         DeNeve = (CheckBox) view.findViewById(R.id.checkBoxDeNeve);
 
         setupCheckboxes();
-        final FirebaseAuth auth = FirebaseAuth.getInstance();
+        //final FirebaseAuth auth = FirebaseAuth.getInstance();
 
         Button btnSubmit = (Button) view.findViewById(R.id.buttonaddswipe);
         btnSubmit.setText("Add");
@@ -130,8 +130,9 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
             @Override
             public void onClick(View v) {
                 //TODO: ADD VERIFICATION FOR DATA ENTERED
-                db.addSwipe(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
-                        calendar.getTimeInMillis(), auth.getCurrentUser().getUid(), diningHall));
+                mDb.addSwipe(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
+                        //calendar.getTimeInMillis(), auth.getCurrentUser().getUid(), diningHall));
+                        calendar.getTimeInMillis(), mUAuth.uid(), diningHall));
                 dismiss();
             }
         });

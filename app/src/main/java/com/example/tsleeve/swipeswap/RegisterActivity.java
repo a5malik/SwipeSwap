@@ -15,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterActivity extends AppCompatActivity {
     private UserAuth uAuth = new UserAuth();
+    private SwipeDataAuth db = new SwipeDataAuth();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,10 +24,11 @@ public class RegisterActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //TODO add rules for username
+        // TODO: add rules for username
 
-        final FirebaseAuth auth = FirebaseAuth.getInstance();
-        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users");
+        //final FirebaseAuth auth = FirebaseAuth.getInstance();
+        //final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users");
+        //final DatabaseReference ref = db.getUsersReference();
         final String uid = uAuth.uid();
         final EditText editTextusername = (EditText) findViewById(R.id.editTextaddusername);
         Button btn = (Button) findViewById(R.id.buttonsubmitregistration);
@@ -35,8 +37,10 @@ public class RegisterActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (editTextusername.getText().toString().length() >= 5) {
-                    ref.child(uid).child("username").setValue(editTextusername.getText().toString());
+                String user = editTextusername.getText().toString();
+                if (user.length() >= 5) {
+                    db.registerUsername(uid, user);
+                    //ref.child(uid).child("username").setValue(user);
                     startActivity(MainActivity.createIntent(RegisterActivity.this));
                     finish();
                 }

@@ -31,10 +31,12 @@ import java.util.Calendar;
 public class CalendarDayFragment extends Fragment {
     private RecyclerView recyclerView;
     private FirebaseRecyclerAdapter mAdapter;
-    private DatabaseReference mRef;
+    //private DatabaseReference mRef;
+    private SwipeDataAuth mDb = new SwipeDataAuth();
 
     public static class SwipeViewHolder extends RecyclerView.ViewHolder {
         View mView;
+        SwipeDataAuth mDb = new SwipeDataAuth();
 
         public SwipeViewHolder(View itemView) {
             super(itemView);
@@ -54,13 +56,13 @@ public class CalendarDayFragment extends Fragment {
             TextView tvdininghall = (TextView) mView.findViewById(R.id.textViewdininghall);
             String diningHallString = "";
             int diningHall = swipe.getDiningHall();
-            if ((diningHall & 1) == 1)
+            if ((diningHall & SwipeDataAuth.BPLATE_ID) == SwipeDataAuth.BPLATE_ID)
                 diningHallString += "BPlate.";
-            if ((diningHall & 2) == 2)
+            if ((diningHall & SwipeDataAuth.COVEL_ID) == SwipeDataAuth.COVEL_ID)
                 diningHallString += "Covel.";
-            if ((diningHall & 4) == 4)
+            if ((diningHall & SwipeDataAuth.DENEVE_ID) == SwipeDataAuth.DENEVE_ID)
                 diningHallString += "DeNeve.";
-            if ((diningHall & 8) == 8)
+            if ((diningHall & SwipeDataAuth.FEAST_ID) == SwipeDataAuth.FEAST_ID)
                 diningHallString += "Feast.";
             if (diningHallString.length() == 0)
                 diningHallString = "No Dining Halls Selected.";
@@ -72,11 +74,12 @@ public class CalendarDayFragment extends Fragment {
             TextView tvendtime = (TextView) mView.findViewById(R.id.textViewendtime);
             tvendtime.setText(Long.toString(swipe.getEndTime()));
 
-            final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users").child(swipe.getOwner_ID());
+            //final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users").child(swipe.getOwner_ID());
+            final DatabaseReference ref = mDb.getUserReference(swipe.getOwner_ID());
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    tvownerid.setText(dataSnapshot.child("username").getValue(String.class));
+                    tvownerid.setText(dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class));
                 }
 
                 @Override
@@ -123,8 +126,9 @@ public class CalendarDayFragment extends Fragment {
         calendar.set(Calendar.SECOND, 59);
         Long endTime = calendar.getTimeInMillis();
 
-        mRef = FirebaseDatabase.getInstance().getReference().child("swipes");
-        Query query = mRef.orderByChild("startTime").startAt(startTime).endAt(endTime);
+        //mRef = FirebaseDatabase.getInstance().getReference().child("swipes");
+        Query query = mDb.orderBy(SwipeDataAuth.ALL_SWIPES, SwipeDataAuth.START_TIME, startTime, endTime);
+        //Query query = mRef.orderByChild("startTime").startAt(startTime).endAt(endTime);
         mAdapter = new FirebaseRecyclerAdapter<Swipe, SwipeViewHolder>(Swipe.class, R.layout.swipe_view,
                 SwipeViewHolder.class, query) {
             @Override

@@ -25,7 +25,8 @@ public class AuthUiActivity extends AppCompatActivity implements View.OnClickLis
     private static final int RC_SIGN_IN = 100;
     ProgressBar spinner;
     Button buttonSignIn;
-    private UserAuth uAuth = new UserAuth();
+    private UserAuth mUAuth = new UserAuth();
+    private SwipeDataAuth db = new SwipeDataAuth();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +40,10 @@ public class AuthUiActivity extends AppCompatActivity implements View.OnClickLis
         buttonSignIn.setOnClickListener(this);
         buttonSignIn.setText("Sign In");
         spinner = (ProgressBar) findViewById(R.id.progressBarheader);
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        if (auth.getCurrentUser() != null) {
+
+        //FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (mUAuth.validUser()) {
+        //if (auth.getCurrentUser() != null) {
             startActivity(MainActivity.createIntent(this));
             finish();
         }
@@ -62,8 +65,10 @@ public class AuthUiActivity extends AppCompatActivity implements View.OnClickLis
     private void handleSignInResponse(int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             spinner.setVisibility(View.VISIBLE);
-            final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users");
+            final String uid = mUAuth.uid();
+            //final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            DatabaseReference ref = db.getUsersReference();
+            //DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users");
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -83,6 +88,7 @@ public class AuthUiActivity extends AppCompatActivity implements View.OnClickLis
 
                 }
             });
+
             finish();
             return;
         }
