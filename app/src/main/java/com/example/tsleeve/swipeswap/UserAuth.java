@@ -6,6 +6,7 @@ import com.google.firebase.auth.AuthResult;
 
 import android.util.Log;
 import android.support.annotation.NonNull;
+import android.content.Context;
 
 import java.io.InputStream;
 
@@ -16,6 +17,8 @@ import com.amazonaws.auth.PropertiesCredentials;
 import com.amazonaws.sns.samples.mobilepush.SNSMobilePush;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.AmazonClientException;
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.regions.Regions;
 
 /**
  * Created by victorlai on 10/23/16.
@@ -33,6 +36,7 @@ public class UserAuth {
     private static final String TAG = "UserAuth";
     private static final String ENDPOINT = "https://sns.ap-southeast-2.amazonaws.com";
     private static final String AWS_SERVER = "Swipes_App_Server";
+    private static final String IDENTITY_POOL_ID = "us-west-2:a6e9a940-92d6-4459-8ff8-96c295d1cbcc";
 
     public UserAuth() {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -79,11 +83,16 @@ public class UserAuth {
     /**
      * Sends a request to the AWS server to send a notification to a user.
      */
-    public void sendAWSNotification() {
+    public void sendAWSNotification(Context c) {
         AmazonSNS sns = null;
         try {
-            InputStream in = SNSMobilePush.class.getClassLoader().getResourceAsStream("AwsCredentials.properties");
-            sns = new AmazonSNSClient(new PropertiesCredentials(in));
+            // Initialize the Amazon Cognito credentials provider
+            CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                    c,
+                    IDENTITY_POOL_ID, // Identity Pool ID
+                    Regions.US_WEST_2 // Region
+            );
+            sns = new AmazonSNSClient(credentialsProvider);
             sns.setEndpoint(ENDPOINT);
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,14 +121,14 @@ public class UserAuth {
     /**
      * Sends a notification to a user.
      */
-    public void sendNotification() {
-        new SendAWSNotificationTask().execute();
+    public void sendNotification(Context c) {
+        new SendAWSNotificationTask().execute(c);
     }
 
-    private class SendAWSNotificationTask extends AsyncTask<Void, Void, Void> {
+    private class SendAWSNotificationTask extends AsyncTask<Context, Void, Void> {
         @Override
-        protected Void doInBackground(Void... params) {
-            sendAWSNotification();
+        protected Void doInBackground(Context... params) {
+            sendAWSNotification(params[0]);
             return null;
         }
     }
