@@ -22,17 +22,20 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * Created by footb on 10/19/2016.
  */
 
 public class CalendarDayFragment extends Fragment {
-    private RecyclerView recyclerView;
-    private FirebaseRecyclerAdapter mAdapter;
+    protected RecyclerView recyclerView;
+    protected FirebaseRecyclerAdapter mAdapter;
+    Long mStartTime, mEndTime;
     //private DatabaseReference mRef;
-    private SwipeDataAuth mDb = new SwipeDataAuth();
+    protected SwipeDataAuth mDb = new SwipeDataAuth();
 
     public static class SwipeViewHolder extends RecyclerView.ViewHolder {
         View mView;
@@ -68,11 +71,25 @@ public class CalendarDayFragment extends Fragment {
                 diningHallString = "No Dining Halls Selected.";
             tvdininghall.setText(diningHallString);
 
-            TextView tvstarttime = (TextView) mView.findViewById(R.id.textViewstarttime);
-            tvstarttime.setText(Long.toString(swipe.getStartTime()));
+            String startDayofMonth, startDayofWeek, startTimeofDay, startMonth;
+            String endTimeofDay;
 
-            TextView tvendtime = (TextView) mView.findViewById(R.id.textViewendtime);
-            tvendtime.setText(Long.toString(swipe.getEndTime()));
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(swipe.getStartTime());
+            startDayofMonth = Integer.toString(cal.get(Calendar.DAY_OF_MONTH));
+            startDayofWeek = new SimpleDateFormat("EEE").format(cal.getTime());
+            startTimeofDay = new SimpleDateFormat("h:mm a").format(cal.getTime());
+            startMonth = new SimpleDateFormat("MMM").format(cal.getTime());
+
+            cal.setTimeInMillis(swipe.getEndTime());
+            endTimeofDay = new SimpleDateFormat("h:mm a").format(cal.getTime());
+
+            TextView tvDate = (TextView) mView.findViewById(R.id.textViewDate);
+            tvDate.setText(startDayofWeek + ", " + startMonth + " " + startDayofMonth);
+
+            TextView tvtime = (TextView) mView.findViewById(R.id.textViewTime);
+            tvtime.setText(startTimeofDay + "-" + endTimeofDay);
+
 
             //final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users").child(swipe.getOwner_ID());
             final DatabaseReference ref = mDb.getUserReference(swipe.getOwner_ID());
@@ -115,19 +132,9 @@ public class CalendarDayFragment extends Fragment {
         //recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        Long startTime = calendar.getTimeInMillis();
-
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 59);
-        Long endTime = calendar.getTimeInMillis();
-
+        setStartandEndTimes();
         //mRef = FirebaseDatabase.getInstance().getReference().child("swipes");
-        Query query = mDb.orderBy(SwipeDataAuth.ALL_SWIPES, SwipeDataAuth.START_TIME, startTime, endTime);
+        Query query = mDb.orderBy(SwipeDataAuth.ALL_SWIPES, SwipeDataAuth.START_TIME, mStartTime, mEndTime);
         //Query query = mRef.orderByChild("startTime").startAt(startTime).endAt(endTime);
         mAdapter = new FirebaseRecyclerAdapter<Swipe, SwipeViewHolder>(Swipe.class, R.layout.swipe_view,
                 SwipeViewHolder.class, query) {
@@ -139,6 +146,19 @@ public class CalendarDayFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(mAdapter);
 
+    }
+
+    protected void setStartandEndTimes() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        mStartTime = calendar.getTimeInMillis();
+
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        mEndTime = calendar.getTimeInMillis();
     }
 
 
