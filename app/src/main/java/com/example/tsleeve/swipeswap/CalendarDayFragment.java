@@ -31,8 +31,10 @@ import java.util.GregorianCalendar;
  */
 
 public class CalendarDayFragment extends Fragment {
-    protected RecyclerView recyclerView;
-    protected FirebaseRecyclerAdapter mAdapter;
+    protected RecyclerView recyclerViewSwipes;
+    protected RecyclerView recyclerViewRequests;
+    protected FirebaseRecyclerAdapter mAdapterSwipes;
+    protected FirebaseRecyclerAdapter mAdapterRequests;
     Long mStartTime, mEndTime;
     //private DatabaseReference mRef;
     protected SwipeDataAuth mDb = new SwipeDataAuth();
@@ -46,13 +48,12 @@ public class CalendarDayFragment extends Fragment {
             mView = itemView;
         }
 
-        public void setEverything(final Swipe swipe, int position) {
+        public void setEverything(final Swipe swipe, int position, String Title) {
             TextView tvTitle = (TextView) mView.findViewById(R.id.textViewTitle);
-            tvTitle.setText("Swipe " + Integer.toString(position));
+            tvTitle.setText(Title + " " + Integer.toString(position));
 
             TextView tvprice = (TextView) mView.findViewById(R.id.textViewprice);
             tvprice.setText(Double.toString(swipe.getPrice()));
-
             final TextView tvownerid = (TextView) mView.findViewById(R.id.textViewowner_id);
             tvownerid.setText(swipe.getOwner_ID());
 
@@ -121,8 +122,8 @@ public class CalendarDayFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.calendar_day_fragment, container, false);
-        recyclerView = (RecyclerView) view.findViewById(R.id.day_recycler_view);
-
+        recyclerViewSwipes = (RecyclerView) view.findViewById(R.id.day_recycler_view_swipes);
+        recyclerViewRequests = (RecyclerView) view.findViewById(R.id.day_recycler_view_requests);
         return view;
     }
 
@@ -130,23 +131,37 @@ public class CalendarDayFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+        recyclerViewSwipes.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+        recyclerViewRequests.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 
         setStartandEndTimes();
         //mRef = FirebaseDatabase.getInstance().getReference().child("swipes");
-        Query query = mDb.orderBy(SwipeDataAuth.ALL_SWIPES, SwipeDataAuth.START_TIME, mStartTime, mEndTime);
+        Query querySwipes = mDb.orderBy(SwipeDataAuth.ALL_SWIPES, SwipeDataAuth.START_TIME, mStartTime, mEndTime);
         //Query query = mRef.orderByChild("startTime").startAt(startTime).endAt(endTime);
-        mAdapter = new FirebaseRecyclerAdapter<Swipe, SwipeViewHolder>(Swipe.class, R.layout.swipe_view,
-                SwipeViewHolder.class, query) {
+        mAdapterSwipes = new FirebaseRecyclerAdapter<Swipe, SwipeViewHolder>(Swipe.class, R.layout.swipe_view,
+                SwipeViewHolder.class, querySwipes) {
             @Override
             protected void populateViewHolder(SwipeViewHolder viewHolder, Swipe model, int position) {
-                viewHolder.setEverything(model, position);
+                viewHolder.setEverything(model, position, "Swipe");
             }
         };
-        mAdapter.notifyDataSetChanged();
-        recyclerView.setAdapter(mAdapter);
+        mAdapterSwipes.notifyDataSetChanged();
+        recyclerViewSwipes.setAdapter(mAdapterSwipes);
+
+        Query queryRequests = mDb.orderBy(SwipeDataAuth.ALL_REQUESTS, SwipeDataAuth.START_TIME, mStartTime, mEndTime);
+        //Query query = mRef.orderByChild("startTime").startAt(startTime).endAt(endTime);
+        mAdapterRequests = new FirebaseRecyclerAdapter<Swipe, SwipeViewHolder>(Swipe.class, R.layout.swipe_view,
+                SwipeViewHolder.class, queryRequests) {
+            @Override
+            protected void populateViewHolder(SwipeViewHolder viewHolder, Swipe model, int position) {
+                viewHolder.setEverything(model, position, "Request");
+            }
+        };
+        mAdapterRequests.notifyDataSetChanged();
+        recyclerViewRequests.setAdapter(mAdapterRequests);
 
     }
+
 
     protected void setStartandEndTimes() {
         Calendar calendar = Calendar.getInstance();
@@ -165,6 +180,7 @@ public class CalendarDayFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mAdapter.cleanup();
+        mAdapterSwipes.cleanup();
+        mAdapterRequests.cleanup();
     }
 }

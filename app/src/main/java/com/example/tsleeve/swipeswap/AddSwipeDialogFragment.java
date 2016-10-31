@@ -124,13 +124,25 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
         setupCheckboxes();
         //final FirebaseAuth auth = FirebaseAuth.getInstance();
 
-        Button btnSubmit = (Button) view.findViewById(R.id.buttonaddswipe);
-        btnSubmit.setText("Add");
-        btnSubmit.setOnClickListener(new View.OnClickListener() {
+        Button btnSell = (Button) view.findViewById(R.id.buttonaddswipe);
+        btnSell.setText("Sell");
+        btnSell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //TODO: ADD VERIFICATION FOR DATA ENTERED
                 mDb.addSwipe(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
+                        //calendar.getTimeInMillis(), auth.getCurrentUser().getUid(), diningHall));
+                        calendar.getTimeInMillis(), mUAuth.uid(), diningHall));
+                dismiss();
+            }
+        });
+
+        Button btnBuy = (Button) view.findViewById(R.id.buttonaddrequest);
+        btnBuy.setText("Buy");
+        btnBuy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDb.addRequest(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
                         //calendar.getTimeInMillis(), auth.getCurrentUser().getUid(), diningHall));
                         calendar.getTimeInMillis(), mUAuth.uid(), diningHall));
                 dismiss();
@@ -145,6 +157,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
             }
         });
         btnCancel.setText("Cancel");
+
 
         return view;
     }

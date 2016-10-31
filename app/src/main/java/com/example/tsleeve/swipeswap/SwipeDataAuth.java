@@ -75,6 +75,10 @@ public class SwipeDataAuth {
         return mDatabase.child(ALL_SWIPES).push().setValue(s);
     }
 
+    public Task<Void> addRequest(Swipe s) {
+        return mDatabase.child(ALL_REQUESTS).push().setValue(s);
+    }
+
     public DatabaseReference getUsersReference() {
         return mDatabase.child(ALL_USERS);
     }
