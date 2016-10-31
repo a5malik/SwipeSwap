@@ -3,12 +3,19 @@ package com.example.tsleeve.swipeswap;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.AuthResult;
+
 import android.util.Log;
 import android.support.annotation.NonNull;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.OnCompleteListener;
-import android.widget.Toast;
-import android.content.Context;
+
+import java.io.InputStream;
+
+import android.os.AsyncTask;
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.AmazonSNSClient;
+import com.amazonaws.auth.PropertiesCredentials;
+import com.amazonaws.sns.samples.mobilepush.SNSMobilePush;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.AmazonClientException;
 
 /**
  * Created by victorlai on 10/23/16.
@@ -21,8 +28,11 @@ public class UserAuth {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser mUser = mAuth.getCurrentUser();
+    private SwipeDataAuth mDb = new SwipeDataAuth();
 
     private static final String TAG = "UserAuth";
+    private static final String ENDPOINT = "https://sns.ap-southeast-2.amazonaws.com";
+    private static final String AWS_SERVER = "Swipes_App_Server";
 
     public UserAuth() {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -65,4 +75,54 @@ public class UserAuth {
     public void signOut() {
         mAuth.signOut();
     }
+
+    /**
+     * Sends a request to the AWS server to send a notification to a user.
+     */
+    public void sendAWSNotification() {
+        AmazonSNS sns = null;
+        try {
+            InputStream in = SNSMobilePush.class.getClassLoader().getResourceAsStream("AwsCredentials.properties");
+            sns = new AmazonSNSClient(new PropertiesCredentials(in));
+            sns.setEndpoint(ENDPOINT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            SNSMobilePush smp = new SNSMobilePush(sns);
+            String uid = uid();
+            smp.initAndroidAppNotification(AWS_SERVER, uid, mDb.getUserToken(uid));
+        } catch (AmazonServiceException ase) {
+            Log.d(TAG, "Caught an AmazonServiceException, which means your request made it "
+                            + "to Amazon SNS, but was rejected with an error response for some reason.");
+            Log.d(TAG, "Error Message:    " + ase.getMessage());
+            Log.d(TAG, "HTTP Status Code: " + ase.getStatusCode());
+            Log.d(TAG, "AWS Error Code:   " + ase.getErrorCode());
+            Log.d(TAG, "Error Type:       " + ase.getErrorType());
+            Log.d(TAG, "Request ID:       " + ase.getRequestId());
+        } catch (AmazonClientException ace) {
+            Log.d(TAG, "Caught an AmazonClientException, which means the client encountered "
+                            + "a serious internal problem while trying to communicate with SNS, such as not "
+                            + "being able to access the network.");
+            Log.d(TAG, "Error Message: " + ace.getMessage());
+        }
+    }
+
+    /**
+     * Sends a notification to a user.
+     */
+    public void sendNotification() {
+        new SendAWSNotificationTask().execute();
+    }
+
+    private class SendAWSNotificationTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            sendAWSNotification();
+            return null;
+        }
+    }
+
+
 }
