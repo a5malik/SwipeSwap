@@ -82,7 +82,7 @@ public class SwipeDataAuth {
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     /**
-     * This function writes a swipe obect to mDatabase
+     * This function writes a Swipe object to mDatabase
      * under both root->swipes and root->users->uid->swipes
      *
      * @param s The Swipe object to be written to Firebase
@@ -95,7 +95,7 @@ public class SwipeDataAuth {
     }
 
     /**
-     * This function writes a swipe object to mDatabase
+     * This function writes a Swipe object to mDatabase
      * under root->requests
      *
      * @param s The Swipe object to be written to Firebase
@@ -117,10 +117,10 @@ public class SwipeDataAuth {
     }
 
     /**
-     * Returns the reference to a specific user's reference,
+     * Returns the reference to a specific user under root->users,
      * and can be used to obtain the users metadata.
      *
-     * @param uid UserID of the user whose reference we want
+     * @param uid UserID of the user to update
      * @return Reference to the Google Cloud Storage object of the user
      */
     public DatabaseReference getUserReference(String uid) {
@@ -128,9 +128,9 @@ public class SwipeDataAuth {
     }
 
     /**
-     * Set a username under root->users->uid->username
+     * Set a username for the user under root->users->uid->username
      *
-     * @param uid New UserID
+     * @param uid UserID of user to update
      * @param username New Username
      * @return
      */
@@ -148,7 +148,7 @@ public class SwipeDataAuth {
      * regToken is used for user authentication, and is stored in user objects.
      *
      * @param token registration token to be updated for user
-     * @param uid UserID to update user's Google Cloud Storage object
+     * @param uid UserID to update user Google Cloud Storage object
      * @return
      */
     public Task<Void> updateToken(String token, String uid) {
@@ -159,7 +159,7 @@ public class SwipeDataAuth {
 
     /**
      * Gets the registration token of a user from root->users->uid->regToken
-     * in firebase, and sleeps 1 second to recieve the data.
+     * in firebase, and sleeps for 1 second to wait for the data.
      *
      * @param uid UserID to obtain the registration token
      * @return the user regToken in string format
@@ -189,9 +189,9 @@ public class SwipeDataAuth {
     }
 
     /**
-     * This function first ets a reference to root->users->uid->swipes for a
+     * This function first gets a reference to root->users->uid->swipes for a
      * particular user ID, and adds all the swipes associated with this reference to an
-     * Arraylist, using data snapshots, to map each attribute in firebase to
+     * ArrayList, using data snapshots to map each attribute in firebase to
      * the corresponding field in the Swipes class
      *
      * @param uid UserID of the firebase user
