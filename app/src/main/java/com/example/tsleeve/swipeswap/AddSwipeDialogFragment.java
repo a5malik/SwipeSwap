@@ -132,7 +132,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
                 //TODO: ADD VERIFICATION FOR DATA ENTERED
                 mDb.addSwipe(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
                         //calendar.getTimeInMillis(), auth.getCurrentUser().getUid(), diningHall));
-                        calendar.getTimeInMillis(), mUAuth.uid(), diningHall));
+                        calendar.getTimeInMillis(), mUAuth.uid(), diningHall), mUAuth.uid());
                 mUAuth.sendNotification(getActivity()); // TODO: test - remove later
                 dismiss();
             }
