@@ -29,6 +29,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+
+import android.content.BroadcastReceiver;
+import android.support.v4.content.LocalBroadcastManager;
+import android.content.IntentFilter;
 
 import java.util.Calendar;
 
@@ -37,7 +42,17 @@ public class MainActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 100;
     //private Button dateButton;
     private TabLayout tabLayout;
-    private UserAuth uAuth = new UserAuth();
+    private UserAuth mUAuth = new UserAuth();
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            if (extras.getString("action").equals("goToFragment")) {
+                // TODO: Show fragment to alert user if he/she wants to accept the swipe sale/request
+            }
+        }
+    };
+    private SwipeDataAuth mDb = new SwipeDataAuth();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (!uAuth.validUser()) {
+        if (!mUAuth.validUser()) {
             Intent intent = AuthUiActivity.createIntent(this);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
@@ -72,6 +87,10 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
 
         setTabIcons();
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver,
+                new IntentFilter("broadcaster"));
+        mDb.updateToken(FirebaseInstanceId.getInstance().getToken(), mUAuth.uid()); // TODO: May be better placed elsewhere
     }
 
     private void setTabIcons() {

@@ -100,7 +100,8 @@ public class AmazonSNSClientWrapper {
 				"{\"GCM\":" +
 						"\"{\\\"notification\\\":"+
 						"{\\\"title\\\":\\\"AWS SNS Notification\\\",\\\"" +
-						"body\\\":\\\"Your swipe has been posted.\\\"},"+
+						"body\\\":\\\"Your swipe has been posted.\\\"," +
+						"\\\"click_action\\\":\\\"OPEN_ACTIVITY\\\"},"+
 						"\\\"data\\\":{}}\"}";//SampleMessageGenerator.jsonify(messageMap);
 		// TODO: Add click_action payload to message
 		// For direct publish to mobile end points, topicArn is not relevant.

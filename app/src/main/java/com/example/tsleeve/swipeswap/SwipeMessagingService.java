@@ -10,6 +10,7 @@ import android.support.v4.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import android.util.Log;
+import android.support.v4.content.LocalBroadcastManager;
 
 
 public class SwipeMessagingService extends FirebaseMessagingService {
@@ -20,6 +21,7 @@ public class SwipeMessagingService extends FirebaseMessagingService {
 
         Log.d(TAG, "From: " + remoteMessage.getFrom());
         Log.d(TAG, "Notification Message Body: " + remoteMessage.getNotification().getBody());
+        //Log.d(TAG, "Click action: " + remoteMessage.getNotification().getClickAction());
 
         // Calling method to generate notification
         sendNotification(remoteMessage.getNotification().getBody());
@@ -35,6 +37,10 @@ public class SwipeMessagingService extends FirebaseMessagingService {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
+
+        Intent broadcast = new Intent("broadcaster");
+        broadcast.putExtra("action", "goToFragment");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)

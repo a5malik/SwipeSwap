@@ -94,7 +94,6 @@ public class SNSMobilePush {
 		// the method
 		// com.amazonaws.sns.samples.tools.SampleMessageGenerator.getSampleAndroidMessage()
 		String serverAPIKey = "AIzaSyDejm_PLDCaUBl3QnPArGBM0_G_aIGRhes\n";
-		//String registrationId = "dd88D1SYPhA:APA91bG30L2ThRCKxH6vMBpFd9bSwFTwNnSCznJ_tgwi6Y_hTAB9BmP6K0SlOvgkd5saH76MmLSAWZw5Lz1rDv1msZqfo0HaOoO8WFlxVajW-t2t_Guso1CxcgSOjxTEC6iz0PYuG2aP";
 		snsClientWrapper.demoNotification(Platform.GCM, "", serverAPIKey,
 				registrationId, serverName, attributesMap, uid);
 	}
