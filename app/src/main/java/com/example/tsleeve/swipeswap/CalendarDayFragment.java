@@ -38,6 +38,8 @@ public class CalendarDayFragment extends Fragment {
     Long mStartTime, mEndTime;
     //private DatabaseReference mRef;
     protected SwipeDataAuth mDb = new SwipeDataAuth();
+    public final static String DATE_TO_SHOW = "DATE_TO_SHOW";
+    public final static Long TODAY = new Long(0);
 
     public static class SwipeViewHolder extends RecyclerView.ViewHolder {
         View mView;
@@ -115,6 +117,19 @@ public class CalendarDayFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle bundle = this.getArguments();
+        Long time = TODAY;
+        if (bundle != null) {
+            time = bundle.getLong(DATE_TO_SHOW, TODAY);
+        }
+
+        setStartandEndTimes(time);
+
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
     }
 
@@ -134,7 +149,6 @@ public class CalendarDayFragment extends Fragment {
         recyclerViewSwipes.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         recyclerViewRequests.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 
-        setStartandEndTimes();
         //mRef = FirebaseDatabase.getInstance().getReference().child("swipes");
         Query querySwipes = mDb.orderBy(SwipeDataAuth.ALL_SWIPES, SwipeDataAuth.START_TIME, mStartTime, mEndTime);
         //Query query = mRef.orderByChild("startTime").startAt(startTime).endAt(endTime);
@@ -163,8 +177,11 @@ public class CalendarDayFragment extends Fragment {
     }
 
 
-    protected void setStartandEndTimes() {
+    protected void setStartandEndTimes(Long currentTime) {
         Calendar calendar = Calendar.getInstance();
+        if (currentTime != TODAY)
+            calendar.setTimeInMillis(currentTime);
+
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);

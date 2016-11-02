@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import java.util.Calendar;
 
+import static android.R.attr.fragment;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,6 +21,8 @@ import java.util.Calendar;
 public class CalendarMonthFragment extends Fragment implements CalendarView.OnDateChangeListener {
 
     CalendarView calendarView;
+    private android.support.v4.app.FragmentManager manager = null;
+    private Fragment fragment = null;
     public CalendarMonthFragment() {
         // Required empty public constructor
     }
@@ -43,6 +47,15 @@ public class CalendarMonthFragment extends Fragment implements CalendarView.OnDa
 
     @Override
     public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        Bundle bundle = new Bundle();
+        bundle.putLong(CalendarDayFragment.DATE_TO_SHOW, cal.getTimeInMillis());
+        if (manager == null) manager = getChildFragmentManager();
+        fragment = new CalendarDayFragment();
+        fragment.setArguments(bundle);
+        manager.beginTransaction().replace(R.id.month_dayfragment_container, fragment).commit();
     }
 }
