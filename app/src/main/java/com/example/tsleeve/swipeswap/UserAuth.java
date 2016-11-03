@@ -58,7 +58,7 @@ public class UserAuth {
     /**
      * Returns whether or not the current user is authenticated and valid.
      *
-     * @return true if the user is valid; otherwise, false.
+     * @return <code>true</code> if the user is valid; <code>false</code> otherwise
      */
     public boolean validUser() {
         return mUser != null;
@@ -67,7 +67,7 @@ public class UserAuth {
     /**
      * Returns the user ID of the current authenticated user, or null if the user is not valid.
      *
-     * @return the user ID of the current user.
+     * @return The user ID of the current user.
      */
     public String uid() {
         return validUser() ? mUser.getUid() : null;
@@ -81,7 +81,11 @@ public class UserAuth {
     }
 
     /**
-     * Sends a request to the AWS server to send a notification to a user.
+     * Sends a request to the AWS server to issue a request to Firebase to send an appropriate
+     * notfication to a user.
+     *
+     * @param c The Android context to be used to set up a credentials provider for caching
+     * @see     CognitoCachingCredentialsProvider
      */
     public void sendAWSNotification(Context c) {
         AmazonSNS sns = null;

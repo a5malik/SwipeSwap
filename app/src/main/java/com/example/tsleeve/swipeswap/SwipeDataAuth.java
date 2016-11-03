@@ -82,12 +82,12 @@ public class SwipeDataAuth {
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     /**
-     * This function writes a Swipe object to mDatabase
-     * under both root->swipes and root->users->uid->swipes
+     * Stores the specified swipe sale in the application's database.
      *
-     * @param s The Swipe object to be written to Firebase
-     * @param uid User ID of the swipe seller
-     * @return
+     * @param s   The swipe to be saved
+     * @param uid The ID of the swipe seller
+     * @return    A task that represents the completion of the operation to add the swipe sale
+     * @see       Swipe
      */
     public Task<Void> addSwipe(Swipe s, String uid) {
         mDatabase.child(ALL_USERS).child(uid).child(ALL_SWIPES).push().setValue(s);
@@ -95,22 +95,26 @@ public class SwipeDataAuth {
     }
 
     /**
-     * This function writes a Swipe object to mDatabase
-     * under root->requests
+     * Saves the specified swipe request to the application's database.
      *
-     * @param s The Swipe object to be written to Firebase
-     * @return
+     * @param  s   The Swipe object to be written to Firebase
+     * @param  uid The ID of the user making the swipe request
+     * @return     A task that represents the completion of the operation to add the swipe request
+     * @see        Swipe
      */
-    public Task<Void> addRequest(Swipe s) {
+    public Task<Void> addRequest(Swipe s, String uid) {
+        mDatabase.child(ALL_USERS).child(uid).child(ALL_REQUESTS).push().setValue(s);
         return mDatabase.child(ALL_REQUESTS).push().setValue(s);
     }
 
     // TODO: Remove swipe
 
     /**
-     * Gets a reference to the root->users in the Firebase data
+     * Gets a reference to the location in the application's database where all users' data is
+     * located.
      *
-     * @return reference to the Google Cloud Storage object that has all users data
+     * @return A reference to the database location containing users' data
+     * @see    DatabaseReference
      */
     public DatabaseReference getUsersReference() {
         return mDatabase.child(ALL_USERS);
@@ -120,36 +124,53 @@ public class SwipeDataAuth {
      * Returns the reference to a specific user under root->users,
      * and can be used to obtain the users metadata.
      *
-     * @param uid UserID of the user to update
-     * @return Reference to the Google Cloud Storage object of the user
+     * @param  uid the ID of the user to get the a reference to
+     * @return     Reference to the Google Cloud Storage object of the user
+     * @see        DatabaseReference
      */
     public DatabaseReference getUserReference(String uid) {
         return mDatabase.child(ALL_USERS).child(uid);
     }
 
     /**
-     * Set a username for the user under root->users->uid->username
+     * Set a username for the a user.  A username can be thought of as a nickname for a user.
      *
-     * @param uid UserID of user to update
-     * @param username New Username
-     * @return
+     * @param  uid      The ID of the user to register a username with
+     * @param  username The username string
+     * @return          A task that represents the completion of the operation to register a user
+     *                  with a username
      */
     public Task<Void> registerUsername(String uid, String username) {
         return mDatabase.child(ALL_USERS).child(uid).child(USERNAME).setValue(username);
     }
 
+    /**
+     * Sorts a target key based on a specified key in the application's database.
+     *
+     * @param target The target key to sort
+     * @param key    The key to sort based on
+     * @param start  The lower bound constraint (inclusive)
+     * @param end    The upper bound constraint (inclusive)
+     * @return       A query reference to be used to add event listeners and retrieve data
+     * @see          Query
+     */
     public Query orderBy(String target, String key, double start, double end) {
         DatabaseReference ref = mDatabase.child(target);
         return ref.orderByChild(key).startAt(start).endAt(end);
     }
 
     /**
-     * Sets a value for root->users->uid->regToken in the firebase data.
-     * regToken is used for user authentication, and is stored in user objects.
+     * Updates the registration token associated.  See
+     * <a href="https://firebase.google.com/docs/notifications/android/console-device#access_the_registration_token">
+     * https://firebase.google.com/docs/notifications/android/console-device#access_the_registration_token
+     * </a>
+     * for more information about when registration tokens get updated.
      *
-     * @param token registration token to be updated for user
-     * @param uid UserID to update user Google Cloud Storage object
-     * @return
+     * @param  token Registration token to be updated for the specified user
+     * @param  uid   The ID of the user to update the token of
+     * @return       A task that represents the completion of the operation to add the swipe sale,
+     *               or null if the user ID is null
+     * @see          SwipeInstanceIDService
      */
     public Task<Void> updateToken(String token, String uid) {
         if (uid == null)
@@ -158,11 +179,12 @@ public class SwipeDataAuth {
     }
 
     /**
-     * Gets the registration token of a user from root->users->uid->regToken
-     * in firebase, and sleeps for 1 second to wait for the data.
+     * Gets the registration token associated with the specified user.
      *
-     * @param uid UserID to obtain the registration token
-     * @return the user regToken in string format
+     * The registration token can be thought of as an ID associated with a unique device.
+     *
+     * @param uid ID of the user to obtain the registration token from
+     * @return    The registration token
      */
     public String getUserToken(String uid) {
         DatabaseReference ref = mDatabase.child(ALL_USERS).child(uid).child(TOKEN);
@@ -189,13 +211,10 @@ public class SwipeDataAuth {
     }
 
     /**
-     * This function first gets a reference to root->users->uid->swipes for a
-     * particular user ID, and adds all the swipes associated with this reference to an
-     * ArrayList, using data snapshots to map each attribute in firebase to
-     * the corresponding field in the Swipes class
+     * Returns a listing of all swipe sales associated with the specified user.
      *
-     * @param uid UserID of the firebase user
-     * @return ArrayList of all the swipes associated with a particular user
+     * @param uid ID of the user to get all swipes from
+     * @return    A list of all the swipes associated with a particular user
      */
     public ArrayList<Swipe> getAllSwipesByUser(String uid) {
         DatabaseReference ref = mDatabase.child(ALL_USERS).child(uid).child(ALL_SWIPES);

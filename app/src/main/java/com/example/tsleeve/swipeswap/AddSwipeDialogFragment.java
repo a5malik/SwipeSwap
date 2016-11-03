@@ -145,7 +145,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
             public void onClick(View v) {
                 mDb.addRequest(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
                         //calendar.getTimeInMillis(), auth.getCurrentUser().getUid(), diningHall));
-                        calendar.getTimeInMillis(), mUAuth.uid(), diningHall));
+                        calendar.getTimeInMillis(), mUAuth.uid(), diningHall), mUAuth.uid());
                 dismiss();
             }
         });
