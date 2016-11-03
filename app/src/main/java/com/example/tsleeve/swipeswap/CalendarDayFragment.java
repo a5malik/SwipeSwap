@@ -41,6 +41,14 @@ public class CalendarDayFragment extends Fragment {
     public final static String DATE_TO_SHOW = "DATE_TO_SHOW";
     public final static Long TODAY = new Long(0);
 
+    public static CalendarDayFragment getInstance(Long time) {
+        Bundle bundle = new Bundle();
+        bundle.putLong(CalendarDayFragment.DATE_TO_SHOW, time);
+        CalendarDayFragment fragment = new CalendarDayFragment();
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     public static class SwipeViewHolder extends RecyclerView.ViewHolder {
         View mView;
         SwipeDataAuth mDb = new SwipeDataAuth();

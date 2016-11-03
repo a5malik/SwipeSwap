@@ -51,11 +51,9 @@ public class CalendarMonthFragment extends Fragment implements CalendarView.OnDa
         cal.set(Calendar.YEAR, year);
         cal.set(Calendar.MONTH, month);
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        Bundle bundle = new Bundle();
-        bundle.putLong(CalendarDayFragment.DATE_TO_SHOW, cal.getTimeInMillis());
+
+        fragment = CalendarDayFragment.getInstance(cal.getTimeInMillis());
         if (manager == null) manager = getChildFragmentManager();
-        fragment = new CalendarDayFragment();
-        fragment.setArguments(bundle);
         manager.beginTransaction().replace(R.id.month_dayfragment_container, fragment).commit();
     }
 }
