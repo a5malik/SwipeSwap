@@ -75,8 +75,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 AddSwipeDialogFragment addSwipeDialogFragment = new AddSwipeDialogFragment();
                 addSwipeDialogFragment.show(getFragmentManager(), "ADD_SWIPE_FRAGMENT");
-                // FirebaseDatabase.getInstance().getReference().child("swipes").
-                //       push().setValue(new Swipe(6.75, Calendar.getInstance().getTimeInMillis(), Calendar.getInstance().getTimeInMillis(), "1234", 2));
             }
         });
 
@@ -90,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver,
                 new IntentFilter("broadcaster"));
-        mDb.updateToken(FirebaseInstanceId.getInstance().getToken(), mUAuth.uid()); // TODO: May be better placed elsewhere
+        mDb.updateToken(FirebaseInstanceId.getInstance().getToken(), mUAuth.uid());
     }
 
     private void setTabIcons() {

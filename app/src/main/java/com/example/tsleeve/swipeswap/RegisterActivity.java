@@ -43,6 +43,8 @@ public class RegisterActivity extends AppCompatActivity {
                     //ref.child(uid).child("username").setValue(user);
                     startActivity(MainActivity.createIntent(RegisterActivity.this));
                     finish();
+                } else {
+                    // TODO: Display something to indicate that the username must be at least 5 characters.
                 }
             }
         });
