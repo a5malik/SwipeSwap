@@ -4,13 +4,23 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="right"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/close_button"
+        android:src="@drawable/close_icon"/>
     <TextView
-        android:text="TextView"
+        android:text="Swipe Transaction"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="-20dp"
+        android:textColor="@color/gotSwipesRed"
         android:id="@+id/textViewAddSwipeHeader"
-        android:textSize="20dp" />
+        android:textSize="30dp" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -20,67 +30,182 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="50dp"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/calendar_mini_icon"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="15dp"
+                    android:textSize="15dp"
+                    android:text="Friday, Nov. 4th"
+                    android:textColor="@color/black"
+                    android:id="@+id/textViewSwipeDate"/>
+                <Button
+                    android:layout_width="100dp"
+                    android:layout_height="35dp"
+                    android:layout_marginLeft="20dp"
+                    android:textAlignment="center"
+                    android:background="@color/gotSwipesRed"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/white"
+                    android:text="Choose Date"
+                    android:textSize="10dp"
+                    android:id="@+id/buttonSwipeDate" />
+            </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="50dp"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/time_icon"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="15dp"
+                    android:textSize="15dp"
+                    android:text="8:00 am - 1:00 pm"
+                    android:id="@+id/textViewSwipeTime"
+                    android:textColor="@color/black"/>
+                <Button
+                    android:layout_width="100dp"
+                    android:layout_height="35dp"
+                    android:layout_marginLeft="20dp"
+                    android:textAlignment="center"
+                    android:background="@color/gotSwipesRed"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/white"
+                    android:textSize="10dp"
+                    android:text="Choose Time"
+                    android:id="@+id/buttonSwipeTime" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="50dp"
+                android:text="Pick Dining Option(s)"
+                android:textColor="@color/gotSwipesGray"
+                android:textSize="20dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:orientation="horizontal">
+                <CheckBox
+                    android:text="De Neve Dining Hall"
+                    android:textColor="@color/gotSwipesGray"
+                    android:buttonTint="@color/gotSwipesRed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:id="@+id/checkBoxCovel" />
+
+                <CheckBox
+                    android:text="Bruin Plate Dining Hall"
+                    android:textColor="@color/gotSwipesGray"
+                    android:buttonTint="@color/gotSwipesRed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_gravity="left"
+                    android:id="@+id/checkBoxFeast" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:orientation="horizontal">
+                <CheckBox
+                    android:text="Covel Dining Hall"
+                    android:textColor="@color/gotSwipesGray"
+                    android:buttonTint="@color/gotSwipesRed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:id="@+id/checkBoxBPlate" />
+
+                <CheckBox
+                    android:text="Feast Dining Hall"
+                    android:textColor="@color/gotSwipesGray"
+                    android:buttonTint="@color/gotSwipesRed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_gravity="left"
+                    android:id="@+id/checkBoxDeNeve" />
+            </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="50dp"
+                android:text="Enter Desired Swipe Price"
+                android:textColor="@color/gotSwipesGray"
+                android:textSize="20dp"/>
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="50dp"
                 android:inputType="numberDecimal"
+                android:hint="$0.00"
                 android:ems="10"
                 android:id="@+id/editTextswipeprice" />
 
-            <Button
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                android:id="@+id/buttonSwipeDate" />
+                android:layout_marginTop="60dp"
+                android:orientation="horizontal">
+                    <Button
+                        android:text="SELL"
+                        android:layout_width="100dp"
+                        android:layout_height="35dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="10dp"
+                        android:background="@color/gotSwipesRed"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:id="@+id/buttonaddswipe" />
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:id="@+id/buttonSwipeTime" />
-
-            <CheckBox
-                android:text="CheckBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/checkBoxCovel" />
-
-            <CheckBox
-                android:text="CheckBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/checkBoxFeast" />
-
-            <CheckBox
-                android:text="CheckBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/checkBoxBPlate" />
-
-            <CheckBox
-                android:text="CheckBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/checkBoxDeNeve" />
-
-            <Button
-                android:text="Button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/buttonaddswipe" />
-
-            <Button
-                android:text="Button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/buttonaddrequest" />
-
-            <Button
-                android:text="Button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/buttoncancel" />
+                    <Button
+                        android:text="BUY"
+                        android:layout_width="100dp"
+                        android:layout_height="35dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="50dp"
+                        android:background="@color/gotSwipesRed"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:id="@+id/buttonaddrequest" />
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

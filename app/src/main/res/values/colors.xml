@@ -8,4 +8,5 @@
     <color name="transparent">#00000000</color>
     <color name="black">#000</color>
     <color name="gotSwipesRed">#F16464</color>
+    <color name="gotSwipesGray">#757575</color>
 </resources>

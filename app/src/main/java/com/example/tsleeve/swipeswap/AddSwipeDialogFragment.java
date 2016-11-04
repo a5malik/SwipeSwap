@@ -1,18 +1,23 @@
 package com.example.tsleeve.swipeswap;
 
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -26,8 +31,27 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
     private Calendar calendar;
     private EditText editTextSwipePrice;
     Button btnSwipeDate, btnSwipeTime;
+    TextView tvSwipeDate, tvSwipeTime;
+    ImageView closeButton;
     private SwipeDataAuth mDb = new SwipeDataAuth();
     private UserAuth mUAuth = new UserAuth();
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog =  super.onCreateDialog(savedInstanceState);
+        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        return dialog;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        }
+    }
 
     @Override
     public void onClick(View v) {
@@ -72,10 +96,9 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
         calendar = Calendar.getInstance();
 
         TextView textViewHeader = (TextView) view.findViewById(R.id.textViewAddSwipeHeader);
-        textViewHeader.setText("ADD A SWIPE");
+        textViewHeader.setText("Swipe Transaction");
         btnSwipeDate = (Button) view.findViewById(R.id.buttonSwipeDate);
-        btnSwipeDate.setHint("Click for date");
-
+        tvSwipeDate = (TextView) view.findViewById(R.id.textViewSwipeDate);
         btnSwipeDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,7 +108,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
                         calendar.set(Calendar.YEAR, year);
                         calendar.set(Calendar.MONTH, month);
                         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        btnSwipeDate.setText(Integer.toString(dayOfMonth) + "/" + Integer.toString(month) + "/" + Integer.toString(year));
+                        tvSwipeDate.setText(Integer.toString(dayOfMonth) + "/" + Integer.toString(month) + "/" + Integer.toString(year));
 
                     }
                 }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
@@ -94,7 +117,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
         });
 
         btnSwipeTime = (Button) view.findViewById(R.id.buttonSwipeTime);
-        btnSwipeTime.setHint("Click for time");
+        tvSwipeTime = (TextView) view.findViewById(R.id.textViewSwipeTime);
         btnSwipeTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,7 +126,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                         calendar.set(Calendar.MINUTE, minute);
-                        btnSwipeTime.setText(Integer.toString(hourOfDay) + ":" + Integer.toString(minute));
+                        tvSwipeTime.setText(Integer.toString(hourOfDay) + ":" + Integer.toString(minute));
                     }
                 }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false);
                 timePickerDialog.show();
@@ -143,17 +166,13 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
 
             }
         });
-
-        Button btnCancel = (Button) view.findViewById(R.id.buttoncancel);
-        btnCancel.setOnClickListener(new View.OnClickListener() {
+        closeButton = (ImageView) view.findViewById(R.id.close_button);
+        closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismiss();
             }
         });
-        btnCancel.setText("Cancel");
-
-
         return view;
     }
 
@@ -162,11 +181,6 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
         DeNeve.setOnClickListener(this);
         BPlate.setOnClickListener(this);
         Feast.setOnClickListener(this);
-
-        Covel.setText("Covel");
-        DeNeve.setText("DeNeve");
-        BPlate.setText("BPlate");
-        Feast.setText("Feast");
     }
 
     public void show(FragmentManager fragmentManager, String add_swipe_fragment) {
