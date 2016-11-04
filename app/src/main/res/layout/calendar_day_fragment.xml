@@ -8,23 +8,21 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <android.support.v7.widget.RecyclerView
+                android:id="@+id/day_recycler_view_swipes"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/day_recycler_view_swipes" />
+                android:layout_height="wrap_content" />
 
             <android.support.v7.widget.RecyclerView
+                android:id="@+id/day_recycler_view_requests"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/day_recycler_view_requests" />
+                android:layout_height="wrap_content" />
         </LinearLayout>
-
     </ScrollView>
 
 

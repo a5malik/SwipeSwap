@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ui.email.SignInActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -30,8 +29,8 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.profile_fragment, container, false);
-        TextView tv = (TextView) view.findViewById(R.id.textViewProfile);
-        tv.setText("Profile Fragment");
+        TextView tv = (TextView) view.findViewById(R.id.profileHeader);
+        tv.setText("David Smallberg");
         Button btnSignOut = (Button) view.findViewById(R.id.buttonSignOut);
         btnSignOut.setText("Sign Out");
         btnSignOut.setOnClickListener(new View.OnClickListener() {

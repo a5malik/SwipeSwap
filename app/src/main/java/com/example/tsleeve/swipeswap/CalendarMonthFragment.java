@@ -8,11 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CalendarView;
-import android.widget.Toast;
 
 import java.util.Calendar;
-
-import static android.R.attr.fragment;
 
 
 /**
@@ -42,7 +39,7 @@ public class CalendarMonthFragment extends Fragment implements CalendarView.OnDa
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MONTH, 1);
         calendarView.setMaxDate(calendar.getTimeInMillis());
-        calendarView.setMinDate(Calendar.getInstance().getTimeInMillis());
+        calendarView.setMinDate(Calendar.getInstance().getTimeInMillis()- 1000);
     }
 
     @Override

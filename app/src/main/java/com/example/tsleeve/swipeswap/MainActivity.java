@@ -1,41 +1,20 @@
 package com.example.tsleeve.swipeswap;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ui.email.SignInActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
-
-import android.content.BroadcastReceiver;
-import android.support.v4.content.LocalBroadcastManager;
-import android.content.IntentFilter;
-
-import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -61,40 +40,47 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         if (!mUAuth.validUser()) {
             Intent intent = AuthUiActivity.createIntent(this);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();
         }
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.main_fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AddSwipeDialogFragment addSwipeDialogFragment = new AddSwipeDialogFragment();
-                addSwipeDialogFragment.show(getFragmentManager(), "ADD_SWIPE_FRAGMENT");
-            }
-        });
-
         ViewPager viewPager = (ViewPager) findViewById(R.id.main_view_pager);
         viewPager.setAdapter(new MainFragmentPagerAdapter(getSupportFragmentManager(), MainActivity.this));
         viewPager.setOffscreenPageLimit(3);
         tabLayout = (TabLayout) findViewById(R.id.main_tab_layout);
         tabLayout.setupWithViewPager(viewPager);
+        setTabIcons(0);
+        tabLayout.setOnTabSelectedListener(
+                new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
 
-        setTabIcons();
+                    @Override
+                    public void onTabSelected(TabLayout.Tab tab) {
+                        super.onTabSelected(tab);
+                        setTabIcons(tab.getPosition());
+                    }
+                }
+        );
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver,
                 new IntentFilter("broadcaster"));
         mDb.updateToken(FirebaseInstanceId.getInstance().getToken(), mUAuth.uid());
     }
 
-    private void setTabIcons() {
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_date_range_black_24dp);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_list_black_24dp);
-        tabLayout.getTabAt(2).setIcon(R.drawable.ic_account_box_black_24dp);
+    private void setTabIcons(int tabposition) {
+        tabLayout.getTabAt(0).setIcon(R.drawable.calendar_icon);
+        tabLayout.getTabAt(1).setIcon(R.drawable.message_icon);
+        tabLayout.getTabAt(2).setIcon(R.drawable.profile_icon);
+        if(tabposition == 0){
+            tabLayout.getTabAt(0).setIcon(R.drawable.calendar_icon_highlighted);
+        }
+        else if(tabposition == 1){
+            tabLayout.getTabAt(1).setIcon(R.drawable.message_icon_highlighted);
+        }
+        else if(tabposition == 2){
+            tabLayout.getTabAt(2).setIcon(R.drawable.profile_icon_highlighted);
+        }
     }
 
     @Override
@@ -148,4 +134,10 @@ public class MainActivity extends AppCompatActivity {
         in.setClass(context, MainActivity.class);
         return in;
     }
+
+    public void showAddSwipe(){
+        AddSwipeDialogFragment addSwipeDialogFragment = new AddSwipeDialogFragment();
+        addSwipeDialogFragment.show(getFragmentManager(), "ADD_SWIPE_FRAGMENT");
+    }
+
 }

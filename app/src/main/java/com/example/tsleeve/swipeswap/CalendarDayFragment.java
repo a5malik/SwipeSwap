@@ -8,23 +8,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 /**
  * Created by footb on 10/19/2016.
@@ -60,24 +54,21 @@ public class CalendarDayFragment extends Fragment {
 
         public void setEverything(final Swipe swipe, int position, String Title) {
             TextView tvTitle = (TextView) mView.findViewById(R.id.textViewTitle);
-            tvTitle.setText(Title + " " + Integer.toString(position));
-
-            TextView tvprice = (TextView) mView.findViewById(R.id.textViewprice);
-            tvprice.setText(Double.toString(swipe.getPrice()));
-            final TextView tvownerid = (TextView) mView.findViewById(R.id.textViewowner_id);
-            tvownerid.setText(swipe.getOwner_ID());
+            tvTitle.setText(Title + " " + Integer.toString(position) + " for $" + Double.toString(swipe.getPrice()));
+            //final TextView tvownerid = (TextView) mView.findViewById(R.id.textViewowner_id);
+            //tvownerid.setText(swipe.getOwner_ID());
 
             TextView tvdininghall = (TextView) mView.findViewById(R.id.textViewdininghall);
             String diningHallString = "";
             int diningHall = swipe.getDiningHall();
             if ((diningHall & SwipeDataAuth.BPLATE_ID) == SwipeDataAuth.BPLATE_ID)
-                diningHallString += "BPlate.";
+                diningHallString += "Bruin Plate Dining Hall";
             if ((diningHall & SwipeDataAuth.COVEL_ID) == SwipeDataAuth.COVEL_ID)
-                diningHallString += "Covel.";
+                diningHallString += "Covel Dining Hall";
             if ((diningHall & SwipeDataAuth.DENEVE_ID) == SwipeDataAuth.DENEVE_ID)
-                diningHallString += "DeNeve.";
+                diningHallString += "De Neve Dining Hall";
             if ((diningHall & SwipeDataAuth.FEAST_ID) == SwipeDataAuth.FEAST_ID)
-                diningHallString += "Feast.";
+                diningHallString += "Feast Dining Hall";
             if (diningHallString.length() == 0)
                 diningHallString = "No Dining Halls Selected.";
             tvdininghall.setText(diningHallString);
@@ -90,16 +81,18 @@ public class CalendarDayFragment extends Fragment {
             startDayofMonth = Integer.toString(cal.get(Calendar.DAY_OF_MONTH));
             startDayofWeek = new SimpleDateFormat("EEE").format(cal.getTime());
             startTimeofDay = new SimpleDateFormat("h:mm a").format(cal.getTime());
-            startMonth = new SimpleDateFormat("MMM").format(cal.getTime());
 
             cal.setTimeInMillis(swipe.getEndTime());
             endTimeofDay = new SimpleDateFormat("h:mm a").format(cal.getTime());
 
             TextView tvDate = (TextView) mView.findViewById(R.id.textViewDate);
-            tvDate.setText(startDayofWeek + ", " + startMonth + " " + startDayofMonth);
+            tvDate.setText(startDayofMonth);
+
+            TextView tvDay = (TextView) mView.findViewById(R.id.textViewDay);
+            tvDay.setText(startDayofWeek);
 
             TextView tvtime = (TextView) mView.findViewById(R.id.textViewTime);
-            tvtime.setText(startTimeofDay + "-" + endTimeofDay);
+            tvtime.setText(startTimeofDay + "—" + endTimeofDay);
 
 
             //final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users").child(swipe.getOwner_ID());
@@ -107,7 +100,7 @@ public class CalendarDayFragment extends Fragment {
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    tvownerid.setText(dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class));
+                    //tvownerid.setText(dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class));
                 }
 
                 @Override

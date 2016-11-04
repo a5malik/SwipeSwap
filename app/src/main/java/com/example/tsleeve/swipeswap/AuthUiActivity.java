@@ -2,24 +2,18 @@ package com.example.tsleeve.swipeswap;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import static com.firebase.ui.auth.ui.AcquireEmailHelper.RC_SIGN_IN;
 
 public class AuthUiActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int RC_SIGN_IN = 100;
@@ -34,11 +28,11 @@ public class AuthUiActivity extends AppCompatActivity implements View.OnClickLis
 
         setContentView(R.layout.auth_ui_layout);
         TextView header = (TextView) findViewById(R.id.header);
-        header.setText("GotSwipes? ;)");
+        header.setText("Got Swipes?");
 
         buttonSignIn = (Button) findViewById(R.id.buttonSignIn);
         buttonSignIn.setOnClickListener(this);
-        buttonSignIn.setText("Sign In");
+        buttonSignIn.setText("Login");
         spinner = (ProgressBar) findViewById(R.id.progressBarheader);
 
         //FirebaseAuth auth = FirebaseAuth.getInstance();

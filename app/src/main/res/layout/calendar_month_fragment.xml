@@ -3,35 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.tsleeve.swipeswap.CalendarMonthFragment">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <CalendarView
+            android:id="@+id/calendarView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="3" />
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1">
-
-            <LinearLayout
+            <FrameLayout
+                android:id="@+id/month_dayfragment_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <CalendarView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/calendarView"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/month_dayfragment_container" />
-            </LinearLayout>
+                android:layout_height="wrap_content" />
         </ScrollView>
-
-
     </LinearLayout>
 </FrameLayout>

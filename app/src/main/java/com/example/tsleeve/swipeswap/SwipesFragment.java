@@ -2,13 +2,13 @@ package com.example.tsleeve.swipeswap;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 /**
  * Created by footb on 10/18/2016.
@@ -31,6 +31,13 @@ public class SwipesFragment extends Fragment {
         viewPager.setAdapter(new CalendarFragmentPagerAdapter(getChildFragmentManager(), getContext()));
         viewPager.setOffscreenPageLimit(3);
         tabLayout.setupWithViewPager(viewPager);
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.main_fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainActivity)getActivity()).showAddSwipe();
+            }
+        });
         return view;
     }
 }

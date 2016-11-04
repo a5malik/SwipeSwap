@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +15,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
-
-import com.google.android.gms.auth.api.Auth;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
 
@@ -143,10 +140,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
         btnBuy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDb.addRequest(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
-                        //calendar.getTimeInMillis(), auth.getCurrentUser().getUid(), diningHall));
-                        calendar.getTimeInMillis(), mUAuth.uid(), diningHall), mUAuth.uid());
-                dismiss();
+
             }
         });
 
@@ -173,5 +167,8 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
         DeNeve.setText("DeNeve");
         BPlate.setText("BPlate");
         Feast.setText("Feast");
+    }
+
+    public void show(FragmentManager fragmentManager, String add_swipe_fragment) {
     }
 }
