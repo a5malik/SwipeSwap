@@ -163,7 +163,9 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
         btnBuy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                mDb.addRequest(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
+                        calendar.getTimeInMillis(), mUAuth.uid(), diningHall), mUAuth.uid());
+                dismiss();
             }
         });
         closeButton = (ImageView) view.findViewById(R.id.close_button);

@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">GotSwipes?</string>
 
+    <string name="facebook_application_id" translatable="false">201471733631764</string>
+    <!-- Facebook Application ID, prefixed by 'fb'.  Enables Chrome Custom tabs. -->
+    <string name="facebook_login_protocol_scheme" translatable="false">fb201471733631764</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
