@@ -83,7 +83,7 @@ public class AmazonSNSClientWrapper {
 	}
 
 	private PublishResult publish(String endpointArn, Platform platform,
-			Map<Platform, Map<String, MessageAttributeValue>> attributesMap) {
+			Map<Platform, Map<String, MessageAttributeValue>> attributesMap, String notifMessage) {
 		PublishRequest publishRequest = new PublishRequest();
 		Map<String, MessageAttributeValue> notificationAttributes = getValidNotificationAttributes(attributesMap
 				.get(platform));
@@ -97,12 +97,14 @@ public class AmazonSNSClientWrapper {
 		//Map<String, String> messageMap = new HashMap<String, String>();
 		//messageMap.put(platform.name(), message);
 		message =
-				"{\"GCM\":" +
-						"\"{\\\"notification\\\":"+
-						"{\\\"title\\\":\\\"AWS SNS Notification\\\",\\\"" +
-						"body\\\":\\\"Your swipe has been posted.\\\"," +
-						"\\\"click_action\\\":\\\"OPEN_ACTIVITY\\\"},"+
-						"\\\"data\\\":{}}\"}";//SampleMessageGenerator.jsonify(messageMap);
+				"{" +
+						"\"GCM\": " +
+						"\"{ \\\"notification\\\": " +
+						"{ " +
+						"\\\"body\\\": \\\"" + notifMessage + "\\\"" +
+						"}, " +
+						//"\\\"click_action\\\":\\\"OPEN_ACTIVITY\\\"},"+
+						"\\\"data\\\": {}}\"}";//SampleMessageGenerator.jsonify(messageMap);
 		// TODO: Add click_action payload to message
 		// For direct publish to mobile end points, topicArn is not relevant.
 		publishRequest.setTargetArn(endpointArn);
@@ -126,7 +128,8 @@ public class AmazonSNSClientWrapper {
 
 	public void demoNotification(Platform platform, String principal,
 			String credential, String platformToken, String applicationName,
-			Map<Platform, Map<String, MessageAttributeValue>> attrsMap, String uid) {
+			Map<Platform, Map<String, MessageAttributeValue>> attrsMap, String uid,
+								 String notifMessage) {
 		// Create Platform Application. This corresponds to an app on a
 		// platform.
 		CreatePlatformApplicationResult platformApplicationResult = null;
@@ -153,7 +156,7 @@ public class AmazonSNSClientWrapper {
 		}
 
 		// Publish a push notification to an Endpoint.
-		PublishResult publishResult = publish(endpointArn, platform, attrsMap);
+		PublishResult publishResult = publish(endpointArn, platform, attrsMap, notifMessage);
 		System.out.println("Published! \n{MessageId="
 				+ publishResult.getMessageId() + "}");
 

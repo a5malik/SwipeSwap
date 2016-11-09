@@ -84,15 +84,15 @@ public class UserAuth {
      * Sends a request to the AWS server to issue a request to Firebase to send an appropriate
      * notfication to a user.
      *
-     * @param c The Android context to be used to set up a credentials provider for caching
+     * @param n The Notification containing message details
      * @see     CognitoCachingCredentialsProvider
      */
-    public void sendAWSNotification(Context c) {
+    public void sendAWSNotification(Notification n) {
         AmazonSNS sns = null;
         try {
             // Initialize the Amazon Cognito credentials provider
             CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
-                    c,
+                    n.getContext(),
                     IDENTITY_POOL_ID, // Identity Pool ID
                     Regions.US_WEST_2 // Region
             );
@@ -105,7 +105,7 @@ public class UserAuth {
         try {
             SNSMobilePush smp = new SNSMobilePush(sns);
             String uid = uid();
-            smp.initAndroidAppNotification(AWS_SERVER, uid, mDb.getUserToken(uid));
+            smp.initAndroidAppNotification(AWS_SERVER, uid, mDb.getUserToken(uid), n.message());
         } catch (AmazonServiceException ase) {
             Log.d(TAG, "Caught an AmazonServiceException, which means your request made it "
                             + "to Amazon SNS, but was rejected with an error response for some reason.");
@@ -123,19 +123,19 @@ public class UserAuth {
     }
 
     /**
-     * Sends a notification to a user.
+     * Sends a notification.
+     *
+     * @param n The notification details
      */
-    public void sendNotification(Context c) {
-        new SendAWSNotificationTask().execute(c);
+    public void sendNotification(Notification n) {
+        new SendAWSNotificationTask().execute(n);
     }
 
-    private class SendAWSNotificationTask extends AsyncTask<Context, Void, Void> {
+    private class SendAWSNotificationTask extends AsyncTask<Notification, Void, Void> {
         @Override
-        protected Void doInBackground(Context... params) {
+        protected Void doInBackground(Notification... params) {
             sendAWSNotification(params[0]);
             return null;
         }
     }
-
-
 }

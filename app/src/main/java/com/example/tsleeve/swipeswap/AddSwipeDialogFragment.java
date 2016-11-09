@@ -153,7 +153,10 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
                 mDb.addSwipe(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
                         //calendar.getTimeInMillis(), auth.getCurrentUser().getUid(), diningHall));
                         calendar.getTimeInMillis(), mUAuth.uid(), diningHall), mUAuth.uid());
-                mUAuth.sendNotification(getActivity()); // TODO: test - remove later
+
+                // TODO: test - remove later
+                Notification n = new Notification(getActivity(), "", Notification.Message.OTHER);
+                mUAuth.sendNotification(n);
                 dismiss();
             }
         });
@@ -168,6 +171,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
                 dismiss();
             }
         });
+
         closeButton = (ImageView) view.findViewById(R.id.close_button);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -1,5 +1,7 @@
 package com.example.tsleeve.swipeswap;
 
+import android.os.AsyncTask;
+
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DatabaseReference;
 import com.google.android.gms.tasks.Task;
@@ -45,6 +47,7 @@ public class SwipeDataAuth {
      *     ...
      *   users
      *     uid
+     *       regToken
      *       username
      *       swipes
      *         ...
@@ -77,6 +80,7 @@ public class SwipeDataAuth {
      */
 
     private String mUserToken;
+    private String mUsername;
     private ArrayList<Swipe> mSwipes = new ArrayList<Swipe>();
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -107,7 +111,17 @@ public class SwipeDataAuth {
         return mDatabase.child(ALL_REQUESTS).push().setValue(s);
     }
 
-    // TODO: Remove swipe
+    public Task<Void> removeSwipe(String uid) {
+        return null; // TODO
+    }
+
+    private class SendAWSNotificationTask extends AsyncTask<Notification, Void, Void> {
+        @Override
+        protected Void doInBackground(Notification... params) {
+
+            return null;
+        }
+    }
 
     /**
      * Gets a reference to the location in the application's database where all users' data is
@@ -183,6 +197,9 @@ public class SwipeDataAuth {
      *
      * The registration token can be thought of as an ID associated with a unique device.
      *
+     * Implementation Note: This method is considered unstable.  It may sometimes not return a
+     * non-null value.
+     *
      * @param uid ID of the user to obtain the registration token from
      * @return    The registration token
      */
@@ -212,6 +229,9 @@ public class SwipeDataAuth {
 
     /**
      * Returns a listing of all swipe sales associated with the specified user.
+     *
+     * Implementation Note: This method is considered unstable.  It may sometimes not return a
+     * non-null value.
      *
      * @param uid ID of the user to get all swipes from
      * @return    A list of all the swipes associated with a particular user
@@ -252,5 +272,38 @@ public class SwipeDataAuth {
             ie.printStackTrace();
         }
         return mSwipes;
+    }
+
+    /**
+     * Gets the username of the specified user.
+     *
+     * Implementation Note: This method is considered unstable.  It may sometimes not return a
+     * non-null value.
+     *
+     * @param uid ID of the user to get the username of
+     * @return    The username
+     */
+    public String getUserName(String uid) {
+        DatabaseReference ref = mDatabase.child(ALL_USERS).child(uid).child(USERNAME);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mUsername = dataSnapshot.getValue(String.class);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        // Wait until data has arrived
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException ie) {
+            ie.printStackTrace();
+        }
+        return mUsername;
     }
 }

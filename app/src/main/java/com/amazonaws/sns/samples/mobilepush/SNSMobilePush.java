@@ -88,14 +88,15 @@ public class SNSMobilePush {
 		}
 	}
 
-	public void initAndroidAppNotification(String serverName, String uid, String registrationId) {
+	public void initAndroidAppNotification(String serverName, String uid, String registrationId,
+										   String notifMessage) {
 		// TODO: Please fill in following values for your application. You can
 		// also change the notification payload as per your preferences using
 		// the method
 		// com.amazonaws.sns.samples.tools.SampleMessageGenerator.getSampleAndroidMessage()
-		String serverAPIKey = "AIzaSyDejm_PLDCaUBl3QnPArGBM0_G_aIGRhes\n";
+		String serverAPIKey = "AIzaSyDejm_PLDCaUBl3QnPArGBM0_G_aIGRhes\n"; // TODO
 		snsClientWrapper.demoNotification(Platform.GCM, "", serverAPIKey,
-				registrationId, serverName, attributesMap, uid);
+				registrationId, serverName, attributesMap, uid, notifMessage);
 	}
 
 	//public void demoKindleAppNotification() {
