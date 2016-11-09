@@ -26,6 +26,10 @@ public class SwipeDataAuth {
     public static final String USERNAME = "username";
     public static final String START_TIME = "startTime";
     public static final String DINING_HALL = "diningHall";
+    public static final String BPLATE = "BPlate";
+    public static final String COVEL = "Covel";
+    public static final String DENEVE = "DeNeve";
+    public static final String FEAST = "Feast";
     public static final String TOKEN = "regToken";
 
     public static final Integer BPLATE_ID = 1;
@@ -95,6 +99,17 @@ public class SwipeDataAuth {
      */
     public Task<Void> addSwipe(Swipe s, String uid) {
         mDatabase.child(ALL_USERS).child(uid).child(ALL_SWIPES).push().setValue(s);
+
+        int diningHall = s.getDiningHall();
+        if ((diningHall & BPLATE_ID) == BPLATE_ID)
+            mDatabase.child(DINING_HALL).child(BPLATE).child(ALL_SWIPES).push().setValue(s);
+        if ((diningHall & COVEL_ID) == COVEL_ID)
+            mDatabase.child(DINING_HALL).child(COVEL).child(ALL_SWIPES).push().setValue(s);
+        if ((diningHall & DENEVE_ID) == DENEVE_ID)
+            mDatabase.child(DINING_HALL).child(DENEVE).child(ALL_SWIPES).push().setValue(s);
+        if ((diningHall & FEAST_ID) == FEAST_ID)
+            mDatabase.child(DINING_HALL).child(FEAST).child(ALL_SWIPES).push().setValue(s);
+
         return mDatabase.child(ALL_SWIPES).push().setValue(s);
     }
 
@@ -108,6 +123,17 @@ public class SwipeDataAuth {
      */
     public Task<Void> addRequest(Swipe s, String uid) {
         mDatabase.child(ALL_USERS).child(uid).child(ALL_REQUESTS).push().setValue(s);
+
+        int diningHall = s.getDiningHall();
+        if ((diningHall & BPLATE_ID) == BPLATE_ID)
+            mDatabase.child(DINING_HALL).child(BPLATE).child(ALL_REQUESTS).push().setValue(s);
+        if ((diningHall & COVEL_ID) == COVEL_ID)
+            mDatabase.child(DINING_HALL).child(COVEL).child(ALL_REQUESTS).push().setValue(s);
+        if ((diningHall & DENEVE_ID) == DENEVE_ID)
+            mDatabase.child(DINING_HALL).child(DENEVE).child(ALL_REQUESTS).push().setValue(s);
+        if ((diningHall & FEAST_ID) == FEAST_ID)
+            mDatabase.child(DINING_HALL).child(FEAST).child(ALL_REQUESTS).push().setValue(s);
+
         return mDatabase.child(ALL_REQUESTS).push().setValue(s);
     }
 
@@ -115,7 +141,7 @@ public class SwipeDataAuth {
         return null; // TODO
     }
 
-    private class SendAWSNotificationTask extends AsyncTask<Notification, Void, Void> {
+    private class RemoveSwipeTask extends AsyncTask<Notification, Void, Void> {
         @Override
         protected Void doInBackground(Notification... params) {
 
