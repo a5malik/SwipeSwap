@@ -152,7 +152,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
                 //TODO: ADD VERIFICATION FOR DATA ENTERED
                 mDb.addSwipe(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
                         //calendar.getTimeInMillis(), auth.getCurrentUser().getUid(), diningHall));
-                        calendar.getTimeInMillis(), mUAuth.uid(), diningHall), mUAuth.uid());
+                        calendar.getTimeInMillis(), mUAuth.uid(), diningHall, Swipe.Type.SALE), mUAuth.uid());
 
                 // TODO: test - remove later
                 Notification n = new Notification(getActivity(), "", Notification.Message.OTHER);
@@ -167,7 +167,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
             @Override
             public void onClick(View v) {
                 mDb.addRequest(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
-                        calendar.getTimeInMillis(), mUAuth.uid(), diningHall), mUAuth.uid());
+                        calendar.getTimeInMillis(), mUAuth.uid(), diningHall, Swipe.Type.REQUEST), mUAuth.uid());
                 dismiss();
             }
         });

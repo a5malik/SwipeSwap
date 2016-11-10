@@ -85,6 +85,7 @@ public class SwipeDataAuth {
 
     private String mUserToken;
     private String mUsername;
+    private Task<Void> mTask;
     private ArrayList<Swipe> mSwipes = new ArrayList<Swipe>();
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -137,16 +138,181 @@ public class SwipeDataAuth {
         return mDatabase.child(ALL_REQUESTS).push().setValue(s);
     }
 
-    public Task<Void> removeSwipe(String uid) {
-        return null; // TODO
+    /**
+     * Deletes the specified swipe from the application's database.
+     *
+     * Implementation Note: This method is called in AsyncTask to avoid obstructing the user's
+     * experience.
+     *
+     * @param uid      The user ID associated with the swipe to remove
+     * @param postTime The datetime that the swipe was posted
+     * @see RemoveSwipeTask
+     */
+    public void removeSwipe(final String uid, final Long postTime, Swipe.Type type) {
+        SwipeID id = new SwipeID(uid, postTime, type);
+        RemoveSwipeTask t = new RemoveSwipeTask();
+        t.execute(id);
     }
 
-    private class RemoveSwipeTask extends AsyncTask<Notification, Void, Void> {
-        @Override
-        protected Void doInBackground(Notification... params) {
+    private class SwipeID {
+        private String mUid;
+        private Long mPostTime;
+        private Swipe.Type mType;
 
-            return null;
+        public SwipeID() {}
+
+        public SwipeID(String uid, Long postTime, Swipe.Type type) {
+            this.mUid = uid;
+            this.mPostTime = postTime;
+            this.mType = type;
         }
+
+        public String getUid() {
+            return mUid;
+        }
+
+        public Long getPostTime() {
+            return mPostTime;
+        }
+
+        public Swipe.Type getType() {
+            return mType;
+        }
+    }
+    
+    private class RemoveSwipeTask extends AsyncTask<SwipeID, Void, Task<Void>> {
+        @Override
+        protected Task<Void> doInBackground(SwipeID... params) {
+            final SwipeID id = params[0];
+            final String uid = id.getUid();
+            final Long postTime = id.getPostTime();
+            Swipe.Type type = id.getType();
+
+            Query qSwipeRef = null;
+            if (type == Swipe.Type.SALE)
+                qSwipeRef = mDatabase.child(ALL_SWIPES).orderByChild("postTime").startAt(postTime).endAt(postTime);
+            else // type == Swipe.Type.SALE
+                qSwipeRef = mDatabase.child(ALL_REQUESTS).orderByChild("postTime").startAt(postTime).endAt(postTime);
+
+            qSwipeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    HashMap<String, Object> swipes = (HashMap<String, Object>)dataSnapshot.getValue();
+                    if (swipes == null) {
+                        // No such swipe found
+                        return;
+                    }
+
+                    for (String keyObj : swipes.keySet()) {
+                        HashMap<String, Object> attributes = (HashMap<String, Object>)swipes.get(keyObj);
+                        String ownerID = (String)attributes.get("owner_ID");
+                        Long targetPostTime = (Long)attributes.get("postTime");
+                        Integer diningHall = ((Long)attributes.get("diningHall")).intValue();
+                        if (ownerID.equals(uid) && targetPostTime.compareTo(postTime) == 0)
+                            mTask = dataSnapshot.getRef().child(keyObj).setValue(null);
+                        mTask = removeDiningHallSwipe(id, diningHall);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+            Query qUserRef =
+                    mDatabase.child(ALL_USERS).child(uid).child(ALL_SWIPES).orderByChild("postTime").startAt(postTime).endAt(postTime);
+            qUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    HashMap<String, Object> swipes = (HashMap<String, Object>)dataSnapshot.getValue();
+                    if (swipes == null) {
+                        // No such swipe found
+                        return;
+                    }
+
+                    for (String keyObj : swipes.keySet()) {
+                        HashMap<String, Object> attributes = (HashMap<String, Object>)swipes.get(keyObj);
+                        String ownerID = (String)attributes.get("owner_ID");
+                        Long targetPostTime = (Long)attributes.get("postTime");
+                        if (ownerID.equals(uid) && targetPostTime.compareTo(postTime) == 0)
+                            mTask = dataSnapshot.getRef().child(keyObj).setValue(null);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+            return mTask;
+        }
+    }
+
+    private Task<Void> removeDiningHallSwipe(SwipeID id, int diningHall) {
+        final String uid = id.getUid();
+        final Long postTime = id.getPostTime();
+        final Swipe.Type type = id.getType();
+
+        ValueEventListener vel = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String, Object> swipes = (HashMap<String, Object>) dataSnapshot.getValue();
+                if (swipes == null) {
+                    // No such swipe found
+                    return;
+                }
+
+                for (String keyObj : swipes.keySet()) {
+                    HashMap<String, Object> attributes = (HashMap<String, Object>) swipes.get(keyObj);
+                    String ownerID = (String) attributes.get("owner_ID");
+                    Long targetPostTime = (Long) attributes.get("postTime");
+
+                    if (ownerID.equals(uid) && targetPostTime.compareTo(postTime) == 0) {
+                        dataSnapshot.getRef().child(keyObj).setValue(null);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        Query qRef = null;
+        DatabaseReference dRef = mDatabase.child(DINING_HALL);
+        if ((diningHall & BPLATE_ID) == BPLATE_ID) {
+            if (type == Swipe.Type.SALE)
+                qRef = dRef.child(BPLATE).child(ALL_SWIPES).orderByChild("postTime").startAt(postTime).endAt(postTime);
+            else
+                qRef = dRef.child(BPLATE).child(ALL_REQUESTS).orderByChild("postTime").startAt(postTime).endAt(postTime);
+            qRef.addListenerForSingleValueEvent(vel);
+        }
+        if ((diningHall & COVEL_ID) == COVEL_ID) {
+            if (type == Swipe.Type.SALE)
+                qRef = dRef.child(COVEL).child(ALL_SWIPES).orderByChild("postTime").startAt(postTime).endAt(postTime);
+            else
+                qRef = dRef.child(COVEL).child(ALL_REQUESTS).orderByChild("postTime").startAt(postTime).endAt(postTime);
+            qRef.addListenerForSingleValueEvent(vel);
+        }
+        if ((diningHall & DENEVE_ID) == DENEVE_ID) {
+            if (type == Swipe.Type.SALE)
+                qRef = dRef.child(DENEVE).child(ALL_SWIPES).orderByChild("postTime").startAt(postTime).endAt(postTime);
+            else
+                qRef = dRef.child(DENEVE).child(ALL_REQUESTS).orderByChild("postTime").startAt(postTime).endAt(postTime);
+            qRef.addListenerForSingleValueEvent(vel);
+        }
+        if ((diningHall & FEAST_ID) == FEAST_ID) {
+            if (type == Swipe.Type.SALE)
+                qRef = dRef.child(FEAST).child(ALL_SWIPES).orderByChild("postTime").startAt(postTime).endAt(postTime);
+            else
+                qRef = dRef.child(FEAST).child(ALL_REQUESTS).orderByChild("postTime").startAt(postTime).endAt(postTime);
+            qRef.addListenerForSingleValueEvent(vel);
+        }
+
+        return mTask;
     }
 
     /**
@@ -254,15 +420,16 @@ public class SwipeDataAuth {
     }
 
     /**
-     * Returns a listing of all swipe sales associated with the specified user.
+     * Returns a listing of all swipe sales or requests associated with the specified user.
      *
      * Implementation Note: This method is considered unstable.  It may sometimes not return a
      * non-null value.
      *
-     * @param uid ID of the user to get all swipes from
-     * @return    A list of all the swipes associated with a particular user
+     * @param uid  ID of the user to get all swipes from
+     * @param type The type of swipe post to retrieve
+     * @return     A list of all the swipes associated with a particular user
      */
-    public ArrayList<Swipe> getAllSwipesByUser(String uid) {
+    public ArrayList<Swipe> getAllSwipesByUser(String uid, final Swipe.Type type) {
         DatabaseReference ref = mDatabase.child(ALL_USERS).child(uid).child(ALL_SWIPES);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -281,7 +448,8 @@ public class SwipeDataAuth {
                     Double price = new Double(p.doubleValue());
 
                     Long startTime = (Long)h.get("startTime");
-                    mSwipes.add(new Swipe(price, startTime, endTime, ownerId, diningHall));
+
+                    mSwipes.add(new Swipe(price, startTime, endTime, ownerId, diningHall, type));
                 }
             }
 

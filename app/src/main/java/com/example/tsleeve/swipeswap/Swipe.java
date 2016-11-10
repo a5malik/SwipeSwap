@@ -2,6 +2,7 @@ package com.example.tsleeve.swipeswap;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Calendar;
 
 /**
  * Created by footb on 10/4/2016.
@@ -9,12 +10,20 @@ import java.util.Map;
 
 public class Swipe {
 
-    public Double price;
-    public Long startTime;
-    public Long endTime;
-    public String owner_ID;
-    public Integer diningHall;
+    private Double price;
+    private Long startTime;
+    private Long endTime;
+    private String owner_ID;
+    private Integer diningHall;
+    private Long postTime;
+    private Type type;
 
+    private Calendar calendar = Calendar.getInstance();
+
+    public enum Type {
+        SALE,
+        REQUEST
+    }
 
     /**
      * Constructs a Swipe with a price, start time, end time, owner ID, and dining hall.
@@ -25,12 +34,14 @@ public class Swipe {
      * @param owner_ID   The ID of the user associated with the swipe
      * @param diningHall The integer value associated with the dining hall
      */
-    public Swipe(Double price, Long startTime, Long endTime, String owner_ID, Integer diningHall) {
+    public Swipe(Double price, Long startTime, Long endTime, String owner_ID, Integer diningHall, Type type) {
         this.price = price;
         this.startTime = startTime;
         this.endTime = endTime;
         this.owner_ID = owner_ID;
         this.diningHall = diningHall;
+        this.postTime = calendar.getTimeInMillis();
+        this.type = type;
     }
 
     public Swipe() { }
@@ -124,6 +135,20 @@ public class Swipe {
     public Integer getDiningHall() {
         return diningHall;
     }
+
+    /**
+     * Gets the datetime (in milliseconds) that the swipe post was made.
+     *
+     * @return The time that the swip post was made.
+     */
+    public Long getPostTime() { return postTime; }
+
+    /**
+     * Gets the type of swipe post made - either sale or request
+     *
+     * @return The type of swipe post
+     */
+    public Type getType() { return type; }
 
     /**
      * Converts the swipe to a map data structure, containing the swipe's attributes.
