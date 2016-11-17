@@ -107,6 +107,8 @@
                 android:text="Pick Dining Option(s)"
                 android:textColor="@color/gotSwipesGray"
                 android:textSize="20dp"/>
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -178,6 +180,34 @@
                 android:hint="$0.00"
                 android:ems="10"
                 android:id="@+id/editTextswipeprice" />
+
+            <RadioGroup
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:id="@+id/radioGroupAddSwipes">
+
+                <RadioButton
+                    android:id="@+id/radio_once"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Once" />
+
+                <RadioButton
+                    android:id="@+id/radio_week"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Week" />
+
+                <RadioButton
+                    android:id="@+id/radio_month"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Month" />
+            </RadioGroup>
+
 
             <LinearLayout
                 android:layout_width="match_parent"

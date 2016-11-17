@@ -18,6 +18,8 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -33,6 +35,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
     Button btnSwipeDate, btnSwipeTime;
     TextView tvSwipeDate, tvSwipeTime;
     ImageView closeButton;
+    RadioGroup radioGroup;
     private SwipeDataAuth mDb = new SwipeDataAuth();
     private UserAuth mUAuth = new UserAuth();
 
@@ -144,15 +147,40 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
         setupCheckboxes();
         //final FirebaseAuth auth = FirebaseAuth.getInstance();
 
+        radioGroup = (RadioGroup) view.findViewById(R.id.radioGroupAddSwipes);
+        RadioButton radioButton = (RadioButton) view.findViewById(R.id.radio_once);
+        radioButton.setChecked(true);
+
         Button btnSell = (Button) view.findViewById(R.id.buttonaddswipe);
         btnSell.setText("Sell");
         btnSell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //TODO: ADD VERIFICATION FOR DATA ENTERED
-                mDb.addSwipe(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
-                        //calendar.getTimeInMillis(), auth.getCurrentUser().getUid(), diningHall));
-                        calendar.getTimeInMillis(), mUAuth.uid(), diningHall, Swipe.Type.SALE), mUAuth.uid());
+                switch (radioGroup.getCheckedRadioButtonId()) {
+                    case R.id.radio_once:
+                        mDb.addSwipe(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
+                                //calendar.getTimeInMillis(), auth.getCurrentUser().getUid(), diningHall));
+                                calendar.getTimeInMillis(), mUAuth.uid(), diningHall, Swipe.Type.SALE), mUAuth.uid());
+                        break;
+                    case R.id.radio_week:
+                        for (int i = 1; i <= 6; i++) {
+                            mDb.addSwipe(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
+                                    //calendar.getTimeInMillis(), auth.getCurrentUser().getUid(), diningHall));
+                                    calendar.getTimeInMillis(), mUAuth.uid(), diningHall, Swipe.Type.SALE), mUAuth.uid());
+                            calendar.add(Calendar.DAY_OF_MONTH, 1);
+                        }
+                        break;
+                    case R.id.radio_month:
+                        for (int i = 1; i <= 30; i++) {
+                            mDb.addSwipe(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
+                                    //calendar.getTimeInMillis(), auth.getCurrentUser().getUid(), diningHall));
+                                    calendar.getTimeInMillis(), mUAuth.uid(), diningHall, Swipe.Type.SALE), mUAuth.uid());
+                            calendar.add(Calendar.DAY_OF_MONTH, 1);
+                        }
+                        break;
+
+                }
 
                 // TODO: test - remove later
                 Notification n = new Notification(getActivity(), "", Notification.Message.OTHER);
@@ -166,8 +194,27 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
         btnBuy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDb.addRequest(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
-                        calendar.getTimeInMillis(), mUAuth.uid(), diningHall, Swipe.Type.REQUEST), mUAuth.uid());
+                switch (radioGroup.getCheckedRadioButtonId()) {
+                    case R.id.radio_once:
+                        mDb.addRequest(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
+                                calendar.getTimeInMillis(), mUAuth.uid(), diningHall, Swipe.Type.REQUEST), mUAuth.uid());
+                        break;
+                    case R.id.radio_week:
+                        for (int i = 1; i <= 6; i++) {
+                            mDb.addRequest(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
+                                    calendar.getTimeInMillis(), mUAuth.uid(), diningHall, Swipe.Type.REQUEST), mUAuth.uid());
+                            calendar.add(Calendar.DAY_OF_MONTH, 1);
+                        }
+                        break;
+                    case R.id.radio_month:
+                        for (int i = 1; i <= 30; i++) {
+                            mDb.addRequest(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
+                                    calendar.getTimeInMillis(), mUAuth.uid(), diningHall, Swipe.Type.REQUEST), mUAuth.uid());
+                            calendar.add(Calendar.DAY_OF_MONTH, 1);
+                        }
+                        break;
+                }
+                
                 dismiss();
             }
         });
@@ -180,6 +227,9 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
             }
         });
         return view;
+    }
+
+    private void addSwipesForMonth() {
     }
 
     private void setupCheckboxes() {
