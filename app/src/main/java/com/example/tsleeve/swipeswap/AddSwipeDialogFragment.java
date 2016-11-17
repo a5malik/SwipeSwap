@@ -229,9 +229,6 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
         return view;
     }
 
-    private void addSwipesForMonth() {
-    }
-
     private void setupCheckboxes() {
         Covel.setOnClickListener(this);
         DeNeve.setOnClickListener(this);
