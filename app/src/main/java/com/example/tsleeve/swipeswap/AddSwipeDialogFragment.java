@@ -1,9 +1,13 @@
 package com.example.tsleeve.swipeswap;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -157,6 +161,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
             @Override
             public void onClick(View v) {
                 //TODO: ADD VERIFICATION FOR DATA ENTERED
+
                 switch (radioGroup.getCheckedRadioButtonId()) {
                     case R.id.radio_once:
                         mDb.addSwipe(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),

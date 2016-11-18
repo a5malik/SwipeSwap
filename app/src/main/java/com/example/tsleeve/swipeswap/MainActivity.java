@@ -1,11 +1,14 @@
 package com.example.tsleeve.swipeswap;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -16,9 +19,18 @@ import android.view.MenuItem;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.util.Calendar;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 100;
+    public static final String TYPE_OF_INTENT = "TOI";
+
+    public static enum TYPE {
+        RATE_SELLER,
+        RATE_BUYER,
+        NONE
+    }
     //private Button dateButton;
     private TabLayout tabLayout;
     private UserAuth mUAuth = new UserAuth();
@@ -66,6 +78,25 @@ public class MainActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver,
                 new IntentFilter("broadcaster"));
         mDb.updateToken(FirebaseInstanceId.getInstance().getToken(), mUAuth.uid());
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
+        notificationIntent.addCategory("android.intent.category.DEFAULT");
+
+        PendingIntent broadcast = PendingIntent.getBroadcast(this, 100, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.SECOND, 15);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), broadcast);
+
+        if (getIntent().getExtras() != null) {
+            TYPE intentType = TYPE.values()[getIntent().getExtras().getInt(TYPE_OF_INTENT, 2)];
+            if (intentType == TYPE.RATE_BUYER) {
+                RateDialogFragment rateDialogFragment = new RateDialogFragment();
+                rateDialogFragment.show(getFragmentManager(), "RateDialog");
+            }
+        }
     }
 
     private void setTabIcons(int tabposition) {
