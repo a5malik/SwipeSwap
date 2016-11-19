@@ -104,8 +104,8 @@ public class UserAuth {
 
         try {
             SNSMobilePush smp = new SNSMobilePush(sns);
-            String uid = uid();
-            smp.initAndroidAppNotification(AWS_SERVER, uid, mDb.getUserToken(uid), n.message());
+            String uid = n.getUserID();
+            smp.initAndroidAppNotification(AWS_SERVER, mDb.getUserToken(uid), n);
         } catch (AmazonServiceException ase) {
             Log.d(TAG, "Caught an AmazonServiceException, which means your request made it "
                             + "to Amazon SNS, but was rejected with an error response for some reason.");

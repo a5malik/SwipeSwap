@@ -38,8 +38,15 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Bundle extras = intent.getExtras();
-            if (extras.getString("action").equals("goToFragment")) {
-                // TODO: Show fragment to alert user if he/she wants to accept the swipe sale/request
+            if (extras.getString("action").equals(SwipeMessagingService.CONFIRM_FRAGMENT)) {
+                // TODO: Show fragment to confirm acceptance of the swipe sale/request
+
+            } else if (extras.getString("action").equals(SwipeMessagingService.MESSAGING_FRAGMENT)) {
+                // TODO: Show fragment to connect user to chat room
+
+            } else if (extras.getString("action").equals(SwipeMessagingService.REVIEW_FRAGMENT)) {
+                // TODO: Show fragment to review the user
+
             }
         }
     };

@@ -16,6 +16,10 @@ import android.support.v4.content.LocalBroadcastManager;
 public class SwipeMessagingService extends FirebaseMessagingService {
     private static final String TAG = "SwipeMessagingService";
 
+    public static final String CONFIRM_FRAGMENT = "confirm";
+    public static final String MESSAGING_FRAGMENT = "message";
+    public static final String REVIEW_FRAGMENT = "review";
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
@@ -24,28 +28,40 @@ public class SwipeMessagingService extends FirebaseMessagingService {
         //Log.d(TAG, "Click action: " + remoteMessage.getNotification().getClickAction());
 
         // Calling method to generate notification
-        sendNotification(remoteMessage.getNotification().getBody());
+        sendNotification(remoteMessage.getNotification().getBody(),
+                remoteMessage.getNotification().getTitle());
     }
 
     /**
      * Create and show a simple notification containing the received FCM message.
      *
      * @param messageBody FCM message body received.
+     * @param title       FCM title received
      */
-    private void sendNotification(String messageBody) {
+    private void sendNotification(String messageBody, String title) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Intent broadcast = new Intent("broadcaster");
-        broadcast.putExtra("action", "goToFragment");
+        String fragment = null;
+        if (title.equals("Swipe Accepted")) {
+            fragment = CONFIRM_FRAGMENT;
+        } else if (title.equals("Confirmed")) {
+            fragment = MESSAGING_FRAGMENT;
+        } else if (title.equals("Review")) {
+            fragment = REVIEW_FRAGMENT;
+        } else {
+            fragment = "";
+        }
+        broadcast.putExtra("action", fragment);
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_person)
-                .setContentTitle(getString(R.string.app_name))
+                .setContentTitle(getString(R.string.app_name) + " | " + title)
                 .setContentText(messageBody)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)

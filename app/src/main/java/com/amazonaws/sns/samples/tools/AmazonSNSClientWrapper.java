@@ -83,7 +83,8 @@ public class AmazonSNSClientWrapper {
 	}
 
 	private PublishResult publish(String endpointArn, Platform platform,
-			Map<Platform, Map<String, MessageAttributeValue>> attributesMap, String notifMessage) {
+			Map<Platform, Map<String, MessageAttributeValue>> attributesMap, String notifMessage,
+								  String title) {
 		PublishRequest publishRequest = new PublishRequest();
 		Map<String, MessageAttributeValue> notificationAttributes = getValidNotificationAttributes(attributesMap
 				.get(platform));
@@ -101,6 +102,7 @@ public class AmazonSNSClientWrapper {
 						"\"GCM\": " +
 						"\"{ \\\"notification\\\": " +
 						"{ " +
+						"\\\"title\\\": \\\"" + title + "\\\", " +
 						"\\\"body\\\": \\\"" + notifMessage + "\\\"" +
 						"}, " +
 						//"\\\"click_action\\\":\\\"OPEN_ACTIVITY\\\"},"+
@@ -129,7 +131,7 @@ public class AmazonSNSClientWrapper {
 	public void demoNotification(Platform platform, String principal,
 			String credential, String platformToken, String applicationName,
 			Map<Platform, Map<String, MessageAttributeValue>> attrsMap, String uid,
-								 String notifMessage) {
+								 String notifMessage, String title) {
 		// Create Platform Application. This corresponds to an app on a
 		// platform.
 		CreatePlatformApplicationResult platformApplicationResult = null;
@@ -156,7 +158,7 @@ public class AmazonSNSClientWrapper {
 		}
 
 		// Publish a push notification to an Endpoint.
-		PublishResult publishResult = publish(endpointArn, platform, attrsMap, notifMessage);
+		PublishResult publishResult = publish(endpointArn, platform, attrsMap, notifMessage, title);
 		System.out.println("Published! \n{MessageId="
 				+ publishResult.getMessageId() + "}");
 

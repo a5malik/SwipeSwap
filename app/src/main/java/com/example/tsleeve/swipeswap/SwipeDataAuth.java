@@ -146,6 +146,7 @@ public class SwipeDataAuth {
      *
      * @param uid      The user ID associated with the swipe to remove
      * @param postTime The datetime that the swipe was posted
+     * @param type     The type of swipe post
      * @see RemoveSwipeTask
      */
     public void removeSwipe(final String uid, final Long postTime, Swipe.Type type) {
@@ -179,7 +180,7 @@ public class SwipeDataAuth {
             return mType;
         }
     }
-    
+
     private class RemoveSwipeTask extends AsyncTask<SwipeID, Void, Task<Void>> {
         @Override
         protected Task<Void> doInBackground(SwipeID... params) {

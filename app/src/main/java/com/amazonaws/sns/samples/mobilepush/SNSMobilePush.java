@@ -27,6 +27,8 @@ import com.amazonaws.services.sns.model.MessageAttributeValue;
 import com.amazonaws.sns.samples.tools.AmazonSNSClientWrapper;
 import com.amazonaws.sns.samples.tools.SampleMessageGenerator.Platform;
 
+import com.example.tsleeve.swipeswap.Notification;
+
 public class SNSMobilePush {
 
 	private AmazonSNSClientWrapper snsClientWrapper;
@@ -88,15 +90,18 @@ public class SNSMobilePush {
 		}
 	}
 
-	public void initAndroidAppNotification(String serverName, String uid, String registrationId,
-										   String notifMessage) {
+	public void initAndroidAppNotification(String serverName, String registrationId,
+										   Notification notification) {
 		// TODO: Please fill in following values for your application. You can
 		// also change the notification payload as per your preferences using
 		// the method
 		// com.amazonaws.sns.samples.tools.SampleMessageGenerator.getSampleAndroidMessage()
 		String serverAPIKey = "AIzaSyDejm_PLDCaUBl3QnPArGBM0_G_aIGRhes\n"; // TODO
+		String uid = notification.getUserID();
+		String notifMessage = notification.message();
+		String notifTitle = notification.title();
 		snsClientWrapper.demoNotification(Platform.GCM, "", serverAPIKey,
-				registrationId, serverName, attributesMap, uid, notifMessage);
+				registrationId, serverName, attributesMap, uid, notifMessage, notifTitle);
 	}
 
 	//public void demoKindleAppNotification() {
