@@ -20,6 +20,7 @@ import android.view.MenuItem;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Calendar;
 
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 100;
     public static final String TYPE_OF_INTENT = "TOI";
 
-    public static enum TYPE {
+    /*public static enum TYPE {
         RATE_SELLER, //buyer will get this to rate the seller
         RATE_BUYER,  // seller will get this to rate the buyer
         ACCEPT_BUYER, //seller will get this when a buyer is interested in a swipe
@@ -40,11 +41,11 @@ public class MainActivity extends AppCompatActivity {
         ACK_NO_BUYER, //buyer will get this when a seller has rejected to sell to him
         ACK_NO_SELLER, //seller will get this when a buyer has rejected to buy from him
         NONE
-    }
+    }*/
     //private Button dateButton;
     private TabLayout tabLayout;
     private UserAuth mUAuth = new UserAuth();
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    /*private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Bundle extras = intent.getExtras();
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }
-    };
+    };*/
     private SwipeDataAuth mDb = new SwipeDataAuth();
 
     @Override
@@ -92,8 +93,8 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver,
-                new IntentFilter("broadcaster"));
+        /*LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver,
+                new IntentFilter("broadcaster"));*/
         mDb.updateToken(FirebaseInstanceId.getInstance().getToken(), mUAuth.uid());
 
         /*AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -110,18 +111,20 @@ public class MainActivity extends AppCompatActivity {
 
         //deal with different types of intents here.
         if (getIntent().getExtras() != null) {
-            TYPE intentType = TYPE.values()[getIntent().getExtras().getInt(TYPE_OF_INTENT, 6)];
-            if (intentType == TYPE.RATE_BUYER || intentType == TYPE.RATE_SELLER) {
+            //TYPE intentType = TYPE.values()[getIntent().getExtras().getInt(TYPE_OF_INTENT, 6)];
+            Bundle b = getIntent().getExtras();
+            Notification.Message notifType = Notification.Message.valueOf(b.getString("swipe_notification_type"));
+            if (notifType == Notification.Message.REVIEW_BUYER || notifType == Notification.Message.REVIEW_SELLER) {
                 RateDialogFragment rateDialogFragment = new RateDialogFragment();
                 rateDialogFragment.setCancelable(false);
                 rateDialogFragment.show(getFragmentManager(), "RateDialog");
             } else {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
                 AlertDialog alertDialog;
-                switch (intentType) {
+                switch (notifType) {
 
-                    case ACCEPT_BUYER:
-                        alertDialogBuilder.setMessage("XX(***)(rating) wants to buy your swipe for X PM at for X dollars");
+                    case ACCEPTED_SALE:
+                        alertDialogBuilder.setMessage("XX wants to buy your swipe for X PM at for X dollars");
                         alertDialogBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -141,8 +144,8 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                         break;
-                    case ACCEPT_SELLER:
-                        alertDialogBuilder.setMessage("XX(**) wants to sell to you for XX dollars for your request for a swipe" +
+                    case ACCEPTED_REQUEST:
+                        alertDialogBuilder.setMessage("XX wants to sell to you for XX dollars for your request for a swipe" +
                                 "at XPM at X dining hall");
                         alertDialogBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                             @Override
@@ -163,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                         });
 
                         break;
-                    case ACK_BUYER:
+                    case ACK_SALE:
                         alertDialogBuilder.setMessage("XX has agreed to sell to you a swipe for x dollars. " +
                                 "time: Xpm loc: X dining halls");
                         alertDialogBuilder.setPositiveButton("Got It!", new DialogInterface.OnClickListener() {
@@ -177,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
                         alertDialog = alertDialogBuilder.create();
                         alertDialog.show();
                         break;
-                    case ACK_SELLER:
+                    case ACK_REQUEST:
                         alertDialogBuilder.setMessage("XX has agreed to buy a swipe for x dollars. " +
                                 "time: Xpm loc: X dining halls");
                         alertDialogBuilder.setPositiveButton("Got It!", new DialogInterface.OnClickListener() {
@@ -190,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
                         });
                         break;
 
-                    case ACK_NO_BUYER:
+                    case REJECTED_SALE:
                         alertDialogBuilder.setMessage("XX has rejected to sell to you a swipe for x dollars. " +
                                 "time: Xpm loc: X dining halls");
                         alertDialogBuilder.setPositiveButton("Their Loss!", new DialogInterface.OnClickListener() {
@@ -201,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                         break;
-                    case ACK_NO_SELLER:
+                    case REJECTED_REQUEST:
                         alertDialogBuilder.setMessage("XX has rejected to buy a swipe for x dollars. " +
                                 "time: Xpm loc: X dining halls");
                         alertDialogBuilder.setPositiveButton("Their Loss!", new DialogInterface.OnClickListener() {
@@ -211,6 +214,9 @@ public class MainActivity extends AppCompatActivity {
                                 //Nothing
                             }
                         });
+                        break;
+                    default:
+                        // TODO
                         break;
 
                 }

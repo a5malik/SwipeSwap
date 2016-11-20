@@ -20,6 +20,9 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.regions.Regions;
 
+import java.util.Map;
+import java.util.HashMap;
+
 /**
  * Created by victorlai on 10/23/16.
  */
@@ -88,6 +91,17 @@ public class UserAuth {
      * @see     CognitoCachingCredentialsProvider
      */
     public void sendAWSNotification(Notification n) {
+        Swipe s = n.getSwipe();
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("price", s.getPrice());
+        data.put("startTime", s.getStartTime());
+        data.put("endTime", s.getEndTime());
+        data.put("owner_ID", s.getOwner_ID());
+        data.put("diningHall", s.getDiningHall());
+        data.put("postTime", s.getPostTime());
+        data.put("type", s.getType());
+        data.put("notification_type", n.getType());
+
         AmazonSNS sns = null;
         try {
             // Initialize the Amazon Cognito credentials provider
@@ -105,7 +119,7 @@ public class UserAuth {
         try {
             SNSMobilePush smp = new SNSMobilePush(sns);
             String uid = n.getUserID();
-            smp.initAndroidAppNotification(AWS_SERVER, mDb.getUserToken(uid), n);
+            smp.initAndroidAppNotification(AWS_SERVER, mDb.getUserToken(uid), n, data);
         } catch (AmazonServiceException ase) {
             Log.d(TAG, "Caught an AmazonServiceException, which means your request made it "
                             + "to Amazon SNS, but was rejected with an error response for some reason.");

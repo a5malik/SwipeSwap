@@ -91,7 +91,7 @@ public class SNSMobilePush {
 	}
 
 	public void initAndroidAppNotification(String serverName, String registrationId,
-										   Notification notification) {
+										   Notification notification, Map<String, Object> data) {
 		// TODO: Please fill in following values for your application. You can
 		// also change the notification payload as per your preferences using
 		// the method
@@ -101,7 +101,7 @@ public class SNSMobilePush {
 		String notifMessage = notification.message();
 		String notifTitle = notification.title();
 		snsClientWrapper.demoNotification(Platform.GCM, "", serverAPIKey,
-				registrationId, serverName, attributesMap, uid, notifMessage, notifTitle);
+				registrationId, serverName, attributesMap, uid, notifMessage, notifTitle, data);
 	}
 
 	//public void demoKindleAppNotification() {
