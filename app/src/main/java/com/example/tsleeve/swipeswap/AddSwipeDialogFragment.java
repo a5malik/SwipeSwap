@@ -193,7 +193,7 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
 
                 // TODO: test - remove later
                 //String uid = mUAuth.uid();
-                //Notification n = new Notification(getActivity(), uid, Notification.Message.ACCEPTED_SALE, s);
+                //Notification n = new Notification(getActivity(), uid, uid, Notification.Message.ACCEPTED_SALE, s);
                 //mUAuth.sendNotification(n);
                 dismiss();
             }

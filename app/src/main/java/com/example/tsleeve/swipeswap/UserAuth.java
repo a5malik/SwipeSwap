@@ -93,14 +93,17 @@ public class UserAuth {
     public void sendAWSNotification(Notification n) {
         Swipe s = n.getSwipe();
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("price", s.getPrice());
-        data.put("startTime", s.getStartTime());
-        data.put("endTime", s.getEndTime());
-        data.put("owner_ID", s.getOwner_ID());
-        data.put("diningHall", s.getDiningHall());
-        data.put("postTime", s.getPostTime());
-        data.put("type", s.getType());
+        if (s != null) {
+            data.put("price", s.getPrice());
+            data.put("startTime", s.getStartTime());
+            data.put("endTime", s.getEndTime());
+            data.put("owner_ID", s.getOwner_ID());
+            data.put("diningHall", s.getDiningHall());
+            data.put("postTime", s.getPostTime());
+            data.put("type", s.getType());
+        }
         data.put("notification_type", n.getType());
+        data.put("initiating_user_ID", n.getInitiatorUserID());
 
         AmazonSNS sns = null;
         try {
@@ -118,7 +121,7 @@ public class UserAuth {
 
         try {
             SNSMobilePush smp = new SNSMobilePush(sns);
-            String uid = n.getUserID();
+            String uid = n.getTargetUserID();
             smp.initAndroidAppNotification(AWS_SERVER, mDb.getUserToken(uid), n, data);
         } catch (AmazonServiceException ase) {
             Log.d(TAG, "Caught an AmazonServiceException, which means your request made it "
