@@ -93,13 +93,15 @@ public class UserAuth {
     public void sendAWSNotification(Notification n) {
         Swipe s = n.getSwipe();
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("price", s.getPrice());
-        data.put("startTime", s.getStartTime());
-        data.put("endTime", s.getEndTime());
-        data.put("owner_ID", s.getOwner_ID());
-        data.put("diningHall", s.getDiningHall());
-        data.put("postTime", s.getPostTime());
-        data.put("type", s.getType());
+        if (s != null) {
+            data.put("price", s.getPrice());
+            data.put("startTime", s.getStartTime());
+            data.put("endTime", s.getEndTime());
+            data.put("owner_ID", s.getOwner_ID());
+            data.put("diningHall", s.getDiningHall());
+            data.put("postTime", s.getPostTime());
+            data.put("type", s.getType());
+        }
         data.put("notification_type", n.getType());
 
         AmazonSNS sns = null;
