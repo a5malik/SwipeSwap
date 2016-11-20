@@ -113,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
             TYPE intentType = TYPE.values()[getIntent().getExtras().getInt(TYPE_OF_INTENT, 6)];
             if (intentType == TYPE.RATE_BUYER || intentType == TYPE.RATE_SELLER) {
                 RateDialogFragment rateDialogFragment = new RateDialogFragment();
+                rateDialogFragment.setCancelable(false);
                 rateDialogFragment.show(getFragmentManager(), "RateDialog");
             } else {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -120,14 +121,16 @@ public class MainActivity extends AppCompatActivity {
                 switch (intentType) {
 
                     case ACCEPT_BUYER:
-                        alertDialogBuilder.setMessage("XX wants to buy your swipe for X PM at for X dollars");
+                        alertDialogBuilder.setMessage("XX(***)(rating) wants to buy your swipe for X PM at for X dollars");
                         alertDialogBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 //Things to do:
                                 //1. start the alarm to send notifications to 30 minutes after swipe time.
                                 //2. send the notification to the buyer(ACK_BUYER)
-                                //3. redirect to messaging
+                                //3. remove swipe, add transaction to both users
+                                //4. redirect to messaging
+
                             }
                         });
                         alertDialogBuilder.setNegativeButton("Reject", new DialogInterface.OnClickListener() {
@@ -139,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                         });
                         break;
                     case ACCEPT_SELLER:
-                        alertDialogBuilder.setMessage("XX wants to sell to you for XX dollars for your request for a swipe" +
+                        alertDialogBuilder.setMessage("XX(**) wants to sell to you for XX dollars for your request for a swipe" +
                                 "at XPM at X dining hall");
                         alertDialogBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                             @Override
@@ -147,7 +150,8 @@ public class MainActivity extends AppCompatActivity {
                                 //Things to do:
                                 //1. start the alarm to send notifications to 30 minutes after swipe time.
                                 //2. send the notification to the seller(ACK_SELLER)
-                                //3. redirect to messaging
+                                //3. remove request, add transaction to both users
+                                //4. redirect to messaging
                             }
                         });
                         alertDialogBuilder.setNegativeButton("Reject", new DialogInterface.OnClickListener() {
@@ -211,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 alertDialog = alertDialogBuilder.create();
+                alertDialog.setCanceledOnTouchOutside(false);
                 alertDialog.show();
             }
         }
