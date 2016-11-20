@@ -40,10 +40,18 @@ public class SwipeMessagingService extends FirebaseMessagingService {
      */
     private void sendNotification(String messageBody, String title) {
         Intent intent = new Intent(this, MainActivity.class);
+
+        //Put all the extras(userID, swipe details, type of intent) in this intent. for eg.
+        //intent.putExtra(MainActivity.TYPE_OF_INTENT, MainActivity.TYPE.ACCEPT_BUYER.ordinal());
+        //Look at the MainActivity.TYPE enum
+
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
+        //don't think we need this?
+        //could you have the type of notification in the payload? rather than getting it from title?
+        //we need all 6 types, not just 3(a person can be buyer or seller, and can get notifs for either use case)
         Intent broadcast = new Intent("broadcaster");
         String fragment = null;
         if (title.equals("Swipe Accepted")) {
@@ -70,6 +78,7 @@ public class SwipeMessagingService extends FirebaseMessagingService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
+        //have different notification ID for different types of notifications.
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
 }

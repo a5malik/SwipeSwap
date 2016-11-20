@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -27,8 +29,12 @@ public class MainActivity extends AppCompatActivity {
     public static final String TYPE_OF_INTENT = "TOI";
 
     public static enum TYPE {
-        RATE_SELLER,
-        RATE_BUYER,
+        RATE_SELLER, //buyer will get this to rate the seller
+        RATE_BUYER,  // seller will get this to rate the buyer
+        ACCEPT_BUYER, //seller will get this when a buyer is interested in a swipe
+        ACCEPT_SELLER, //buyer will get this when a seller wants to respond to a request
+        ACK_BUYER, //buyer will get this when a seller has confirmed he wants to sell to him
+        ACK_SELLER, //seller will get this when a buyer has confirmed he will buy from him
         NONE
     }
     //private Button dateButton;
@@ -86,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                 new IntentFilter("broadcaster"));
         mDb.updateToken(FirebaseInstanceId.getInstance().getToken(), mUAuth.uid());
 
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        /*AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
         notificationIntent.addCategory("android.intent.category.DEFAULT");
@@ -96,15 +102,32 @@ public class MainActivity extends AppCompatActivity {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.SECOND, 15);
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), broadcast);
+*/
 
+        //deal with different types of intents here.
         if (getIntent().getExtras() != null) {
-            TYPE intentType = TYPE.values()[getIntent().getExtras().getInt(TYPE_OF_INTENT, 2)];
-            if (intentType == TYPE.RATE_BUYER) {
-                RateDialogFragment rateDialogFragment = new RateDialogFragment();
-                rateDialogFragment.show(getFragmentManager(), "RateDialog");
+            TYPE intentType = TYPE.values()[getIntent().getExtras().getInt(TYPE_OF_INTENT, 6)];
+            switch (intentType) {
+                case RATE_BUYER:
+                    RateDialogFragment rateDialogFragment = new RateDialogFragment();
+                    rateDialogFragment.show(getFragmentManager(), "RateDialog");
+                    break;
+
+                case ACCEPT_BUYER:
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                    alertDialogBuilder.setMessage("XX wants to buy your swipe at X for X dollars");
+                    alertDialogBuilder.setNegativeButton("no", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
+                    break;
+            }
             }
         }
-    }
 
     private void setTabIcons(int tabposition) {
         tabLayout.getTabAt(0).setIcon(R.drawable.calendar_icon);

@@ -1,5 +1,6 @@
 package com.example.tsleeve.swipeswap;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
@@ -19,6 +21,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * Created by footb on 10/19/2016.
@@ -46,13 +50,14 @@ public class CalendarDayFragment extends Fragment {
     public static class SwipeViewHolder extends RecyclerView.ViewHolder {
         View mView;
         SwipeDataAuth mDb = new SwipeDataAuth();
+        UserAuth mUAuth = new UserAuth();
 
         public SwipeViewHolder(View itemView) {
             super(itemView);
             mView = itemView;
         }
 
-        public void setEverything(final Swipe swipe, int position, String Title) {
+        public void setEverything(final Swipe swipe, int position, String Title, final Context context) {
             TextView tvTitle = (TextView) mView.findViewById(R.id.textViewTitle);
             tvTitle.setText(Title + " " + Integer.toString(position) + " for $" + Double.toString(swipe.getPrice()));
             //final TextView tvownerid = (TextView) mView.findViewById(R.id.textViewowner_id);
@@ -94,6 +99,19 @@ public class CalendarDayFragment extends Fragment {
             TextView tvtime = (TextView) mView.findViewById(R.id.textViewTime);
             tvtime.setText(startTimeofDay + "—" + endTimeofDay);
 
+
+            mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    CharSequence text = "Owner has been notified of your interest!";
+                    int duration = Toast.LENGTH_SHORT;
+
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+                    Notification n = new Notification(context, swipe.getOwner_ID(), Notification.Message.ACCEPTED_SALE);
+                    mUAuth.sendNotification(n);
+                }
+            });
 
             //final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users").child(swipe.getOwner_ID());
             final DatabaseReference ref = mDb.getUserReference(swipe.getOwner_ID());
@@ -157,7 +175,7 @@ public class CalendarDayFragment extends Fragment {
                 SwipeViewHolder.class, querySwipes) {
             @Override
             protected void populateViewHolder(SwipeViewHolder viewHolder, Swipe model, int position) {
-                viewHolder.setEverything(model, position, "Swipe");
+                viewHolder.setEverything(model, position, "Swipe", getContext());
             }
         };
         mAdapterSwipes.notifyDataSetChanged();
@@ -169,7 +187,7 @@ public class CalendarDayFragment extends Fragment {
                 SwipeViewHolder.class, queryRequests) {
             @Override
             protected void populateViewHolder(SwipeViewHolder viewHolder, Swipe model, int position) {
-                viewHolder.setEverything(model, position, "Request");
+                viewHolder.setEverything(model, position, "Request", getContext());
             }
         };
         mAdapterRequests.notifyDataSetChanged();
