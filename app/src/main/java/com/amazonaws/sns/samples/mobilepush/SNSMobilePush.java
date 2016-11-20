@@ -97,7 +97,7 @@ public class SNSMobilePush {
 		// the method
 		// com.amazonaws.sns.samples.tools.SampleMessageGenerator.getSampleAndroidMessage()
 		String serverAPIKey = "AIzaSyDejm_PLDCaUBl3QnPArGBM0_G_aIGRhes\n"; // TODO
-		String uid = notification.getUserID();
+		String uid = notification.getTargetUserID();
 		String notifMessage = notification.message();
 		String notifTitle = notification.title();
 		snsClientWrapper.demoNotification(Platform.GCM, "", serverAPIKey,

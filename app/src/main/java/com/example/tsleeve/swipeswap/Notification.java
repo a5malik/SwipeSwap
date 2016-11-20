@@ -8,7 +8,8 @@ import android.content.Context;
 
 public class Notification {
     private Context mContext;
-    private String mUser;
+    private String mInitiator;
+    private String mTargetUser;
     private Message mMessage;
     private Swipe mSwipe;
     private SwipeDataAuth mDb = new SwipeDataAuth();
@@ -26,16 +27,18 @@ public class Notification {
     }
 
     /**
-     * Constructs a Notification with a context, target user, and message.
+     * Constructs a Notification with a context, initiating user, target user, message, and Swipe.
      *
      * @param context    The context of the application
+     * @param initiator  The ID of the user that initiated the notification
      * @param targetUser The ID of the user to receive the notification
      * @param message    The type of message to be included in the notification
      * @param swipe      The information about the swipe post to be included in the notification
      */
-    public Notification(Context context, String targetUser, Message message, Swipe swipe) {
+    public Notification(Context context, String initiator, String targetUser, Message message, Swipe swipe) {
         this.mContext = context;
-        this.mUser = targetUser;
+        this.mInitiator = initiator;
+        this.mTargetUser = targetUser;
         this.mMessage = message;
         this.mSwipe = swipe;
     }
@@ -44,24 +47,33 @@ public class Notification {
      * Constructs a Notification with a context, target user, and message.
      *
      * @param context    The context of the application
+     * @param initiator  The ID of the user that initiated the notification
      * @param targetUser The ID of the user to receive the notification
      * @param message    The type of message to be included in the notification
      */
-    public Notification(Context context, String targetUser, Message message) {
+    public Notification(Context context, String initiator, String targetUser, Message message) {
         this.mContext = context;
-        this.mUser = targetUser;
+        this.mInitiator = initiator;
+        this.mTargetUser = targetUser;
         this.mMessage = message;
         this.mSwipe = null;
     }
 
     /**
-     * Returns the ID of the user to send the notification to
+     * Returns the ID of the user to send the notification to.
      *
      * @return The user ID
      */
-    public String getUserID() {
-        return mUser;
+    public String getTargetUserID() {
+        return mTargetUser;
     }
+
+    /**
+     * Returns the ID of the user that initiated the notification.
+     *
+     * @return The user ID
+     */
+    public String getInitiatorUserID() { return mInitiator; }
 
     /**
      * Returns the information for the swipe post.
@@ -100,7 +112,7 @@ public class Notification {
      * @return The message to include in the notification
      */
     public String message() {
-        String user = mDb.getUserName(mUser);
+        String user = mDb.getUserName(mTargetUser);
         String buyer = user;
         String seller = user;
 

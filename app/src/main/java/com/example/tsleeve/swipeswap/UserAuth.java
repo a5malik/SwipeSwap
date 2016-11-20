@@ -103,6 +103,7 @@ public class UserAuth {
             data.put("type", s.getType());
         }
         data.put("notification_type", n.getType());
+        data.put("initiating_user_ID", n.getInitiatorUserID());
 
         AmazonSNS sns = null;
         try {
@@ -120,7 +121,7 @@ public class UserAuth {
 
         try {
             SNSMobilePush smp = new SNSMobilePush(sns);
-            String uid = n.getUserID();
+            String uid = n.getTargetUserID();
             smp.initAndroidAppNotification(AWS_SERVER, mDb.getUserToken(uid), n, data);
         } catch (AmazonServiceException ase) {
             Log.d(TAG, "Caught an AmazonServiceException, which means your request made it "
