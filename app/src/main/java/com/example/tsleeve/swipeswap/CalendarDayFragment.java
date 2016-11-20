@@ -108,7 +108,7 @@ public class CalendarDayFragment extends Fragment {
 
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
-                    Notification n = new Notification(context, swipe.getOwner_ID(), Notification.Message.ACCEPTED_SALE);
+                    Notification n = new Notification(context, swipe.getOwner_ID(), Notification.Message.ACCEPTED_SALE, swipe);
                     mUAuth.sendNotification(n);
                 }
             });

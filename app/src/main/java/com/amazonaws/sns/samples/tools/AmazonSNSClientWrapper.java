@@ -83,7 +83,7 @@ public class AmazonSNSClientWrapper {
 	}
 
 	private PublishResult publish(String endpointArn, Platform platform,
-			Map<Platform, Map<String, MessageAttributeValue>> attributesMap, String notifMessage,
+								  Map<Platform, Map<String, MessageAttributeValue>> attributesMap, String notifMessage,
 								  String title, Map<String, Object> data) {
 		PublishRequest publishRequest = new PublishRequest();
 		Map<String, MessageAttributeValue> notificationAttributes = getValidNotificationAttributes(attributesMap
@@ -111,7 +111,7 @@ public class AmazonSNSClientWrapper {
 		message =
 				"{" +
 						"\"GCM\": " +
-						"\"{ "+
+						"\"{ " +
 						"\\\"notification\\\": " +
 						"{ " +
 						"\\\"title\\\": \\\"" + title + "\\\", " +
@@ -143,8 +143,8 @@ public class AmazonSNSClientWrapper {
 	}
 
 	public void demoNotification(Platform platform, String principal,
-			String credential, String platformToken, String applicationName,
-			Map<Platform, Map<String, MessageAttributeValue>> attrsMap, String uid,
+								 String credential, String platformToken, String applicationName,
+								 Map<Platform, Map<String, MessageAttributeValue>> attrsMap, String uid,
 								 String notifMessage, String title, Map<String, Object> data) {
 		// Create Platform Application. This corresponds to an app on a
 		// platform.

@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 100;
     public static final String TYPE_OF_INTENT = "TOI";
 
-    /*public static enum TYPE {
+    public static enum TYPE {
         RATE_SELLER, //buyer will get this to rate the seller
         RATE_BUYER,  // seller will get this to rate the buyer
         ACCEPT_BUYER, //seller will get this when a buyer is interested in a swipe
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         ACK_NO_BUYER, //buyer will get this when a seller has rejected to sell to him
         ACK_NO_SELLER, //seller will get this when a buyer has rejected to buy from him
         NONE
-    }*/
+    }
     //private Button dateButton;
     private TabLayout tabLayout;
     private UserAuth mUAuth = new UserAuth();
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (notifType) {
 
                     case ACCEPTED_SALE:
-                        alertDialogBuilder.setMessage("XX wants to buy your swipe for X PM at for X dollars");
+                        alertDialogBuilder.setMessage("XX(**) wants to buy your swipe for X PM at for X dollars");
                         alertDialogBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
                         });
                         break;
                     case ACCEPTED_REQUEST:
-                        alertDialogBuilder.setMessage("XX wants to sell to you for XX dollars for your request for a swipe" +
+                        alertDialogBuilder.setMessage("XX(***) wants to sell to you for XX dollars for your request for a swipe" +
                                 "at XPM at X dining hall");
                         alertDialogBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                             @Override

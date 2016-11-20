@@ -68,7 +68,9 @@ public class Notification {
      *
      * @return The swipe data
      */
-    public Swipe getSwipe() { return mSwipe; }
+    public Swipe getSwipe() {
+        return mSwipe;
+    }
 
     /**
      * Returns the appropriate title to be included in the notification.
@@ -140,5 +142,7 @@ public class Notification {
      *
      * @return The type of notification
      */
-    public Message getType() { return mMessage; }
+    public Message getType() {
+        return mMessage;
+    }
 }
