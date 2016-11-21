@@ -33,6 +33,7 @@ public class SwipeDataAuth {
     public static final String DENEVE = "DeNeve";
     public static final String FEAST = "Feast";
     public static final String TOKEN = "regToken";
+    public static final String TRANSACTIONS = "transactions";
 
     public static final Integer BPLATE_ID = 1;
     public static final Integer COVEL_ID = 2;
@@ -51,6 +52,18 @@ public class SwipeDataAuth {
         public Rating() {
             RatingSum = 0.0;
             NOR = 0;
+        }
+    }
+
+    public class Transaction {
+        private Swipe swipe;
+        private String seller_ID;
+        private String buyer_ID;
+
+        public Transaction(Swipe swipe, String buyer_ID, String seller_ID) {
+            this.swipe = swipe;
+            this.buyer_ID = buyer_ID;
+            this.seller_ID = seller_ID;
         }
     }
 
@@ -75,6 +88,7 @@ public class SwipeDataAuth {
      *       requests
      *         ...
      *       reviews
+     *       transactions
      *     ...
      *   requests
      *   diningHalls
@@ -156,6 +170,18 @@ public class SwipeDataAuth {
             mDatabase.child(DINING_HALL).child(FEAST).child(ALL_REQUESTS).push().setValue(s);
 
         return mDatabase.child(ALL_REQUESTS).push().setValue(s);
+    }
+
+    /**
+     * Saves the specified transaction to the application's database.
+     *
+     * @param t   The Transaction object to be written to Firebase
+     * @param uid The ID of the user to store the transaction for
+     * @return    A task that represents the completion of the operation to add the transaction
+     * @see Transaction
+     */
+    public Task<Void> addTransaction(Transaction t, String uid) {
+        return mDatabase.child(ALL_USERS).child(uid).child(TRANSACTIONS).push().setValue(t);
     }
 
     /**
