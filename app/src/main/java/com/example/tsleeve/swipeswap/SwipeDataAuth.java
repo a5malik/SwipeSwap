@@ -24,6 +24,8 @@ public class SwipeDataAuth {
     public static final String ALL_REQUESTS = "requests";
     public static final String ALL_USERS = "users";
     public static final String USERNAME = "username";
+    public static final String RATINGSUM = "rating_sum";
+    public static final String NOR = "NOR";
     public static final String START_TIME = "startTime";
     public static final String DINING_HALL = "diningHall";
     public static final String BPLATE = "BPlate";
@@ -36,6 +38,21 @@ public class SwipeDataAuth {
     public static final Integer COVEL_ID = 2;
     public static final Integer DENEVE_ID = 4;
     public static final Integer FEAST_ID = 8;
+
+    public class Rating {
+        public Double RatingSum;
+        public int NOR;
+
+        public Rating(Double sum, int nor) {
+            RatingSum = sum;
+            NOR = nor;
+        }
+
+        public Rating() {
+            RatingSum = 0.0;
+            NOR = 0;
+        }
+    }
 
     /**
      * Structure of Firebase data:
@@ -87,6 +104,9 @@ public class SwipeDataAuth {
     private String mUsername;
     private Task<Void> mTask;
     private ArrayList<Swipe> mSwipes = new ArrayList<Swipe>();
+    private Double mUserRatingSum;
+    private int mUserNOR;
+
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -351,6 +371,14 @@ public class SwipeDataAuth {
         return mDatabase.child(ALL_USERS).child(uid).child(USERNAME).setValue(username);
     }
 
+    public Task<Void> setUserRatingSum(String uid, Double Rating) {
+        return mDatabase.child(ALL_USERS).child(uid).child(RATINGSUM).setValue(Rating);
+    }
+
+    public Task<Void> setUserNOR(String uid, int nor) {
+        return mDatabase.child(ALL_USERS).child(uid).child(NOR).setValue(nor);
+    }
+
     /**
      * Sorts a target key based on a specified key in the application's database.
      *
@@ -402,6 +430,7 @@ public class SwipeDataAuth {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mUserToken = dataSnapshot.getValue(String.class);
+
 
             }
 
@@ -500,5 +529,30 @@ public class SwipeDataAuth {
             ie.printStackTrace();
         }
         return mUsername;
+    }
+
+    public Rating getUserRating(String uid) {
+
+        DatabaseReference ref = mDatabase.child(ALL_USERS).child(uid);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mUserRatingSum = dataSnapshot.child(RATINGSUM).getValue(Double.class);
+                mUserNOR = dataSnapshot.child(NOR).getValue(Integer.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        // Wait until data has arrived
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException ie) {
+            ie.printStackTrace();
+        }
+        return new Rating(mUserRatingSum, mUserNOR);
     }
 }

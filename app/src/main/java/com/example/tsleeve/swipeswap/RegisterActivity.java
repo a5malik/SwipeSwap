@@ -40,6 +40,8 @@ public class RegisterActivity extends AppCompatActivity {
                 String user = editTextusername.getText().toString();
                 if (user.length() >= 5) {
                     db.registerUsername(uid, user);
+                    db.setUserRatingSum(uid, 0.0);
+                    db.setUserNOR(uid, 0);
                     //ref.child(uid).child("username").setValue(user);
                     startActivity(MainActivity.createIntent(RegisterActivity.this));
                     finish();

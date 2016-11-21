@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +19,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -99,6 +102,10 @@ public class CalendarDayFragment extends Fragment {
             TextView tvtime = (TextView) mView.findViewById(R.id.textViewTime);
             tvtime.setText(startTimeofDay + "—" + endTimeofDay);
 
+            final TextView tvUserName = (TextView) mView.findViewById(R.id.textViewUsername);
+            final RatingBar ratingBar = (RatingBar) mView.findViewById(R.id.ratingBarSwipeView);
+            ratingBar.setIsIndicator(true);
+
 
             mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -108,7 +115,7 @@ public class CalendarDayFragment extends Fragment {
 
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
-                    Notification n = new Notification(context, swipe.getOwner_ID(), Notification.Message.ACCEPTED_SALE, swipe);
+                    Notification n = new Notification(context, mUAuth.uid(), swipe.getOwner_ID(), Notification.Message.ACCEPTED_SALE, swipe);
                     mUAuth.sendNotification(n);
                 }
             });
@@ -119,6 +126,12 @@ public class CalendarDayFragment extends Fragment {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     //tvownerid.setText(dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class));
+                    tvUserName.setText(dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class));
+                    Double sum = dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue(Double.class);
+                    int NOR = dataSnapshot.child(SwipeDataAuth.NOR).getValue(Integer.class);
+                    if (NOR == 0) NOR = 1;
+                    double rating = sum / NOR;
+                    ratingBar.setRating((float) rating);
                 }
 
                 @Override

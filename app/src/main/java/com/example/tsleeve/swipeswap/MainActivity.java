@@ -15,13 +15,19 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import static android.R.id.message;
@@ -97,135 +103,219 @@ public class MainActivity extends AppCompatActivity {
                 new IntentFilter("broadcaster"));*/
         mDb.updateToken(FirebaseInstanceId.getInstance().getToken(), mUAuth.uid());
 
-        /*AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-        Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
-        notificationIntent.addCategory("android.intent.category.DEFAULT");
-
-        PendingIntent broadcast = PendingIntent.getBroadcast(this, 100, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.SECOND, 15);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), broadcast);
-*/
 
         //deal with different types of intents here.
         if (getIntent().getExtras() != null) {
             //TYPE intentType = TYPE.values()[getIntent().getExtras().getInt(TYPE_OF_INTENT, 6)];
-            Bundle b = getIntent().getExtras();
-            Notification.Message notifType = Notification.Message.valueOf(b.getString("swipe_notification_type"));
+            final Bundle b = getIntent().getExtras();
+            final Notification.Message notifType = Notification.Message.valueOf(b.getString("swipe_notification_type"));
+            Log.d("notiftype", Integer.toString(notifType.ordinal()));
             if (notifType == Notification.Message.REVIEW_BUYER || notifType == Notification.Message.REVIEW_SELLER) {
-                RateDialogFragment rateDialogFragment = new RateDialogFragment();
-                rateDialogFragment.setCancelable(false);
-                rateDialogFragment.show(getFragmentManager(), "RateDialog");
+                Log.d("REVIEW", b.getString("user_ID"));
+                final String UID = b.getString("user_ID");
+                DatabaseReference ref = mDb.getUserReference(UID);
+                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        RateDialogFragment rateDialogFragment = new RateDialogFragment();
+                        Bundle args = new Bundle();
+                        args.putString("user_ID", UID);
+                        args.putString("user_name", dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class));
+                        args.putDouble("rating_sum", dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue(Double.class));
+                        args.putInt("NOR", dataSnapshot.child(SwipeDataAuth.NOR).getValue(Integer.class));
+                        rateDialogFragment.setArguments(args);
+                        rateDialogFragment.setCancelable(false);
+                        rateDialogFragment.show(getFragmentManager(), "RateDialog");
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
             } else {
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-                AlertDialog alertDialog;
-                switch (notifType) {
+                String UID = b.getString("swipe_initiating_user_ID");
+                Log.d("UID", UID);
+                final Swipe swipe = new Swipe(Double.parseDouble(b.getString("swipe_price")),
+                        Long.parseLong(b.getString("swipe_startTime")),
+                        Long.parseLong(b.getString("swipe_endTime")),
+                        b.getString("swipe_owner_ID"),
+                        Integer.parseInt(b.getString("swipe_diningHall")),
+                        Swipe.Type.SALE);
+                DatabaseReference ref = mDb.getUserReference(UID);
+                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                        AlertDialog alertDialog;
 
-                    case ACCEPTED_SALE:
-                        alertDialogBuilder.setMessage("XX(**) wants to buy your swipe for X PM at for X dollars");
-                        alertDialogBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //Things to do:
-                                //1. start the alarm to send notifications to 30 minutes after swipe time.
-                                //2. send the notification to the buyer(ACK_BUYER)
-                                //3. remove swipe, add transaction to both users
-                                //4. redirect to messaging
+                        String username = dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class);
+                        String swipeDate, swipeTimeofDay;
+
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTimeInMillis(swipe.getStartTime());
+                        swipeDate = new SimpleDateFormat("EEE, MMM d").format(cal.getTime());
+                        swipeTimeofDay = new SimpleDateFormat("h:mm a").format(cal.getTime());
+                        Double ratingsum = dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue(Double.class);
+                        int NOR = dataSnapshot.child(SwipeDataAuth.NOR).getValue(Integer.class);
+                        Double Rating = ratingsum / ((NOR == 0) ? 1 : NOR);
+                        switch (notifType) {
+
+                            case ACCEPTED_SALE:
+                                alertDialogBuilder.setMessage(String.format("%s (%f)wants to buy your swipe for %s on %s for %f$",
+                                        username, Rating, swipeTimeofDay, swipeDate, swipe.getPrice()));
+                                alertDialogBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //Things to do:
+                                        //1. start the alarm to send notifications to 30 minutes after swipe time.
+                                        //2. send the notification to the buyer(ACK_BUYER)
+                                        //3. remove swipe, add transaction to both users
+                                        //4. redirect to messaging
+
+                                        //2.
+                                        Notification n = new Notification(MainActivity.this, mUAuth.uid(),
+                                                b.getString("swipe_initiating_user_ID"),
+                                                Notification.Message.ACK_SALE, swipe
+                                        );
+                                        mUAuth.sendNotification(n);
+
+                                        //1.
+                                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+                                        Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
+                                        notificationIntent.putExtra("user_ID", b.getString("swipe_initiating_user_ID"));
+                                        notificationIntent.addCategory("android.intent.category.DEFAULT");
+
+                                        PendingIntent broadcast = PendingIntent.getBroadcast(MainActivity.this, 100, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                                        Calendar cal = Calendar.getInstance();
+                                        cal.setTimeInMillis(swipe.getStartTime());
+                                        cal.add(Calendar.SECOND, 15);
+                                        //cal.add(Calendar.MINUTE, 30);
+                                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), broadcast);
+
+
+                                    }
+                                });
+                                alertDialogBuilder.setNegativeButton("Reject", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //send buyer the notification that the seller has rejected(ACK_NO_BUYER)
+                                        Notification n = new Notification(MainActivity.this, mUAuth.uid(),
+                                                b.getString("swipe_initiating_user_ID"),
+                                                Notification.Message.REJECTED_SALE, swipe
+                                        );
+                                        mUAuth.sendNotification(n);
+
+                                    }
+                                });
+                                break;
+                            case ACCEPTED_REQUEST:
+                                alertDialogBuilder.setMessage("XX(***) wants to sell to you for XX dollars for your request for a swipe" +
+                                        "at XPM at X dining hall");
+                                alertDialogBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //Things to do:
+                                        //1. start the alarm to send notifications to 30 minutes after swipe time.
+                                        //2. send the notification to the seller(ACK_SELLER)
+                                        //3. remove request, add transaction to both users
+                                        //4. redirect to messaging
+                                    }
+                                });
+                                alertDialogBuilder.setNegativeButton("Reject", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //send seller the notification that the buyer has rejected(ACK_NO_SELLER)
+
+                                    }
+                                });
+
+                                break;
+                            case ACK_SALE:
+                                alertDialogBuilder.setMessage(String.format("%s (%f) has agreed to sell to you a swipe " +
+                                        "at %s on %s for %f$", username, Rating, swipeTimeofDay, swipeDate, swipe.getPrice()));
+                                alertDialogBuilder.setPositiveButton("Got It!", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //Things to do:
+                                        //1. start the alarm to send notifications to 30 minutes after swipe time.
+                                        //3. redirect to messaging
+                                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+                                        Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
+                                        notificationIntent.putExtra("user_ID", b.getString("swipe_initiating_user_ID"));
+                                        notificationIntent.addCategory("android.intent.category.DEFAULT");
+
+                                        PendingIntent broadcast = PendingIntent.getBroadcast(MainActivity.this, 100, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                                        Calendar cal = Calendar.getInstance();
+                                        cal.setTimeInMillis(swipe.getStartTime());
+                                        cal.add(Calendar.SECOND, 15);
+                                        //cal.add(Calendar.MINUTE, 30);
+                                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), broadcast);
+
+                                    }
+                                });
+                                break;
+                            case ACK_REQUEST:
+                                alertDialogBuilder.setMessage("XX has agreed to buy a swipe for x dollars. " +
+                                        "time: Xpm loc: X dining halls");
+                                alertDialogBuilder.setPositiveButton("Got It!", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //Things to do:
+                                        //1. start the alarm to send notifications to 30 minutes after swipe time.
+                                        //3. redirect to messaging
+                                    }
+                                });
+                                break;
+
+                            case REJECTED_SALE:
+                                alertDialogBuilder.setMessage(String.format("%s (%f) has rejected to sell to you a swipe " +
+                                        "at %s on %s for %f$", username, Rating, swipeTimeofDay, swipeDate, swipe.getPrice()));
+                                alertDialogBuilder.setPositiveButton("Their Loss!", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //Things to do:
+                                        //Nothing
+                                    }
+                                });
+                                break;
+                            case REJECTED_REQUEST:
+                                alertDialogBuilder.setMessage("XX has rejected to buy a swipe for x dollars. " +
+                                        "time: Xpm loc: X dining halls");
+                                alertDialogBuilder.setPositiveButton("Their Loss!", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //Things to do:
+                                        //Nothing
+                                    }
+                                });
+                                break;
+                            default:
+                                // TODO
+                                break;
 
                             }
-                        });
-                        alertDialogBuilder.setNegativeButton("Reject", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //send buyer the notification that the seller has rejected(ACK_NO_BUYER)
-
-                            }
-                        });
-                        break;
-                    case ACCEPTED_REQUEST:
-                        alertDialogBuilder.setMessage("XX(***) wants to sell to you for XX dollars for your request for a swipe" +
-                                "at XPM at X dining hall");
-                        alertDialogBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //Things to do:
-                                //1. start the alarm to send notifications to 30 minutes after swipe time.
-                                //2. send the notification to the seller(ACK_SELLER)
-                                //3. remove request, add transaction to both users
-                                //4. redirect to messaging
-                            }
-                        });
-                        alertDialogBuilder.setNegativeButton("Reject", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //send seller the notification that the buyer has rejected(ACK_NO_SELLER)
-
-                            }
-                        });
-
-                        break;
-                    case ACK_SALE:
-                        alertDialogBuilder.setMessage("XX has agreed to sell to you a swipe for x dollars. " +
-                                "time: Xpm loc: X dining halls");
-                        alertDialogBuilder.setPositiveButton("Got It!", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //Things to do:
-                                //1. start the alarm to send notifications to 30 minutes after swipe time.
-                                //3. redirect to messaging
-                            }
-                        });
                         alertDialog = alertDialogBuilder.create();
+                        alertDialog.setCanceledOnTouchOutside(false);
                         alertDialog.show();
-                        break;
-                    case ACK_REQUEST:
-                        alertDialogBuilder.setMessage("XX has agreed to buy a swipe for x dollars. " +
-                                "time: Xpm loc: X dining halls");
-                        alertDialogBuilder.setPositiveButton("Got It!", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //Things to do:
-                                //1. start the alarm to send notifications to 30 minutes after swipe time.
-                                //3. redirect to messaging
-                            }
-                        });
-                        break;
+                    }
 
-                    case REJECTED_SALE:
-                        alertDialogBuilder.setMessage("XX has rejected to sell to you a swipe for x dollars. " +
-                                "time: Xpm loc: X dining halls");
-                        alertDialogBuilder.setPositiveButton("Their Loss!", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //Things to do:
-                                //Nothing
-                            }
-                        });
-                        break;
-                    case REJECTED_REQUEST:
-                        alertDialogBuilder.setMessage("XX has rejected to buy a swipe for x dollars. " +
-                                "time: Xpm loc: X dining halls");
-                        alertDialogBuilder.setPositiveButton("Their Loss!", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //Things to do:
-                                //Nothing
-                            }
-                        });
-                        break;
-                    default:
-                        // TODO
-                        break;
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
 
                 }
-                alertDialog = alertDialogBuilder.create();
-                alertDialog.setCanceledOnTouchOutside(false);
-                alertDialog.show();
+
             }
         }
-    }
+
 
     private void makeAlertDialog(String message) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
