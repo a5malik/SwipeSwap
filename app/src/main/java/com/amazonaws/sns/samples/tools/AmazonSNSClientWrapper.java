@@ -160,7 +160,7 @@ public class AmazonSNSClientWrapper {
 		}
 
 		// Create an Endpoint. This corresponds to an app on a device.
-		String endpointArn = endpointExists(platformApplicationArn, uid);
+		String endpointArn = endpointExists(platformApplicationArn, platformToken, uid);
 		CreatePlatformEndpointResult platformEndpointResult = null;
 		if (endpointArn == null) {
 			platformEndpointResult = createPlatformEndpoint(
@@ -202,7 +202,7 @@ public class AmazonSNSClientWrapper {
 	 * @param targetUid
      * @return
      */
-	private String endpointExists(String platformApplicationArn, String targetUid) {
+	private String endpointExists(String platformApplicationArn, String platformToken, String targetUid) {
 		ListEndpointsByPlatformApplicationRequest endpointsReq = new ListEndpointsByPlatformApplicationRequest();
 		endpointsReq.setPlatformApplicationArn(platformApplicationArn);
 		ListEndpointsByPlatformApplicationResult endpoints =
@@ -210,7 +210,8 @@ public class AmazonSNSClientWrapper {
 		List<Endpoint> endpointsList = endpoints.getEndpoints();
 		for (Endpoint e : endpointsList) {
 			Map<String, String> attributes = e.getAttributes();
-			if (attributes.get("CustomUserData").equals(targetUid)) {
+			if (attributes.get("CustomUserData").equals(targetUid) &&
+					attributes.get("Token").equals(platformToken)) {
 				return e.getEndpointArn();
 			}
 		}
