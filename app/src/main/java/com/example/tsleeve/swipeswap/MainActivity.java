@@ -203,20 +203,8 @@ public class MainActivity extends AppCompatActivity {
                                         mUAuth.sendNotification(n);
 
                                         //1.
-                                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-                                        Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
-                                        notificationIntent.putExtra("user_ID", b.getString("swipe_initiating_user_ID"));
-                                        notificationIntent.addCategory("android.intent.category.DEFAULT");
-
-                                        PendingIntent broadcast = PendingIntent.getBroadcast(MainActivity.this, 100, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                                        Calendar cal = Calendar.getInstance();
-                                        cal.setTimeInMillis(swipe.getStartTime());
-                                        cal.add(Calendar.SECOND, 15);
-                                        //cal.add(Calendar.MINUTE, 30);
-                                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), broadcast);
-
+                                        setupRatingNotification(b.getString("swipe_initiating_user_ID"),
+                                                swipe.getStartTime());
 
                                     }
                                 });
@@ -234,8 +222,8 @@ public class MainActivity extends AppCompatActivity {
                                 });
                                 break;
                             case ACCEPTED_REQUEST:
-                                alertDialogBuilder.setMessage("XX(***) wants to sell to you for XX dollars for your request for a swipe" +
-                                        "at XPM at X dining hall");
+                                alertDialogBuilder.setMessage(String.format("%s (%f) would like to sell you a swipe " +
+                                        "at %s on %s for %f$", username, Rating, swipeTimeofDay, swipeDate, swipe.getPrice()));
                                 alertDialogBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -244,6 +232,19 @@ public class MainActivity extends AppCompatActivity {
                                         //2. send the notification to the seller(ACK_SELLER)
                                         //3. remove request, add transaction to both users
                                         //4. redirect to messaging
+
+                                        //2.
+                                        Notification n = new Notification(MainActivity.this, mUAuth.uid(),
+                                                b.getString("swipe_initiating_user_ID"),
+                                                Notification.Message.ACK_REQUEST, swipe
+                                        );
+                                        mUAuth.sendNotification(n);
+
+                                        //1.
+                                        setupRatingNotification(b.getString("swipe_initiating_user_ID"),
+                                                swipe.getStartTime());
+
+
                                     }
                                 });
                                 alertDialogBuilder.setNegativeButton("Reject", new DialogInterface.OnClickListener() {
@@ -264,32 +265,28 @@ public class MainActivity extends AppCompatActivity {
                                         //Things to do:
                                         //1. start the alarm to send notifications to 30 minutes after swipe time.
                                         //3. redirect to messaging
-                                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-                                        Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
-                                        notificationIntent.putExtra("user_ID", b.getString("swipe_initiating_user_ID"));
-                                        notificationIntent.addCategory("android.intent.category.DEFAULT");
+                                        //1.
+                                        setupRatingNotification(b.getString("swipe_initiating_user_ID"),
+                                                swipe.getStartTime());
 
-                                        PendingIntent broadcast = PendingIntent.getBroadcast(MainActivity.this, 100, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                                        Calendar cal = Calendar.getInstance();
-                                        cal.setTimeInMillis(swipe.getStartTime());
-                                        cal.add(Calendar.SECOND, 15);
-                                        //cal.add(Calendar.MINUTE, 30);
-                                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), broadcast);
 
                                     }
                                 });
                                 break;
                             case ACK_REQUEST:
-                                alertDialogBuilder.setMessage("XX has agreed to buy a swipe for x dollars. " +
-                                        "time: Xpm loc: X dining halls");
+                                alertDialogBuilder.setMessage(String.format("%s (%f) has agreed to buy the swipe " +
+                                        "at %s on %s for %f$", username, Rating, swipeTimeofDay, swipeDate, swipe.getPrice()));
                                 alertDialogBuilder.setPositiveButton("Got It!", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         //Things to do:
                                         //1. start the alarm to send notifications to 30 minutes after swipe time.
                                         //3. redirect to messaging
+
+                                        //1.
+                                        setupRatingNotification(b.getString("swipe_initiating_user_ID"),
+                                                swipe.getStartTime());
                                     }
                                 });
                                 break;
@@ -306,8 +303,8 @@ public class MainActivity extends AppCompatActivity {
                                 });
                                 break;
                             case REJECTED_REQUEST:
-                                alertDialogBuilder.setMessage("XX has rejected to buy a swipe for x dollars. " +
-                                        "time: Xpm loc: X dining halls");
+                                alertDialogBuilder.setMessage(String.format("%s (%f) has rejected to buy from you a swipe " +
+                                        "at %s on %s for %f$", username, Rating, swipeTimeofDay, swipeDate, swipe.getPrice()));
                                 alertDialogBuilder.setPositiveButton("Their Loss!", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -336,6 +333,22 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }
+
+    private void setupRatingNotification(String UID_to_Rate, Long startTime) {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        Intent notificationIntent = new Intent("android.media.action.DISPLAY_NOTIFICATION");
+        notificationIntent.putExtra("user_ID", UID_to_Rate);
+        notificationIntent.addCategory("android.intent.category.DEFAULT");
+
+        PendingIntent broadcast = PendingIntent.getBroadcast(MainActivity.this, 100, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(startTime);
+        cal.add(Calendar.SECOND, 15);
+        //cal.add(Calendar.MINUTE, 30);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), broadcast);
+    }
 
 
     private void makeAlertDialog(String message) {

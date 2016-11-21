@@ -115,7 +115,11 @@ public class CalendarDayFragment extends Fragment {
 
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
-                    Notification n = new Notification(context, mUAuth.uid(), swipe.getOwner_ID(), Notification.Message.ACCEPTED_SALE, swipe);
+                    Notification n;
+                    if (swipe.getType() == Swipe.Type.SALE)
+                        n = new Notification(context, mUAuth.uid(), swipe.getOwner_ID(), Notification.Message.ACCEPTED_SALE, swipe);
+                    else
+                        n = new Notification(context, mUAuth.uid(), swipe.getOwner_ID(), Notification.Message.ACCEPTED_REQUEST, swipe);
                     mUAuth.sendNotification(n);
                 }
             });
