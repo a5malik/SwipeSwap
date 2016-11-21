@@ -127,8 +127,13 @@ public class CalendarDayFragment extends Fragment {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     //tvownerid.setText(dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class));
                     tvUserName.setText(dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class));
-                    Double sum = dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue(Double.class);
-                    int NOR = dataSnapshot.child(SwipeDataAuth.NOR).getValue(Integer.class);
+                    Double sum = 0.0;
+                    if (dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue() != null)
+                        sum = dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue(Double.class);
+
+                    int NOR = 1;
+                    if (dataSnapshot.child(SwipeDataAuth.NOR).getValue() != null)
+                        NOR = dataSnapshot.child(SwipeDataAuth.NOR).getValue(Integer.class);
                     if (NOR == 0) NOR = 1;
                     double rating = sum / NOR;
                     ratingBar.setRating((float) rating);

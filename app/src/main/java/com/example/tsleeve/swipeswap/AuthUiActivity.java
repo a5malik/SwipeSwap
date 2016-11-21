@@ -33,7 +33,6 @@ public class AuthUiActivity extends AppCompatActivity implements View.OnClickLis
         buttonSignIn = (Button) findViewById(R.id.buttonSignIn);
         buttonSignIn.setOnClickListener(this);
         buttonSignIn.setText("Login");
-        spinner = (ProgressBar) findViewById(R.id.progressBarheader);
 
         //FirebaseAuth auth = FirebaseAuth.getInstance();
         if (mUAuth.validUser()) {
@@ -58,7 +57,6 @@ public class AuthUiActivity extends AppCompatActivity implements View.OnClickLis
 
     private void handleSignInResponse(int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            spinner.setVisibility(View.VISIBLE);
             final String uid = mUAuth.uid();
             //final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
             DatabaseReference ref = db.getUsersReference();
@@ -68,12 +66,10 @@ public class AuthUiActivity extends AppCompatActivity implements View.OnClickLis
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (!dataSnapshot.hasChild(uid)) {
                         startActivity(new Intent(AuthUiActivity.this, RegisterActivity.class));
-                        spinner.setVisibility(View.INVISIBLE);
                         finish();
                     } else {
                         startActivity(MainActivity.createIntent(AuthUiActivity.this));
                         finish();
-                        spinner.setVisibility(View.INVISIBLE);
                     }
                 }
 

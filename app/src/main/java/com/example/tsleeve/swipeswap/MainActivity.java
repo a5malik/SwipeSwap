@@ -118,11 +118,25 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         RateDialogFragment rateDialogFragment = new RateDialogFragment();
+
                         Bundle args = new Bundle();
+
                         args.putString("user_ID", UID);
+
+                        Double sum = 0.0;
+
+                        if (dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue() != null)
+                            sum = dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue(Double.class);
+
+                        int NOR = 0;
+
+                        if (dataSnapshot.child(SwipeDataAuth.NOR).getValue() != null)
+                            NOR = dataSnapshot.child(SwipeDataAuth.NOR).getValue(Integer.class);
+
                         args.putString("user_name", dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class));
-                        args.putDouble("rating_sum", dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue(Double.class));
-                        args.putInt("NOR", dataSnapshot.child(SwipeDataAuth.NOR).getValue(Integer.class));
+                        args.putDouble("rating_sum", sum);
+                        args.putInt("NOR", NOR);
+
                         rateDialogFragment.setArguments(args);
                         rateDialogFragment.setCancelable(false);
                         rateDialogFragment.show(getFragmentManager(), "RateDialog");
@@ -157,9 +171,16 @@ public class MainActivity extends AppCompatActivity {
                         cal.setTimeInMillis(swipe.getStartTime());
                         swipeDate = new SimpleDateFormat("EEE, MMM d").format(cal.getTime());
                         swipeTimeofDay = new SimpleDateFormat("h:mm a").format(cal.getTime());
-                        Double ratingsum = dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue(Double.class);
-                        int NOR = dataSnapshot.child(SwipeDataAuth.NOR).getValue(Integer.class);
-                        Double Rating = ratingsum / ((NOR == 0) ? 1 : NOR);
+
+                        Double sum = 0.0;
+                        if (dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue() != null)
+                            sum = dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue(Double.class);
+
+                        int NOR = 1;
+                        if (dataSnapshot.child(SwipeDataAuth.NOR).getValue() != null)
+                            NOR = dataSnapshot.child(SwipeDataAuth.NOR).getValue(Integer.class);
+                        if (NOR == 0) NOR = 1;
+                        double Rating = sum / NOR;
                         switch (notifType) {
 
                             case ACCEPTED_SALE:
