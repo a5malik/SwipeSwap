@@ -55,7 +55,7 @@ public class RateDialogFragment extends DialogFragment {
                 dismiss();
 
                 NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-                notificationManager.cancel(0);
+                notificationManager.cancel(Notification.Message.REVIEW_BUYER.ordinal());
             }
         });
     }
