@@ -206,6 +206,9 @@ public class MainActivity extends AppCompatActivity {
                                         setupRatingNotification(b.getString("swipe_initiating_user_ID"),
                                                 swipe.getStartTime());
 
+                                        //3.
+                                        mDb.removeSwipe(mUAuth.uid(), Long.parseLong(b.getString("swipe_postTime")), Swipe.Type.SALE);
+
                                     }
                                 });
                                 alertDialogBuilder.setNegativeButton("Reject", new DialogInterface.OnClickListener() {
@@ -244,6 +247,9 @@ public class MainActivity extends AppCompatActivity {
                                         setupRatingNotification(b.getString("swipe_initiating_user_ID"),
                                                 swipe.getStartTime());
 
+                                        //3.
+                                        mDb.removeSwipe(mUAuth.uid(), Long.parseLong(b.getString("swipe_postTime")), Swipe.Type.REQUEST);
+
 
                                     }
                                 });
@@ -251,6 +257,12 @@ public class MainActivity extends AppCompatActivity {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         //send seller the notification that the buyer has rejected(ACK_NO_SELLER)
+                                        Notification n = new Notification(MainActivity.this, mUAuth.uid(),
+                                                b.getString("swipe_initiating_user_ID"),
+                                                Notification.Message.REJECTED_REQUEST, swipe
+                                        );
+                                        mUAuth.sendNotification(n);
+
 
                                     }
                                 });
