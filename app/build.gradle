@@ -42,5 +42,6 @@ dependencies {
 
     compile 'com.twilio:ip-messaging-android:0.10.0'
     compile 'com.koushikdutta.ion:ion:2.1.7'
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
 }
 apply plugin: 'com.google.gms.google-services'
