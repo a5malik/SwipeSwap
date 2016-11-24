@@ -68,9 +68,10 @@ public class StripeActivity extends AppCompatActivity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
+                startService(intent);
+                finish();
                 if (url.contains("?scope=") && url.contains("&code=") && !authComplete) {
                     // Grab authorization code from the return URL      https://stripe.com/docs/connect/reference
-                    // TODO: close webview after retrieving authorization code; localhost redirect page is not needed
                     Uri uri = Uri.parse(url);
                     authCode = uri.getQueryParameter("code");
                     Log.i("", "CODE : " + authCode);
@@ -78,8 +79,6 @@ public class StripeActivity extends AppCompatActivity {
                     resultIntent.putExtra("code", authCode);
                     StripeActivity.this.setResult(Activity.RESULT_OK, resultIntent);
                     setResult(Activity.RESULT_CANCELED, resultIntent);
-
-                    Toast.makeText(getApplicationContext(), "Authorization Code is: " + authCode, Toast.LENGTH_SHORT).show();
 
                     // Construct POST parameters with authorization code    https://stripe.com/docs/connect/reference
                     final String requestParams = "code=" + authCode + "&client_secret=" + testSecretKey + "&grant_type=authorization_code";
@@ -110,7 +109,6 @@ public class StripeActivity extends AppCompatActivity {
                                 session.storeUserid(obj.getString("stripe_user_id"));
                                 session.storeLiveMode(obj.getBoolean("livemode"));
                                 session.storeTokenType(obj.getString("token_type"));
-
                             } catch (Exception e) {
                                 Log.i("", "POST failed: " + e.getMessage());
                             }
@@ -125,6 +123,7 @@ public class StripeActivity extends AppCompatActivity {
                                 chargeParams.put("currency", "usd");
                                 chargeParams.put("source", session.getAccessToken());
                                 Charge.create(chargeParams, requestOptions);
+                                Toast.makeText(getApplicationContext(), "Made payment of: " + payAmount, Toast.LENGTH_SHORT).show();
                             } catch (Exception e) {
                                 Log.i("", "Payment failed: " + e.getMessage());
                             }
