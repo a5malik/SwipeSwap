@@ -22,6 +22,20 @@
         android:ems="10"
         android:id="@+id/editTextaddusername" />
 
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:ems="10"
+        android:id="@+id/editTextPhone" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/editTextVenmoID" />
+
     <Button
         android:text="Button"
         android:layout_width="match_parent"

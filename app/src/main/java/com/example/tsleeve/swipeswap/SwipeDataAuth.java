@@ -24,6 +24,8 @@ public class SwipeDataAuth {
     public static final String ALL_REQUESTS = "requests";
     public static final String ALL_USERS = "users";
     public static final String USERNAME = "username";
+    public static final String PHONENO = "phoneno";
+    public static final String VENMOID = "venmoID";
     public static final String RATINGSUM = "rating_sum";
     public static final String NOR = "NOR";
     public static final String START_TIME = "startTime";
@@ -396,6 +398,15 @@ public class SwipeDataAuth {
     public Task<Void> registerUsername(String uid, String username) {
         return mDatabase.child(ALL_USERS).child(uid).child(USERNAME).setValue(username);
     }
+
+    public Task<Void> registerPhoneNumber(String uid, String PhoneNumber) {
+        return mDatabase.child(ALL_USERS).child(uid).child(PHONENO).setValue(PhoneNumber);
+    }
+
+    public Task<Void> registerVenmoID(String uid, String venmoID) {
+        return mDatabase.child(ALL_USERS).child(uid).child(VENMOID).setValue(venmoID);
+    }
+
 
     public Task<Void> setUserRatingSum(String uid, Double Rating) {
         return mDatabase.child(ALL_USERS).child(uid).child(RATINGSUM).setValue(Rating);
