@@ -115,14 +115,21 @@ public class StripeActivity extends AppCompatActivity {
 
                             try {
                                 // Use details to make payment  https://stripe.com/docs/connect/payments-fees
-                                // TODO: Currently using user's ID and access token - not sure how to transfer to destination account
                                 Stripe.apiKey = testSecretKey;
-                                RequestOptions requestOptions = RequestOptions.builder().setStripeAccount(session.getUserId()).build();
+//                                RequestOptions requestOptions = RequestOptions.builder().setStripeAccount(session.getUserId()).build();
                                 Map<String, Object> chargeParams = new HashMap<String, Object>();
                                 chargeParams.put("amount", payAmount);
                                 chargeParams.put("currency", "usd");
-                                chargeParams.put("source", session.getAccessToken());
-                                Charge.create(chargeParams, requestOptions);
+                                chargeParams.put("source", session.getAccessToken());   // Token reported as invalid???
+                                /* TODO:
+                                Currently using BOTH buyer's access token (source) and ID (destination).
+                                NEED TO CHANGE ID to that of the Seller -> need to send this data somehow
+                                 */
+                                chargeParams.put("destination", session.getUserId());
+
+//                                Charge.create(chargeParams, requestOptions);
+                                Charge.create(chargeParams);
+
                                 Toast.makeText(getApplicationContext(), "Made payment of: " + payAmount, Toast.LENGTH_SHORT).show();
                             } catch (Exception e) {
                                 Log.i("", "Payment failed: " + e.getMessage());
