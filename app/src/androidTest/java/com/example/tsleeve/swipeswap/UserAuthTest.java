@@ -38,6 +38,6 @@ public class UserAuthTest {
 
         fireAuth.signOut();
         //Check user is signed out
-        //assertEquals(false, fireAuth.validUser());
+        assertEquals(false, fireAuth.validUser());
     }
 }
