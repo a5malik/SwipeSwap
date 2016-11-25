@@ -388,7 +388,7 @@ public class SwipeDataAuth {
     }
 
     /**
-     * Set a username for the a user.  A username can be thought of as a nickname for a user.
+     * Sets a username for a user.  A username can be thought of as a nickname for a user.
      *
      * @param  uid      The ID of the user to register a username with
      * @param  username The username string
@@ -399,19 +399,49 @@ public class SwipeDataAuth {
         return mDatabase.child(ALL_USERS).child(uid).child(USERNAME).setValue(username);
     }
 
+    /**
+     * Sets a phone number for a user.
+     *
+     * @param uid         The ID of the user to register a phone number for
+     * @param PhoneNumber The phone number
+     * @return            A task that represents the completion of the operation to register a user
+     *                    with a phone number
+     */
     public Task<Void> registerPhoneNumber(String uid, String PhoneNumber) {
         return mDatabase.child(ALL_USERS).child(uid).child(PHONENO).setValue(PhoneNumber);
     }
 
+    /**
+     * Sets a Venmo ID for a user.
+     *
+     * @param uid     The ID of the user to register a Venmo ID for
+     * @param venmoID The Venmo ID
+     * @return        A task that represents the completion of the operation to register a user
+     *                with a Venmo ID
+     */
     public Task<Void> registerVenmoID(String uid, String venmoID) {
         return mDatabase.child(ALL_USERS).child(uid).child(VENMOID).setValue(venmoID);
     }
 
-
+    /**
+     * Sets the sum of ratings for a particular user.
+     *
+     * @param uid    The ID of the user to save the sum of ratings for
+     * @param Rating The rating
+     * @return       A task that represents the completion of the operation to save a user's
+     *               rating
+     */
     public Task<Void> setUserRatingSum(String uid, Double Rating) {
         return mDatabase.child(ALL_USERS).child(uid).child(RATINGSUM).setValue(Rating);
     }
 
+    /**
+     * Sets the NOR for a particular user.
+     *
+     * @param uid The ID of the user to store the NOR for
+     * @param nor The NOR
+     * @return    A task that represents the completion of the operation to save a user's NOR
+     */
     public Task<Void> setUserNOR(String uid, int nor) {
         return mDatabase.child(ALL_USERS).child(uid).child(NOR).setValue(nor);
     }

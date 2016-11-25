@@ -90,7 +90,7 @@ public class UserAuth {
      * @param n The Notification containing message details
      * @see     CognitoCachingCredentialsProvider
      */
-    public void sendAWSNotification(Notification n) {
+    private void sendAWSNotification(Notification n) {
         Swipe s = n.getSwipe();
         Map<String, Object> data = new HashMap<String, Object>();
         if (s != null) {
