@@ -114,7 +114,7 @@ public class Notification {
      * @return The message to include in the notification
      */
     public String message() {
-        String user = mDb.getUserName(mTargetUser);
+        String user = mDb.getUserName(mInitiator);
         String buyer = user;
         String seller = user;
 

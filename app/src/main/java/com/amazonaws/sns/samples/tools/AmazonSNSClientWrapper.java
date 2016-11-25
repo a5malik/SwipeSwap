@@ -27,6 +27,7 @@ import com.amazonaws.services.sns.model.DeletePlatformApplicationRequest;
 import com.amazonaws.services.sns.model.MessageAttributeValue;
 import com.amazonaws.services.sns.model.PublishRequest;
 import com.amazonaws.services.sns.model.PublishResult;
+import com.amazonaws.services.sns.model.SetEndpointAttributesRequest;
 import com.amazonaws.sns.samples.tools.SampleMessageGenerator.Platform;
 import com.amazonaws.services.sns.model.ListPlatformApplicationsResult;
 import com.amazonaws.services.sns.model.PlatformApplication;
@@ -124,6 +125,7 @@ public class AmazonSNSClientWrapper {
 		// TODO: Add click_action payload to message
 		// For direct publish to mobile end points, topicArn is not relevant.
 		publishRequest.setTargetArn(endpointArn);
+		System.out.println("Sending notification to " + endpointArn);
 
 		// Display the message that will be sent to the endpoint/
 		System.out.println("{Message Body: " + message + "}");
@@ -203,15 +205,25 @@ public class AmazonSNSClientWrapper {
      * @return
      */
 	private String endpointExists(String platformApplicationArn, String platformToken, String targetUid) {
+		String userDataKey = "CustomUserData";
+
 		ListEndpointsByPlatformApplicationRequest endpointsReq = new ListEndpointsByPlatformApplicationRequest();
 		endpointsReq.setPlatformApplicationArn(platformApplicationArn);
 		ListEndpointsByPlatformApplicationResult endpoints =
 				snsClient.listEndpointsByPlatformApplication(endpointsReq);
 		List<Endpoint> endpointsList = endpoints.getEndpoints();
+
 		for (Endpoint e : endpointsList) {
 			Map<String, String> attributes = e.getAttributes();
-			if (attributes.get("CustomUserData").equals(targetUid) &&
-					attributes.get("Token").equals(platformToken)) {
+			if (attributes.get("Token").equals(platformToken)) {
+				if (!attributes.get(userDataKey).equals(targetUid)) {
+					SetEndpointAttributesRequest setReq = new SetEndpointAttributesRequest();
+					setReq.setEndpointArn(e.getEndpointArn());
+					Map<String, String> newAttr = new HashMap<>();
+					newAttr.put(userDataKey, targetUid);
+					setReq.setAttributes(newAttr);
+					snsClient.setEndpointAttributes(setReq);
+				}
 				return e.getEndpointArn();
 			}
 		}
