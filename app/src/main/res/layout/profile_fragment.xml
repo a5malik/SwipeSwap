@@ -25,9 +25,9 @@
             android:orientation="vertical"
             android:layout_weight="1">
             <RelativeLayout
-                android:layout_width="125dp"
-                android:layout_height="125dp"
-                android:layout_marginTop="45dp"
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:layout_marginTop="35dp"
                 android:layout_gravity="center">
                 <com.example.tsleeve.swipeswap.CircleImageView
                     android:layout_width="match_parent"
@@ -61,11 +61,18 @@
                 android:textSize="15dp"
                 android:textColor="@color/black"
                 tools:text="Professor | Los Angeles, CA" />
+            <RatingBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:id="@+id/ratingBarSwipeView"
+                style="@style/Base.Widget.AppCompat.RatingBar.Small" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="30dp"
             android:orientation="vertical"
             android:layout_weight="1">
             <LinearLayout
@@ -92,6 +99,7 @@
                     <EditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:id="@+id/editTextEmailAddress"
                         android:textSize="15dp"
                         android:text="smallberg@ucla.edu"/>
                 </LinearLayout>
@@ -121,6 +129,7 @@
                     <EditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:id="@+id/editTextPhoneNumber"
                         android:textSize="15dp"
                         android:text="123-456-7890"/>
                 </LinearLayout>
@@ -135,7 +144,7 @@
                 <ImageView
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:src="@drawable/map_icon"/>
+                    android:src="@drawable/payment_icon"/>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -145,13 +154,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="15dp"
-                        android:text="Address"/>
+                        android:text="Venmo ID"/>
 
                     <EditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:id="@+id/editTextVenmoID"
                         android:textSize="15dp"
-                        android:text="330 De Neve Drive, Los Angeles"/>
+                        android:text="dsmallberg"/>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

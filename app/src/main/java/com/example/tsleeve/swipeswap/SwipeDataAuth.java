@@ -26,6 +26,7 @@ public class SwipeDataAuth {
     public static final String USERNAME = "username";
     public static final String PHONENO = "phoneno";
     public static final String VENMOID = "venmoID";
+    public static final String ADDRESS = "address";
     public static final String RATINGSUM = "rating_sum";
     public static final String NOR = "NOR";
     public static final String START_TIME = "startTime";
@@ -424,6 +425,18 @@ public class SwipeDataAuth {
     }
 
     /**
+     * Sets a Address for a user.
+     *
+     * @param uid     The ID of the user to register a address for
+     * @param address The address
+     * @return        A task that represents the completion of the operation to register a user
+     *                with a address
+     */
+    public Task<Void> registerAddress(String uid, String address) {
+        return mDatabase.child(ALL_USERS).child(uid).child(ADDRESS).setValue(address);
+    }
+
+    /**
      * Sets the sum of ratings for a particular user.
      *
      * @param uid    The ID of the user to save the sum of ratings for
@@ -576,7 +589,7 @@ public class SwipeDataAuth {
      */
     public String getUserName(String uid) {
         DatabaseReference ref = mDatabase.child(ALL_USERS).child(uid).child(USERNAME);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mUsername = dataSnapshot.getValue(String.class);
@@ -587,8 +600,8 @@ public class SwipeDataAuth {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
-
+        };
+        ref.addListenerForSingleValueEvent(valueEventListener);
         // Wait until data has arrived
         try {
             TimeUnit.SECONDS.sleep(1);
