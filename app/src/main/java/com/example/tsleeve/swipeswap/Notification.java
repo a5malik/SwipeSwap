@@ -92,9 +92,9 @@ public class Notification {
     public String title() {
         switch (mMessage) {
             case ACCEPTED_SALE:
-                return "Buyer interested";
+                return "Buyer Interested";
             case ACCEPTED_REQUEST:
-                return "Seller interested";
+                return "Seller Interested";
             case ACK_REQUEST:
             case ACK_SALE:
                 return "Confirmed";
@@ -119,7 +119,6 @@ public class Notification {
         String buyer = user;
         String seller = user;
 
-        // TODO: Add rating of user in message
         switch (mMessage) {
             case ACCEPTED_SALE:
                 return buyer + " wants to buy your swipe.";
@@ -128,7 +127,7 @@ public class Notification {
             case ACCEPTED_REQUEST:
                 return seller + " wants to sell you a swipe";
             case ACK_REQUEST:
-                return buyer + "has accepted to buy";
+                return buyer + " has accepted to buy";
             case REJECTED_SALE:
                 return seller + "has rejected to sell";
             case REJECTED_REQUEST:
