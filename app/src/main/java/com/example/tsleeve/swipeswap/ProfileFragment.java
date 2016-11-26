@@ -8,7 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
@@ -29,10 +29,11 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.profile_fragment, container, false);
-        TextView tv = (TextView) view.findViewById(R.id.profileHeader);
-        tv.setText("David Smallberg");
-        Button btnSignOut = (Button) view.findViewById(R.id.buttonSignOut);
-        btnSignOut.setText("Sign Out");
+        TextView ProfileHeader = (TextView) view.findViewById(R.id.profileHeader);
+        ProfileHeader.setText("David Smallberg");
+        TextView ProfileSubheader = (TextView) view.findViewById(R.id.profileSubheader);
+        ProfileSubheader.setText("Professor | Los Angeles, CA");
+        ImageButton btnSignOut = (ImageButton) view.findViewById(R.id.buttonSignOut);
         btnSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

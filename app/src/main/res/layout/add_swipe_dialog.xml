@@ -182,10 +182,11 @@
                 android:id="@+id/editTextswipeprice" />
 
             <RadioGroup
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="50dp"
                 android:orientation="horizontal"
                 android:id="@+id/radioGroupAddSwipes">
 
@@ -193,18 +194,21 @@
                     android:id="@+id/radio_once"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:buttonTint="@color/gotSwipesRed"
                     android:text="Once" />
 
                 <RadioButton
                     android:id="@+id/radio_week"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:buttonTint="@color/gotSwipesRed"
                     android:text="Week" />
 
                 <RadioButton
                     android:id="@+id/radio_month"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:buttonTint="@color/gotSwipesRed"
                     android:text="Month" />
             </RadioGroup>
 
@@ -212,7 +216,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="35dp"
+                android:layout_gravity="center_horizontal"
                 android:orientation="horizontal">
                     <Button
                         android:text="SELL"
@@ -230,7 +235,7 @@
                         android:layout_width="100dp"
                         android:layout_height="35dp"
                         android:layout_marginLeft="10dp"
-                        android:layout_marginRight="50dp"
+                        android:layout_marginRight="20dp"
                         android:background="@color/gotSwipesRed"
                         android:textColor="@color/white"
                         android:layout_weight="1"
