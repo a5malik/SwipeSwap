@@ -425,7 +425,7 @@ public class SwipeDataAuth {
     }
 
     /**
-     * Sets a Address for a user.
+     * Sets an address for a user.
      *
      * @param uid     The ID of the user to register a address for
      * @param address The address
@@ -611,6 +611,12 @@ public class SwipeDataAuth {
         return mUsername;
     }
 
+    /**
+     * Retrieves the specified user's rating.
+     *
+     * @param uid The ID of the user to get the rating of
+     * @return    The rating
+     */
     public Rating getUserRating(String uid) {
 
         DatabaseReference ref = mDatabase.child(ALL_USERS).child(uid);

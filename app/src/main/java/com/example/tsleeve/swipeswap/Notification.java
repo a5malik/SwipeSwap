@@ -129,7 +129,7 @@ public class Notification {
             case ACK_REQUEST:
                 return buyer + " has accepted to buy";
             case REJECTED_SALE:
-                return seller + "has rejected to sell";
+                return seller + " has rejected to sell";
             case REJECTED_REQUEST:
                 return buyer + " has rejected to buy";
             case REVIEW_BUYER:
