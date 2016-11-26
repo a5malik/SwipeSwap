@@ -1,5 +1,6 @@
 package com.example.tsleeve.swipeswap;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -62,12 +63,31 @@ public class UserAuth {
     }
 
     /**
+     * Returns the current user
+     *
+     * @return The current user
+     */
+    public FirebaseUser getCurrentUser() {
+        return mUser;
+    }
+
+    /**
      * Returns current user's email
      *
      * @return The user email address
      */
     public String getUserEmailAddress() {
         return mUser.getEmail();
+    }
+
+    /**
+     * Returns current user's profile
+     *
+     * @return The user current profile
+     */
+    public Uri getUserProfile() {
+        //return mUser.getEmail();
+        return mUser.getPhotoUrl();
     }
 
     /**

@@ -40,7 +40,6 @@ dependencies {
     compile 'com.amazonaws:aws-android-sdk-sns:2.2.+'
     compile 'com.amazonaws:aws-android-sdk-core:2.2.+'
     compile 'com.stripe:stripe-android:+'
-
     compile 'com.twilio:ip-messaging-android:0.10.0'
     compile 'com.koushikdutta.ion:ion:2.1.7'
     androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'

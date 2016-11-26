@@ -1,10 +1,17 @@
 package com.example.tsleeve.swipeswap;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +23,15 @@ import android.widget.TextView;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 /**
  * Created by footb on 10/18/2016.
@@ -28,6 +40,9 @@ import com.google.firebase.database.ValueEventListener;
 public class ProfileFragment extends Fragment {
     private UserAuth uAuth = new UserAuth();
     private SwipeDataAuth mDb = new SwipeDataAuth();
+    private static final int SELECT_PICTURE = 1;
+    private static final int REQUEST_CODE_PICTURE= 1;
+    private static CircleImageView profile;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,9 +58,23 @@ public class ProfileFragment extends Fragment {
         final EditText EmailAddress = (EditText) view.findViewById(R.id.editTextEmailAddress);
         final EditText PhoneNumber = (EditText) view.findViewById(R.id.editTextPhoneNumber);
         final EditText VenmoID = (EditText) view.findViewById(R.id.editTextVenmoID);
-        TextView ProfileSubheader = (TextView) view.findViewById(R.id.profileSubheader);
+        final TextView ProfileSubheader = (TextView) view.findViewById(R.id.profileSubheader);
+        final ImageButton btnSignOut = (ImageButton) view.findViewById(R.id.buttonSignOut);
+        profile = (CircleImageView) view.findViewById(R.id.profileImage);
+        profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent pickIntent = new Intent();
+                pickIntent.setType("image/*");
+                pickIntent.setAction(Intent.ACTION_GET_CONTENT);
+                Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                String pickTitle = "Select a Picture from the Gallery";
+                Intent chooserIntent = Intent.createChooser(pickIntent, pickTitle);
+                chooserIntent.putExtra( Intent.EXTRA_INITIAL_INTENTS, new Intent[] { takePhotoIntent });
+                startActivityForResult(chooserIntent, SELECT_PICTURE);
+            }
+        });
         ProfileSubheader.setText("Student | Los Angeles, CA");
-        ImageButton btnSignOut = (ImageButton) view.findViewById(R.id.buttonSignOut);
         ratingBar.setIsIndicator(true);
         if (uAuth.validUser())
             EmailAddress.setText(uAuth.getUserEmailAddress());
@@ -90,6 +119,46 @@ public class ProfileFragment extends Fragment {
                         });
             }
         });
+        Uri uri = uAuth.getUserProfile();
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+            profile.setImageBitmap(bitmap);
+        } catch (Exception e) {
+            Log.e("Error", e.getMessage());
+            e.printStackTrace();
+        }
         return view;
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_PICTURE && resultCode == Activity.RESULT_OK) {
+            if (data == null) {
+                return;
+            }
+            try {
+                InputStream inputStream = getContext().getContentResolver().openInputStream(data.getData());
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                profile.setImageBitmap(bitmap);
+                UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
+                        .setDisplayName("displayName")
+                        .setPhotoUri(getImageUri(getContext(), bitmap))
+                        .build();
+                uAuth.getCurrentUser().updateProfile(userProfileChangeRequest);
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
+    }
 }
+
+
