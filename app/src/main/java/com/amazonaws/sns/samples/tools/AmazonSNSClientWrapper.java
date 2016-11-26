@@ -27,6 +27,7 @@ import com.amazonaws.services.sns.model.DeletePlatformApplicationRequest;
 import com.amazonaws.services.sns.model.MessageAttributeValue;
 import com.amazonaws.services.sns.model.PublishRequest;
 import com.amazonaws.services.sns.model.PublishResult;
+import com.amazonaws.services.sns.model.SetEndpointAttributesRequest;
 import com.amazonaws.sns.samples.tools.SampleMessageGenerator.Platform;
 import com.amazonaws.services.sns.model.ListPlatformApplicationsResult;
 import com.amazonaws.services.sns.model.PlatformApplication;
@@ -83,8 +84,8 @@ public class AmazonSNSClientWrapper {
 	}
 
 	private PublishResult publish(String endpointArn, Platform platform,
-			Map<Platform, Map<String, MessageAttributeValue>> attributesMap, String notifMessage,
-								  String title) {
+								  Map<Platform, Map<String, MessageAttributeValue>> attributesMap, String notifMessage,
+								  String title, Map<String, Object> data) {
 		PublishRequest publishRequest = new PublishRequest();
 		Map<String, MessageAttributeValue> notificationAttributes = getValidNotificationAttributes(attributesMap
 				.get(platform));
@@ -97,19 +98,34 @@ public class AmazonSNSClientWrapper {
 		String message = getPlatformSampleMessage(platform);
 		//Map<String, String> messageMap = new HashMap<String, String>();
 		//messageMap.put(platform.name(), message);
+
+		String dataJSON = "";
+		for (Map.Entry<String, Object> entry : data.entrySet()) {
+			String key = entry.getKey();
+			Object value = entry.getValue();
+			dataJSON += "\\\"" + key + "\\\": \\\"" + value.toString() + "\\\", ";
+		}
+		if (dataJSON.charAt(dataJSON.length() - 2) == ',') {
+			dataJSON = dataJSON.substring(0, dataJSON.length() - 2);
+		}
+
 		message =
 				"{" +
 						"\"GCM\": " +
-						"\"{ \\\"notification\\\": " +
+						"\"{ " +
+						"\\\"notification\\\": " +
 						"{ " +
 						"\\\"title\\\": \\\"" + title + "\\\", " +
 						"\\\"body\\\": \\\"" + notifMessage + "\\\"" +
 						"}, " +
 						//"\\\"click_action\\\":\\\"OPEN_ACTIVITY\\\"},"+
-						"\\\"data\\\": {}}\"}";//SampleMessageGenerator.jsonify(messageMap);
+						"\\\"data\\\": {" + dataJSON + "}" +
+						"}\"" +
+						"}";//SampleMessageGenerator.jsonify(messageMap);
 		// TODO: Add click_action payload to message
 		// For direct publish to mobile end points, topicArn is not relevant.
 		publishRequest.setTargetArn(endpointArn);
+		System.out.println("Sending notification to " + endpointArn);
 
 		// Display the message that will be sent to the endpoint/
 		System.out.println("{Message Body: " + message + "}");
@@ -129,9 +145,9 @@ public class AmazonSNSClientWrapper {
 	}
 
 	public void demoNotification(Platform platform, String principal,
-			String credential, String platformToken, String applicationName,
-			Map<Platform, Map<String, MessageAttributeValue>> attrsMap, String uid,
-								 String notifMessage, String title) {
+								 String credential, String platformToken, String applicationName,
+								 Map<Platform, Map<String, MessageAttributeValue>> attrsMap, String uid,
+								 String notifMessage, String title, Map<String, Object> data) {
 		// Create Platform Application. This corresponds to an app on a
 		// platform.
 		CreatePlatformApplicationResult platformApplicationResult = null;
@@ -146,7 +162,7 @@ public class AmazonSNSClientWrapper {
 		}
 
 		// Create an Endpoint. This corresponds to an app on a device.
-		String endpointArn = endpointExists(platformApplicationArn, uid);
+		String endpointArn = endpointExists(platformApplicationArn, platformToken, uid);
 		CreatePlatformEndpointResult platformEndpointResult = null;
 		if (endpointArn == null) {
 			platformEndpointResult = createPlatformEndpoint(
@@ -158,7 +174,7 @@ public class AmazonSNSClientWrapper {
 		}
 
 		// Publish a push notification to an Endpoint.
-		PublishResult publishResult = publish(endpointArn, platform, attrsMap, notifMessage, title);
+		PublishResult publishResult = publish(endpointArn, platform, attrsMap, notifMessage, title, data);
 		System.out.println("Published! \n{MessageId="
 				+ publishResult.getMessageId() + "}");
 
@@ -188,15 +204,26 @@ public class AmazonSNSClientWrapper {
 	 * @param targetUid
      * @return
      */
-	private String endpointExists(String platformApplicationArn, String targetUid) {
+	private String endpointExists(String platformApplicationArn, String platformToken, String targetUid) {
+		String userDataKey = "CustomUserData";
+
 		ListEndpointsByPlatformApplicationRequest endpointsReq = new ListEndpointsByPlatformApplicationRequest();
 		endpointsReq.setPlatformApplicationArn(platformApplicationArn);
 		ListEndpointsByPlatformApplicationResult endpoints =
 				snsClient.listEndpointsByPlatformApplication(endpointsReq);
 		List<Endpoint> endpointsList = endpoints.getEndpoints();
+
 		for (Endpoint e : endpointsList) {
 			Map<String, String> attributes = e.getAttributes();
-			if (attributes.get("CustomUserData").equals(targetUid)) {
+			if (attributes.get("Token").equals(platformToken)) {
+				if (!attributes.get(userDataKey).equals(targetUid)) {
+					SetEndpointAttributesRequest setReq = new SetEndpointAttributesRequest();
+					setReq.setEndpointArn(e.getEndpointArn());
+					Map<String, String> newAttr = new HashMap<>();
+					newAttr.put(userDataKey, targetUid);
+					setReq.setAttributes(newAttr);
+					snsClient.setEndpointAttributes(setReq);
+				}
 				return e.getEndpointArn();
 			}
 		}

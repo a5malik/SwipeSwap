@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -31,20 +32,35 @@ public class RegisterActivity extends AppCompatActivity {
         //final DatabaseReference ref = db.getUsersReference();
         final String uid = uAuth.uid();
         final EditText editTextusername = (EditText) findViewById(R.id.editTextaddusername);
+        final EditText editTextPhone = (EditText) findViewById(R.id.editTextPhone);
+        final EditText editTextVenmo = (EditText) findViewById(R.id.editTextVenmoID);
+
+        editTextusername.setHint("Enter username(min 5 characters)");
+        editTextPhone.setHint("Enter Phone number");
+        editTextVenmo.setHint("Enter Venmo ID");
+
+
         Button btn = (Button) findViewById(R.id.buttonsubmitregistration);
         btn.setText("Submit");
-        editTextusername.setHint("Enter username(min 5 characters)");
+
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String user = editTextusername.getText().toString();
-                if (user.length() >= 5) {
+                String number = editTextPhone.getText().toString();
+                String venmoID = editTextVenmo.getText().toString();
+                if (user.length() >= 5 && number.length() == 10 && !venmoID.isEmpty()) {
                     db.registerUsername(uid, user);
+                    db.registerPhoneNumber(uid, number);
+                    db.registerVenmoID(uid, venmoID);
+                    db.setUserRatingSum(uid, 0.0);
+                    db.setUserNOR(uid, 0);
                     //ref.child(uid).child("username").setValue(user);
                     startActivity(MainActivity.createIntent(RegisterActivity.this));
                     finish();
                 } else {
                     // TODO: Display something to indicate that the username must be at least 5 characters.
+                    Toast.makeText(RegisterActivity.this, "The fields aren't properly set! Try Again", Toast.LENGTH_SHORT).show();
                 }
             }
         });

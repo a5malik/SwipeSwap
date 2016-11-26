@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 
 /**
  * Created by footb on 11/18/2016.
@@ -14,8 +15,15 @@ import android.support.v7.app.NotificationCompat;
 public class NotifReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        /*
+        UserAuth userAuth = new UserAuth();
+        Notification n = new Notification(context, intent.getExtras().getString("user_ID"), userAuth.uid(), Notification.Message.REVIEW_BUYER);
+        userAuth.sendNotification(n);
+        */
+        Log.d("notif", intent.getExtras().getString("user_ID"));
         Intent notificationIntent = new Intent(context, MainActivity.class);
-        notificationIntent.putExtra(MainActivity.TYPE_OF_INTENT, MainActivity.TYPE.RATE_BUYER.ordinal());
+        notificationIntent.putExtra("swipe_notification_type", "REVIEW_BUYER");
+        notificationIntent.putExtra("user_ID", intent.getExtras().getString("user_ID"));
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addParentStack(MainActivity.class);
@@ -32,6 +40,6 @@ public class NotifReceiver extends BroadcastReceiver {
                 .setContentIntent(pendingIntent).build();
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(0, notification);
+        notificationManager.notify(Notification.Message.REVIEW_BUYER.ordinal(), notification);
     }
 }

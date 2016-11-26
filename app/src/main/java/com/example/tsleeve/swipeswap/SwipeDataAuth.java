@@ -24,6 +24,10 @@ public class SwipeDataAuth {
     public static final String ALL_REQUESTS = "requests";
     public static final String ALL_USERS = "users";
     public static final String USERNAME = "username";
+    public static final String PHONENO = "phoneno";
+    public static final String VENMOID = "venmoID";
+    public static final String RATINGSUM = "rating_sum";
+    public static final String NOR = "NOR";
     public static final String START_TIME = "startTime";
     public static final String DINING_HALL = "diningHall";
     public static final String BPLATE = "BPlate";
@@ -31,11 +35,39 @@ public class SwipeDataAuth {
     public static final String DENEVE = "DeNeve";
     public static final String FEAST = "Feast";
     public static final String TOKEN = "regToken";
+    public static final String TRANSACTIONS = "transactions";
 
     public static final Integer BPLATE_ID = 1;
     public static final Integer COVEL_ID = 2;
     public static final Integer DENEVE_ID = 4;
     public static final Integer FEAST_ID = 8;
+
+    public class Rating {
+        public Double RatingSum;
+        public int NOR;
+
+        public Rating(Double sum, int nor) {
+            RatingSum = sum;
+            NOR = nor;
+        }
+
+        public Rating() {
+            RatingSum = 0.0;
+            NOR = 0;
+        }
+    }
+
+    public class Transaction {
+        private Swipe swipe;
+        private String seller_ID;
+        private String buyer_ID;
+
+        public Transaction(Swipe swipe, String buyer_ID, String seller_ID) {
+            this.swipe = swipe;
+            this.buyer_ID = buyer_ID;
+            this.seller_ID = seller_ID;
+        }
+    }
 
     /**
      * Structure of Firebase data:
@@ -58,6 +90,7 @@ public class SwipeDataAuth {
      *       requests
      *         ...
      *       reviews
+     *       transactions
      *     ...
      *   requests
      *   diningHalls
@@ -87,6 +120,9 @@ public class SwipeDataAuth {
     private String mUsername;
     private Task<Void> mTask;
     private ArrayList<Swipe> mSwipes = new ArrayList<Swipe>();
+    private Double mUserRatingSum;
+    private int mUserNOR;
+
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -136,6 +172,18 @@ public class SwipeDataAuth {
             mDatabase.child(DINING_HALL).child(FEAST).child(ALL_REQUESTS).push().setValue(s);
 
         return mDatabase.child(ALL_REQUESTS).push().setValue(s);
+    }
+
+    /**
+     * Saves the specified transaction to the application's database.
+     *
+     * @param t   The Transaction object to be written to Firebase
+     * @param uid The ID of the user to store the transaction for
+     * @return    A task that represents the completion of the operation to add the transaction
+     * @see Transaction
+     */
+    public Task<Void> addTransaction(Transaction t, String uid) {
+        return mDatabase.child(ALL_USERS).child(uid).child(TRANSACTIONS).push().setValue(t);
     }
 
     /**
@@ -340,7 +388,7 @@ public class SwipeDataAuth {
     }
 
     /**
-     * Set a username for the a user.  A username can be thought of as a nickname for a user.
+     * Sets a username for a user.  A username can be thought of as a nickname for a user.
      *
      * @param  uid      The ID of the user to register a username with
      * @param  username The username string
@@ -349,6 +397,53 @@ public class SwipeDataAuth {
      */
     public Task<Void> registerUsername(String uid, String username) {
         return mDatabase.child(ALL_USERS).child(uid).child(USERNAME).setValue(username);
+    }
+
+    /**
+     * Sets a phone number for a user.
+     *
+     * @param uid         The ID of the user to register a phone number for
+     * @param PhoneNumber The phone number
+     * @return            A task that represents the completion of the operation to register a user
+     *                    with a phone number
+     */
+    public Task<Void> registerPhoneNumber(String uid, String PhoneNumber) {
+        return mDatabase.child(ALL_USERS).child(uid).child(PHONENO).setValue(PhoneNumber);
+    }
+
+    /**
+     * Sets a Venmo ID for a user.
+     *
+     * @param uid     The ID of the user to register a Venmo ID for
+     * @param venmoID The Venmo ID
+     * @return        A task that represents the completion of the operation to register a user
+     *                with a Venmo ID
+     */
+    public Task<Void> registerVenmoID(String uid, String venmoID) {
+        return mDatabase.child(ALL_USERS).child(uid).child(VENMOID).setValue(venmoID);
+    }
+
+    /**
+     * Sets the sum of ratings for a particular user.
+     *
+     * @param uid    The ID of the user to save the sum of ratings for
+     * @param Rating The rating
+     * @return       A task that represents the completion of the operation to save a user's
+     *               rating
+     */
+    public Task<Void> setUserRatingSum(String uid, Double Rating) {
+        return mDatabase.child(ALL_USERS).child(uid).child(RATINGSUM).setValue(Rating);
+    }
+
+    /**
+     * Sets the NOR for a particular user.
+     *
+     * @param uid The ID of the user to store the NOR for
+     * @param nor The NOR
+     * @return    A task that represents the completion of the operation to save a user's NOR
+     */
+    public Task<Void> setUserNOR(String uid, int nor) {
+        return mDatabase.child(ALL_USERS).child(uid).child(NOR).setValue(nor);
     }
 
     /**
@@ -402,6 +497,7 @@ public class SwipeDataAuth {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mUserToken = dataSnapshot.getValue(String.class);
+
 
             }
 
@@ -500,5 +596,30 @@ public class SwipeDataAuth {
             ie.printStackTrace();
         }
         return mUsername;
+    }
+
+    public Rating getUserRating(String uid) {
+
+        DatabaseReference ref = mDatabase.child(ALL_USERS).child(uid);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mUserRatingSum = dataSnapshot.child(RATINGSUM).getValue(Double.class);
+                mUserNOR = dataSnapshot.child(NOR).getValue(Integer.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        // Wait until data has arrived
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException ie) {
+            ie.printStackTrace();
+        }
+        return new Rating(mUserRatingSum, mUserNOR);
     }
 }

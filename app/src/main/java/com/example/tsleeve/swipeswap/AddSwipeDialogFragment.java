@@ -162,8 +162,12 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
             public void onClick(View v) {
                 //TODO: ADD VERIFICATION FOR DATA ENTERED
 
+                Swipe s = null;
                 switch (radioGroup.getCheckedRadioButtonId()) {
                     case R.id.radio_once:
+                        s = new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
+                                //calendar.getTimeInMillis(), auth.getCurrentUser().getUid(), diningHall));
+                                calendar.getTimeInMillis(), mUAuth.uid(), diningHall, Swipe.Type.SALE); // TODO: Remove later
                         mDb.addSwipe(new Swipe(Double.parseDouble(editTextSwipePrice.getText().toString()), calendar.getTimeInMillis(),
                                 //calendar.getTimeInMillis(), auth.getCurrentUser().getUid(), diningHall));
                                 calendar.getTimeInMillis(), mUAuth.uid(), diningHall, Swipe.Type.SALE), mUAuth.uid());
@@ -188,9 +192,9 @@ public class AddSwipeDialogFragment extends DialogFragment implements View.OnCli
                 }
 
                 // TODO: test - remove later
-                String uid = mUAuth.uid();
-                Notification n = new Notification(getActivity(), uid, Notification.Message.OTHER);
-                mUAuth.sendNotification(n);
+                //String uid = mUAuth.uid();
+                //Notification n = new Notification(getActivity(), uid, uid, Notification.Message.ACCEPTED_SALE, s);
+                //mUAuth.sendNotification(n);
                 dismiss();
             }
         });
