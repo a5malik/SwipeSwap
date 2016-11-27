@@ -9,11 +9,14 @@
         android:text="Button"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_margin="15dp"
         android:id="@+id/btnNotif"
-        android:src="@drawable/ic_new_releases_black_24dp"
-        android:layout_below="@+id/buttonSignOut"
-        android:layout_alignStart="@+id/buttonSignOut"
-        android:background="@color/gotSwipesRed" />
+        android:src="@drawable/notification_icon"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:background="@color/transparent"
+        android:layout_gravity="center"
+        android:textColor="@color/black" />
 
     <ImageButton
         android:layout_width="50dp"

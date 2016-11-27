@@ -35,7 +35,9 @@
             android:layout_height="60dp"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="2dp"
+            android:clickable="true"
             android:layout_gravity="center_vertical"
+            android:id="@+id/circleImageViewProfile"
             android:src="@drawable/profile_default"/>
         <LinearLayout
             android:layout_width="wrap_content"
@@ -50,28 +52,6 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="5dp"
                 android:id="@+id/textViewTitle" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:text="TextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/textViewUsername"
-                    android:paddingLeft="5dp" />
-
-                <RatingBar
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/ratingBarSwipeView"
-                    style="@style/Base.Widget.AppCompat.RatingBar.Small" />
-
-            </LinearLayout>
-
-
             <TextView
                 android:text="TextView"
                 android:layout_width="match_parent"

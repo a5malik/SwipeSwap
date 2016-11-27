@@ -1,6 +1,7 @@
 package com.example.tsleeve.swipeswap;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,23 +10,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * Created by footb on 10/19/2016.
@@ -60,10 +51,12 @@ public class CalendarDayFragment extends Fragment {
         View mView;
         SwipeDataAuth mDb = new SwipeDataAuth();
         UserAuth mUAuth = new UserAuth();
+        private final Context context;
 
         public SwipeViewHolder(View itemView) {
             super(itemView);
             mView = itemView;
+            context = itemView.getContext();
         }
 
         public void setEverything(final Swipe swipe, int position, String Title, final Context context) {
@@ -119,15 +112,22 @@ public class CalendarDayFragment extends Fragment {
 
             TextView tvtime = (TextView) mView.findViewById(R.id.textViewTime);
             tvtime.setText(startTimeofDay + "—" + endTimeofDay);
+            CircleImageView profile = (CircleImageView) mView.findViewById(R.id.circleImageViewProfile);
+            profile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, OtherProfileActivity.class);
+                    intent.putExtra("uid", swipe.getOwner_ID());
+                    context.startActivity(intent);
 
-            final TextView tvUserName = (TextView) mView.findViewById(R.id.textViewUsername);
-            final RatingBar ratingBar = (RatingBar) mView.findViewById(R.id.ratingBarSwipeView);
-            ratingBar.setIsIndicator(true);
 
+                }
+            });
 
             mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    /*
                     CharSequence text = "Owner has been notified of your interest!";
                     int duration = Toast.LENGTH_SHORT;
 
@@ -143,36 +143,10 @@ public class CalendarDayFragment extends Fragment {
                         n = new Notification(context, mUAuth.uid(), swipe.getOwner_ID(), Notification.Message.ACCEPTED_REQUEST, swipe);
                     }
                     mDb.addNotif(notif, swipe.getOwner_ID());
-                    mUAuth.sendNotification(n);
+                    mUAuth.sendNotification(n);*/
 
                 }
             });
-
-            //final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users").child(swipe.getOwner_ID());
-            final DatabaseReference ref = mDb.getUserReference(swipe.getOwner_ID());
-            ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    //tvownerid.setText(dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class));
-                    tvUserName.setText(dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class));
-                    Double sum = 0.0;
-                    if (dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue() != null)
-                        sum = dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue(Double.class);
-
-                    int NOR = 1;
-                    if (dataSnapshot.child(SwipeDataAuth.NOR).getValue() != null)
-                        NOR = dataSnapshot.child(SwipeDataAuth.NOR).getValue(Integer.class);
-                    if (NOR == 0) NOR = 1;
-                    double rating = sum / NOR;
-                    ratingBar.setRating((float) rating);
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
         }
     }
 

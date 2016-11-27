@@ -2,13 +2,14 @@ package com.example.tsleeve.swipeswap;
 
 import android.os.AsyncTask;
 
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.DatabaseReference;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +29,7 @@ public class SwipeDataAuth {
     public static final String VENMOID = "venmoID";
     public static final String ADDRESS = "address";
     public static final String RATINGSUM = "rating_sum";
+    public static final String PROFILE_URI = "profile_uri";
     public static final String NOR = "NOR";
     public static final String START_TIME = "startTime";
     public static final String DINING_HALL = "diningHall";
@@ -451,6 +453,18 @@ public class SwipeDataAuth {
      */
     public Task<Void> setUserRatingSum(String uid, Double Rating) {
         return mDatabase.child(ALL_USERS).child(uid).child(RATINGSUM).setValue(Rating);
+    }
+
+    /**
+     * Sets the profile uri for a particular user.
+     *
+     * @param uid    The ID of the user to save the profile uri for
+     * @param profile_uri The profile uri
+     * @return       A task that represents the completion of the operation to save a user's
+     *               rating
+     */
+    public Task<Void> setProfileURI(String uid, String profile_uri) {
+        return mDatabase.child(ALL_USERS).child(uid).child(PROFILE_URI).setValue(profile_uri);
     }
 
     /**

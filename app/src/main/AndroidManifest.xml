@@ -53,7 +53,11 @@
             android:label="@string/title_activity_register"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
+        <activity
+            android:name=".OtherProfileActivity"
+            android:label="OtherProfileActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
         <service
             android:name=".SwipeMessagingService"
             android:enabled="true"

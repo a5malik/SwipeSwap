@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RatingBar;
@@ -29,6 +28,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -41,6 +42,7 @@ import java.io.InputStream;
 public class ProfileFragment extends Fragment {
     private UserAuth uAuth = new UserAuth();
     private SwipeDataAuth mDb = new SwipeDataAuth();
+    private StorageReference storageReference;
     private static final int SELECT_PICTURE = 1;
     private static final int REQUEST_CODE_PICTURE= 1;
     private static CircleImageView profile;
@@ -62,7 +64,7 @@ public class ProfileFragment extends Fragment {
         final TextView ProfileSubheader = (TextView) view.findViewById(R.id.profileSubheader);
         final ImageButton btnSignOut = (ImageButton) view.findViewById(R.id.buttonSignOut);
         final ImageButton btnNotif = (ImageButton) view.findViewById(R.id.btnNotif);
-
+        storageReference = FirebaseStorage.getInstance().getReference();
         btnNotif.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,6 +100,18 @@ public class ProfileFragment extends Fragment {
                     PhoneNumber.setText(dataSnapshot.child(SwipeDataAuth.PHONENO).getValue(String.class));
                 if (dataSnapshot.child(SwipeDataAuth.VENMOID).getValue() != null)
                     VenmoID.setText(dataSnapshot.child(SwipeDataAuth.VENMOID).getValue(String.class));
+                if (dataSnapshot.child(SwipeDataAuth.PROFILE_URI).getValue(String.class) != null){
+                    String uri = dataSnapshot.child(SwipeDataAuth.PROFILE_URI).getValue(String.class);
+                    if(uri.length() > 0){
+                        try {
+                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), Uri.parse(uri));
+                            profile.setImageBitmap(bitmap);
+                        } catch (Exception e) {
+                            Log.e("Error", e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                }
                 Double sum = 0.0;
                 if (dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue() != null)
                     sum = dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue(Double.class);
@@ -129,14 +143,6 @@ public class ProfileFragment extends Fragment {
                         });
             }
         });
-        Uri uri = uAuth.getUserProfile();
-        try {
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
-            profile.setImageBitmap(bitmap);
-        } catch (Exception e) {
-            Log.e("Error", e.getMessage());
-            e.printStackTrace();
-        }
         return view;
     }
 
@@ -150,13 +156,19 @@ public class ProfileFragment extends Fragment {
             try {
                 InputStream inputStream = getContext().getContentResolver().openInputStream(data.getData());
                 Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                profile.setImageBitmap(bitmap);
+                Uri imageUri = getImageUri(getContext(), bitmap);
                 UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
                         .setDisplayName("displayName")
-                        .setPhotoUri(getImageUri(getContext(), bitmap))
+                        .setPhotoUri(imageUri)
                         .build();
                 uAuth.getCurrentUser().updateProfile(userProfileChangeRequest);
-
+                mDb.setProfileURI(uAuth.uid(), imageUri.toString());
+                try {
+                    profile.setImageBitmap(bitmap);
+                } catch (Exception e) {
+                    Log.e("Error", e.getMessage());
+                    e.printStackTrace();
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
