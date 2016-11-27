@@ -28,8 +28,14 @@ public class CalendarFragmentPagerAdapter extends FragmentPagerAdapter {
                 return new CalendarWeekFragment();
             case 2:
                 return new CalendarMonthFragment();
+            case 3:
+                return DiningHallFragment.getInstance(SwipeDataAuth.COVEL);
+            case 4:
+                return DiningHallFragment.getInstance(SwipeDataAuth.FEAST);
+            case 5:
+                return DiningHallFragment.getInstance(SwipeDataAuth.DENEVE);
             default:
-                return new DiningHallFragment();
+                return DiningHallFragment.getInstance(SwipeDataAuth.BPLATE);
         }
     }
 

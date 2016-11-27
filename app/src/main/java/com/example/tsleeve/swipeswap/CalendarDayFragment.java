@@ -40,11 +40,17 @@ public class CalendarDayFragment extends Fragment {
     //private DatabaseReference mRef;
     protected SwipeDataAuth mDb = new SwipeDataAuth();
     public final static String DATE_TO_SHOW = "DATE_TO_SHOW";
+    public final static String TARGETSWIPES = "TargetSWIPES";
+    public final static String TARGETREQUESTS = "TargetREQUESTS";
     public final static Long TODAY = new Long(0);
+    protected String mTargetSwipes = SwipeDataAuth.ALL_SWIPES;
+    protected String mTargetRequests = SwipeDataAuth.ALL_REQUESTS;
 
-    public static CalendarDayFragment getInstance(Long time) {
+    public static CalendarDayFragment getInstance(Long time, String targetSwipes, String targetRequests) {
         Bundle bundle = new Bundle();
         bundle.putLong(CalendarDayFragment.DATE_TO_SHOW, time);
+        bundle.putString(CalendarDayFragment.TARGETSWIPES, targetSwipes);
+        bundle.putString(CalendarDayFragment.TARGETREQUESTS, targetRequests);
         CalendarDayFragment fragment = new CalendarDayFragment();
         fragment.setArguments(bundle);
         return fragment;
@@ -180,6 +186,8 @@ public class CalendarDayFragment extends Fragment {
         Long time = TODAY;
         if (bundle != null) {
             time = bundle.getLong(DATE_TO_SHOW, TODAY);
+            mTargetSwipes = bundle.getString(TARGETSWIPES);
+            mTargetRequests = bundle.getString(TARGETREQUESTS);
         }
 
         setStartandEndTimes(time);
@@ -209,7 +217,7 @@ public class CalendarDayFragment extends Fragment {
         recyclerViewRequests.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 
         //mRef = FirebaseDatabase.getInstance().getReference().child("swipes");
-        Query querySwipes = mDb.orderBy(SwipeDataAuth.ALL_SWIPES, SwipeDataAuth.START_TIME, mStartTime, mEndTime);
+        Query querySwipes = mDb.orderBy(mTargetSwipes, SwipeDataAuth.START_TIME, mStartTime, mEndTime);
         //Query query = mRef.orderByChild("startTime").startAt(startTime).endAt(endTime);
         mAdapterSwipes = new FirebaseRecyclerAdapter<Swipe, SwipeViewHolder>(Swipe.class, R.layout.swipe_view,
                 SwipeViewHolder.class, querySwipes) {
@@ -221,7 +229,7 @@ public class CalendarDayFragment extends Fragment {
         mAdapterSwipes.notifyDataSetChanged();
         recyclerViewSwipes.setAdapter(mAdapterSwipes);
 
-        Query queryRequests = mDb.orderBy(SwipeDataAuth.ALL_REQUESTS, SwipeDataAuth.START_TIME, mStartTime, mEndTime);
+        Query queryRequests = mDb.orderBy(mTargetRequests, SwipeDataAuth.START_TIME, mStartTime, mEndTime);
         //Query query = mRef.orderByChild("startTime").startAt(startTime).endAt(endTime);
         mAdapterRequests = new FirebaseRecyclerAdapter<Swipe, SwipeViewHolder>(Swipe.class, R.layout.swipe_view,
                 SwipeViewHolder.class, queryRequests) {
@@ -250,6 +258,7 @@ public class CalendarDayFragment extends Fragment {
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.SECOND, 59);
         mEndTime = calendar.getTimeInMillis();
+
     }
 
 
