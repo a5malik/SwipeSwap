@@ -52,7 +52,7 @@ public class StripeActivity extends AppCompatActivity {
         setContentView(webView);
 
         // Prepare url for retrieving authorization code
-        String data = "response_type=code&client_id=" + CLIENT_ID + "&scope=read_write";
+        String data = "response_type=code&client_id=" + CLIENT_ID + "&scope=read_write&always_prompt=true";
 
         webView.loadUrl(authURL + data);
         webView.setWebViewClient(new WebViewClient() {
@@ -68,14 +68,14 @@ public class StripeActivity extends AppCompatActivity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                startService(intent);
-                finish();
                 if (url.contains("?scope=") && url.contains("&code=") && !authComplete) {
                     // Grab authorization code from the return URL      https://stripe.com/docs/connect/reference
                     Uri uri = Uri.parse(url);
                     authCode = uri.getQueryParameter("code");
                     Log.i("", "CODE : " + authCode);
                     authComplete = true;
+//                    startService(intent);
+//                    finish();
                     resultIntent.putExtra("code", authCode);
                     StripeActivity.this.setResult(Activity.RESULT_OK, resultIntent);
                     setResult(Activity.RESULT_CANCELED, resultIntent);
@@ -134,6 +134,8 @@ public class StripeActivity extends AppCompatActivity {
                             } catch (Exception e) {
                                 Log.i("", "Payment failed: " + e.getMessage());
                             }
+                            startService(intent);
+                            finish();
                         }
                     }.start();
 
