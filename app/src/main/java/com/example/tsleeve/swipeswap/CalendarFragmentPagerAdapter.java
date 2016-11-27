@@ -10,9 +10,9 @@ import android.support.v4.app.FragmentPagerAdapter;
  */
 
 public class CalendarFragmentPagerAdapter extends FragmentPagerAdapter {
-    final int CAL_PAGE_COUNT = 3;
+    final int CAL_PAGE_COUNT = 7;
     Context context;
-    private String[] titles = new String[]{"Day", "Week", "Month"};
+    private String[] titles = new String[]{"Day", "Week", "Month", "Cov", "Fea", "DeN", "BPl"};
 
     public CalendarFragmentPagerAdapter(FragmentManager fm, Context context) {
         super(fm);
@@ -26,8 +26,10 @@ public class CalendarFragmentPagerAdapter extends FragmentPagerAdapter {
                 return new CalendarDayFragment();
             case 1:
                 return new CalendarWeekFragment();
-            default:
+            case 2:
                 return new CalendarMonthFragment();
+            default:
+                return new DiningHallFragment();
         }
     }
 
