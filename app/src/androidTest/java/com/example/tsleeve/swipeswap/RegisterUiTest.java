@@ -56,6 +56,6 @@ public class RegisterUiTest {
         }
 
         // Check that the username was changed in firebase.
-        assertEquals(mUsername,dAuth.getUserName(uAuth.uid()));
+        assertEquals(mUsername, dAuth.getUserName(uAuth.uid()));
     }
 }

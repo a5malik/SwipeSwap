@@ -116,11 +116,17 @@ public class CalendarDayFragment extends Fragment {
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
                     Notification n;
-                    if (swipe.getType() == Swipe.Type.SALE)
+                    Notif notif;
+                    if (swipe.getType() == Swipe.Type.SALE) {
                         n = new Notification(context, mUAuth.uid(), swipe.getOwner_ID(), Notification.Message.ACCEPTED_SALE, swipe);
-                    else
+                        notif = new Notif(mUAuth.uid(), Notification.Message.ACCEPTED_SALE, swipe);
+                    } else {
+                        notif = new Notif(mUAuth.uid(), Notification.Message.ACCEPTED_REQUEST, swipe);
                         n = new Notification(context, mUAuth.uid(), swipe.getOwner_ID(), Notification.Message.ACCEPTED_REQUEST, swipe);
+                    }
+                    mDb.addNotif(notif, swipe.getOwner_ID());
                     mUAuth.sendNotification(n);
+
                 }
             });
 

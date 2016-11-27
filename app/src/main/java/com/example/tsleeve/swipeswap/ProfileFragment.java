@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RatingBar;
@@ -60,6 +61,16 @@ public class ProfileFragment extends Fragment {
         final EditText VenmoID = (EditText) view.findViewById(R.id.editTextVenmoID);
         final TextView ProfileSubheader = (TextView) view.findViewById(R.id.profileSubheader);
         final ImageButton btnSignOut = (ImageButton) view.findViewById(R.id.buttonSignOut);
+        final Button btnNotif = (Button) view.findViewById(R.id.btnNotif);
+
+        btnNotif.setText("Notifications");
+        btnNotif.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), NotificationActivity.class));
+            }
+        });
+
         profile = (CircleImageView) view.findViewById(R.id.profileImage);
         profile.setOnClickListener(new View.OnClickListener() {
             @Override

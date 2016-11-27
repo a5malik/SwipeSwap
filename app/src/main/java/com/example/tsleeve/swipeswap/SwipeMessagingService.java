@@ -41,7 +41,7 @@ public class SwipeMessagingService extends FirebaseMessagingService {
      * @param title       FCM title received
      */
     private void sendNotification(String messageBody, String title, Map<String, String> data) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, NotificationActivity.class);
 
         //Put all the extras(userID, swipe details, type of intent) in this intent. for eg.
         //intent.putExtra(MainActivity.TYPE_OF_INTENT, MainActivity.TYPE.ACCEPT_BUYER.ordinal());

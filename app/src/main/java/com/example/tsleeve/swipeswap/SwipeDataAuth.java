@@ -37,6 +37,7 @@ public class SwipeDataAuth {
     public static final String FEAST = "Feast";
     public static final String TOKEN = "regToken";
     public static final String TRANSACTIONS = "transactions";
+    public static final String NOTIF = "notif";
 
     public static final Integer BPLATE_ID = 1;
     public static final Integer COVEL_ID = 2;
@@ -149,6 +150,10 @@ public class SwipeDataAuth {
             mDatabase.child(DINING_HALL).child(FEAST).child(ALL_SWIPES).push().setValue(s);
 
         return mDatabase.child(ALL_SWIPES).push().setValue(s);
+    }
+
+    public Task<Void> addNotif(Notif n, String uid) {
+        return mDatabase.child(ALL_USERS).child(uid).child(NOTIF).push().setValue(n);
     }
 
     /**

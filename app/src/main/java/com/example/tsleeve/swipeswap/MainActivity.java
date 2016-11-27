@@ -206,6 +206,7 @@ public class MainActivity extends AppCompatActivity {
                                         );
                                         mUAuth.sendNotification(n);
 
+
                                         //1.
                                         setupRatingNotification(b.getString("swipe_initiating_user_ID"),
                                                 swipe.getStartTime());
