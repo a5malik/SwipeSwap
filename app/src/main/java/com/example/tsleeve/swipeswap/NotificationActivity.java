@@ -86,7 +86,7 @@ public class NotificationActivity extends AppCompatActivity {
                             switch (notif.getM_type()) {
 
                                 case ACCEPTED_SALE:
-                                    alertDialogBuilder.setMessage(String.format("%s (%f) wants to buy your swipe for %s on %s for %s",
+                                    alertDialogBuilder.setMessage(String.format("%s (%.2f) wants to buy your swipe for %s on %s for %s",
                                             username, Rating, swipeTimeofDay, swipeDate, swipePrice));
                                     alertDialogBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                                         @Override
@@ -138,7 +138,7 @@ public class NotificationActivity extends AppCompatActivity {
                                     });
                                     break;
                                 case ACCEPTED_REQUEST:
-                                    alertDialogBuilder.setMessage(String.format("%s (%f) would like to sell you a swipe " +
+                                    alertDialogBuilder.setMessage(String.format("%s (%.2f) would like to sell you a swipe " +
                                             "at %s on %s for %s", username, Rating, swipeTimeofDay, swipeDate, swipePrice));
                                     alertDialogBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                                         @Override
@@ -188,7 +188,7 @@ public class NotificationActivity extends AppCompatActivity {
 
                                     break;
                                 case ACK_SALE:
-                                    alertDialogBuilder.setMessage(String.format("%s (%f) has agreed to sell to you a swipe " +
+                                    alertDialogBuilder.setMessage(String.format("%s (%.2f) has agreed to sell to you a swipe " +
                                             "at %s on %s for %s", username, Rating, swipeTimeofDay, swipeDate, swipePrice));
                                     alertDialogBuilder.setPositiveButton("Got It!", new DialogInterface.OnClickListener() {
                                         @Override
@@ -206,7 +206,7 @@ public class NotificationActivity extends AppCompatActivity {
                                     });
                                     break;
                                 case ACK_REQUEST:
-                                    alertDialogBuilder.setMessage(String.format("%s (%f) has agreed to buy the swipe " +
+                                    alertDialogBuilder.setMessage(String.format("%s (%.2f) has agreed to buy the swipe " +
                                             "at %s on %s for %s", username, Rating, swipeTimeofDay, swipeDate, swipePrice));
                                     alertDialogBuilder.setPositiveButton("Got It!", new DialogInterface.OnClickListener() {
                                         @Override
@@ -226,7 +226,7 @@ public class NotificationActivity extends AppCompatActivity {
                                     break;
 
                                 case REJECTED_SALE:
-                                    alertDialogBuilder.setMessage(String.format("%s (%f) has rejected to sell to you a swipe " +
+                                    alertDialogBuilder.setMessage(String.format("%s (%.2f) has rejected to sell to you a swipe " +
                                             "at %s on %s for %s", username, Rating, swipeTimeofDay, swipeDate, swipePrice));
                                     alertDialogBuilder.setPositiveButton("Their Loss!", new DialogInterface.OnClickListener() {
                                         @Override
@@ -237,7 +237,7 @@ public class NotificationActivity extends AppCompatActivity {
                                     });
                                     break;
                                 case REJECTED_REQUEST:
-                                    alertDialogBuilder.setMessage(String.format("%s (%f) has rejected to buy from you a swipe " +
+                                    alertDialogBuilder.setMessage(String.format("%s (%.2f) has rejected to buy from you a swipe " +
                                             "at %s on %s for %s", username, Rating, swipeTimeofDay, swipeDate, swipePrice));
                                     alertDialogBuilder.setPositiveButton("Their Loss!", new DialogInterface.OnClickListener() {
                                         @Override
@@ -290,6 +290,8 @@ public class NotificationActivity extends AppCompatActivity {
             }
         });
 
+        TextView tvHeader = (TextView) findViewById(R.id.textViewNotifHeader);
+        tvHeader.setText("Click to view details");
 
         RecyclerView recyclerViewNotifications = (RecyclerView) findViewById(R.id.day_recycler_view_notifs);
         recyclerViewNotifications.setLayoutManager(new LinearLayoutManager(this));

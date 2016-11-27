@@ -4,6 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
+    <ImageButton
+        android:text="Button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/btnNotif"
+        android:src="@drawable/ic_new_releases_black_24dp"
+        android:layout_below="@+id/buttonSignOut"
+        android:layout_alignStart="@+id/buttonSignOut"
+        android:background="@color/gotSwipesRed" />
+
     <ImageButton
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -24,12 +35,6 @@
             android:layout_height="0dp"
             android:orientation="vertical"
             android:layout_weight="1">
-
-            <Button
-                android:text="Button"
-                android:layout_width="127dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/btnNotif" />
 
             <RelativeLayout
                 android:layout_width="110dp"

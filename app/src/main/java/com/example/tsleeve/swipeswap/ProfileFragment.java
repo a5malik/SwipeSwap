@@ -61,9 +61,8 @@ public class ProfileFragment extends Fragment {
         final EditText VenmoID = (EditText) view.findViewById(R.id.editTextVenmoID);
         final TextView ProfileSubheader = (TextView) view.findViewById(R.id.profileSubheader);
         final ImageButton btnSignOut = (ImageButton) view.findViewById(R.id.buttonSignOut);
-        final Button btnNotif = (Button) view.findViewById(R.id.btnNotif);
+        final ImageButton btnNotif = (ImageButton) view.findViewById(R.id.btnNotif);
 
-        btnNotif.setText("Notifications");
         btnNotif.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

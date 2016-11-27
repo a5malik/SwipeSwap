@@ -69,14 +69,26 @@ public class CalendarDayFragment extends Fragment {
             TextView tvdininghall = (TextView) mView.findViewById(R.id.textViewdininghall);
             String diningHallString = "";
             int diningHall = swipe.getDiningHall();
-            if ((diningHall & SwipeDataAuth.BPLATE_ID) == SwipeDataAuth.BPLATE_ID)
+            int count = 0;
+            if ((diningHall & SwipeDataAuth.BPLATE_ID) == SwipeDataAuth.BPLATE_ID) {
                 diningHallString += "Bruin Plate Dining Hall";
-            if ((diningHall & SwipeDataAuth.COVEL_ID) == SwipeDataAuth.COVEL_ID)
+                count++;
+            }
+            if ((diningHall & SwipeDataAuth.COVEL_ID) == SwipeDataAuth.COVEL_ID) {
+                if (count > 0) diningHallString += "\n";
                 diningHallString += "Covel Dining Hall";
-            if ((diningHall & SwipeDataAuth.DENEVE_ID) == SwipeDataAuth.DENEVE_ID)
+                count++;
+            }
+            if ((diningHall & SwipeDataAuth.DENEVE_ID) == SwipeDataAuth.DENEVE_ID) {
+                if (count > 0) diningHallString += "\n";
                 diningHallString += "De Neve Dining Hall";
-            if ((diningHall & SwipeDataAuth.FEAST_ID) == SwipeDataAuth.FEAST_ID)
+                count++;
+            }
+            if ((diningHall & SwipeDataAuth.FEAST_ID) == SwipeDataAuth.FEAST_ID) {
+                if (count > 0) diningHallString += "\n";
                 diningHallString += "Feast Dining Hall";
+                count++;
+            }
             if (diningHallString.length() == 0)
                 diningHallString = "No Dining Halls Selected.";
             tvdininghall.setText(diningHallString);
