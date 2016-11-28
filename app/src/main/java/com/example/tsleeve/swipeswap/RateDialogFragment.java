@@ -3,20 +3,16 @@ package com.example.tsleeve.swipeswap;
 import android.app.DialogFragment;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 /**
  * Created by footb on 11/18/2016.
@@ -47,6 +43,9 @@ public class RateDialogFragment extends DialogFragment {
 
         ratingtextView.setText("Rate your experience with " + username);
         RatingBar ratingBar = (RatingBar) view.findViewById(R.id.ratingBar);
+        ratingBar.setMax(5);
+        Drawable drawable = ratingBar.getProgressDrawable();
+        drawable.setColorFilter(Color.parseColor("#F16464"), PorterDuff.Mode.SRC_ATOP);
         ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
