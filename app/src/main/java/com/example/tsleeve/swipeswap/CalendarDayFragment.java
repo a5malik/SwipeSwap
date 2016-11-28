@@ -15,7 +15,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -62,10 +66,9 @@ public class CalendarDayFragment extends Fragment {
         }
 
         public void setEverything(final Swipe swipe, int position, String Title, final Context context) {
-            TextView tvTitle = (TextView) mView.findViewById(R.id.textViewTitle);
-            tvTitle.setText(Title + " " + Integer.toString(position) + " for $" + Double.toString(swipe.getPrice()));
-            //final TextView tvownerid = (TextView) mView.findViewById(R.id.textViewowner_id);
-            //tvownerid.setText(swipe.getOwner_ID());
+            final TextView tvTitle = (TextView) mView.findViewById(R.id.textViewTitle);
+            final String final_title = Title;
+            final int final_position = position;
             LinearLayout transactionNotification = (LinearLayout) mView.findViewById(R.id.TransactionNotification);
 
             TextView tvdininghall = (TextView) mView.findViewById(R.id.textViewdininghall);
@@ -146,6 +149,23 @@ public class CalendarDayFragment extends Fragment {
                     }
                     mDb.addNotif(notif, swipe.getOwner_ID());
                     mUAuth.sendNotification(n);
+                }
+            });
+
+            final DatabaseReference ref = mDb.getUserReference(swipe.getOwner_ID());
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class) != null){
+                        String user = dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class);
+                        tvTitle.setText(user + ": " +
+                                final_title + " for $" + Double.toString(swipe.getPrice()));
+
+                    }
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
                 }
             });
         }
