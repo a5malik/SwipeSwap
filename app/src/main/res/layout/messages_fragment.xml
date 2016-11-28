@@ -18,6 +18,7 @@
         android:text="TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/gotSwipesGray"
         android:id="@+id/textViewNotifHeader"
         android:textSize="24sp"
         android:gravity="center_horizontal"

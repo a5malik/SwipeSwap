@@ -66,17 +66,8 @@ public class ProfileFragment extends Fragment {
         final EditText VenmoID = (EditText) view.findViewById(R.id.editTextVenmoID);
         final TextView ProfileSubheader = (TextView) view.findViewById(R.id.profileSubheader);
         final ImageButton btnSignOut = (ImageButton) view.findViewById(R.id.buttonSignOut);
-        final ImageButton btnNotif = (ImageButton) view.findViewById(R.id.btnNotif);
         storageReference = FirebaseStorage.getInstance().getReference();
         progressDialog = new ProgressDialog(getContext());
-
-        btnNotif.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getActivity(), NotificationActivity.class));
-            }
-        });
-
         profile = (CircleImageView) view.findViewById(R.id.profileImage);
         profile.setOnClickListener(new View.OnClickListener() {
             @Override

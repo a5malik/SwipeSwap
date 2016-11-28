@@ -11,7 +11,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 public class MainFragmentPagerAdapter extends FragmentPagerAdapter {
     final int PAGE_COUNT = 3;
-    private String tabTitles[] = new String[]{"Swipes", "Notifications", "Profile"};
+    private String tabTitles[] = new String[]{"Swipes", "Alerts", "Profile"};
     private Context context;
 
     public MainFragmentPagerAdapter(FragmentManager fm, Context context) {

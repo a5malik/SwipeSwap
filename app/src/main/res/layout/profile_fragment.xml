@@ -4,20 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
-    <ImageButton
-        android:text="Button"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_margin="15dp"
-        android:id="@+id/btnNotif"
-        android:src="@drawable/notification_icon"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:background="@color/transparent"
-        android:layout_gravity="center"
-        android:textColor="@color/black" />
-
     <ImageButton
         android:layout_width="50dp"
         android:layout_height="50dp"

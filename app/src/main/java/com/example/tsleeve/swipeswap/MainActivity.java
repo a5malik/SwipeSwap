@@ -2,16 +2,12 @@ package com.example.tsleeve.swipeswap;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -26,13 +22,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.RemoteMessage;
 
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
-import static android.R.id.message;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -230,13 +221,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void setTabIcons(int tabposition) {
         tabLayout.getTabAt(0).setIcon(R.drawable.calendar_icon);
-        tabLayout.getTabAt(1).setIcon(R.drawable.message_icon);
+        tabLayout.getTabAt(1).setIcon(R.drawable.notification_icon);
         tabLayout.getTabAt(2).setIcon(R.drawable.profile_icon);
         if(tabposition == 0){
             tabLayout.getTabAt(0).setIcon(R.drawable.calendar_icon_highlighted);
         }
         else if(tabposition == 1){
-            tabLayout.getTabAt(1).setIcon(R.drawable.message_icon_highlighted);
+            tabLayout.getTabAt(1).setIcon(R.drawable.notification_icon_highlighted);
         }
         else if(tabposition == 2){
             tabLayout.getTabAt(2).setIcon(R.drawable.profile_icon_highlighted);
