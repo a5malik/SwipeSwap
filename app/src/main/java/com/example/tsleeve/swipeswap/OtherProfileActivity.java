@@ -1,8 +1,10 @@
 package com.example.tsleeve.swipeswap;
 
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -33,6 +35,32 @@ public class OtherProfileActivity extends AppCompatActivity {
         final TextView ProfileHeader = (TextView) findViewById(R.id.profileHeader);
         final TextView ProfileSubheader = (TextView) findViewById(R.id.profileSubheader);
         final CircleImageView profile = (CircleImageView) findViewById(R.id.profileImage);
+        final Button paymentButton = (Button) findViewById(R.id.buttonPay);
+        final Button messageButton = (Button) findViewById(R.id.buttonMessage);
+        GradientDrawable gd = new GradientDrawable();
+        gd.setColor(0x00000000);
+        gd.setCornerRadius(30);
+        gd.setStroke(10, 0xFFF16464);
+        GradientDrawable gd2 = new GradientDrawable();
+        gd2.setColor(0xFFF16464);
+        gd2.setCornerRadius(30);
+        gd2.setStroke(10, 0xFFF16464);
+        paymentButton.setBackground(gd);
+        messageButton.setBackground(gd2);
+
+        paymentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        messageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
         other_profile_uid = getIntent().getExtras().getString("uid");
 
         ProfileSubheader.setText("Student | Los Angeles, CA");
