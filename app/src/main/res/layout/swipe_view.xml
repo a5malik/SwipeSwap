@@ -44,7 +44,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:layout_gravity="center_vertical"
-            android:orientation="vertical">
+            android:clickable="true"
+            android:orientation="vertical"
+            android:id="@+id/TransactionNotification">
 
             <TextView
                 android:text="TextView"
