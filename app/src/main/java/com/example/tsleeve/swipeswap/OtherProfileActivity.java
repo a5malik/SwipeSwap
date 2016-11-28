@@ -1,6 +1,8 @@
 package com.example.tsleeve.swipeswap;
 
+import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -54,12 +56,7 @@ public class OtherProfileActivity extends AppCompatActivity {
 
             }
         });
-        messageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-            }
-        });
 
         other_profile_uid = getIntent().getExtras().getString("uid");
 
@@ -69,8 +66,12 @@ public class OtherProfileActivity extends AppCompatActivity {
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child(SwipeDataAuth.USERNAME).getValue() != null)
-                    ProfileHeader.setText(dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class));
+                String username = null;
+                if (dataSnapshot.child(SwipeDataAuth.USERNAME).getValue() != null) {
+                    username = dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class);
+                    ProfileHeader.setText(username);
+                }
+                final String fusername = username;
                 Double sum = 0.0;
                 if (dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue() != null)
                     sum = dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue(Double.class);
@@ -81,6 +82,26 @@ public class OtherProfileActivity extends AppCompatActivity {
                 if (NOR == 0) NOR = 1;
                 double rating = sum / NOR;
                 ratingBar.setRating((float) rating);
+                final String phoneNumber = dataSnapshot.child(SwipeDataAuth.PHONENO).getValue(String.class);
+                messageButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent smsIntent = new Intent(Intent.ACTION_VIEW);
+
+                        // smsIntent.setData(Uri.parse("smsto:"));
+                        smsIntent.setType("vnd.android-dir/mms-sms");
+                        smsIntent.putExtra("address", phoneNumber);
+
+                        Uri uri = Uri.parse("smsto:" + phoneNumber);
+                        // Create intent with the action and data
+                        Intent smsIntent1 = new Intent(Intent.ACTION_SENDTO, uri);
+
+                        String msg = String.format("Hey %s, ", fusername);
+                        smsIntent1.putExtra("sms_body", msg);
+
+                        startActivity(smsIntent1);
+                    }
+                });
             }
 
             @Override
