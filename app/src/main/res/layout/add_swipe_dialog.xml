@@ -123,7 +123,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:id="@+id/checkBoxCovel" />
+                    android:id="@+id/checkBoxDeNeve" />
 
                 <CheckBox
                     android:text="Bruin Plate Dining Hall"
@@ -133,7 +133,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_gravity="left"
-                    android:id="@+id/checkBoxFeast" />
+                    android:id="@+id/checkBoxBPlate" />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -149,7 +149,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:id="@+id/checkBoxBPlate" />
+                    android:id="@+id/checkBoxCovel" />
 
                 <CheckBox
                     android:text="Feast Dining Hall"
@@ -159,7 +159,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_gravity="left"
-                    android:id="@+id/checkBoxDeNeve" />
+                    android:id="@+id/checkBoxFeast" />
             </LinearLayout>
             <TextView
                 android:layout_width="match_parent"
