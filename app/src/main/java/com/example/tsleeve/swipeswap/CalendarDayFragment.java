@@ -2,6 +2,7 @@ package com.example.tsleeve.swipeswap;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -68,7 +70,7 @@ public class CalendarDayFragment extends Fragment {
         public void setEverything(final Swipe swipe, int position, String Title, final Context context) {
             final TextView tvTitle = (TextView) mView.findViewById(R.id.textViewTitle);
             final String final_title = Title;
-            final int final_position = position;
+            tvTitle.setText(final_title + " for $" + Double.toString(swipe.getPrice()));
             LinearLayout transactionNotification = (LinearLayout) mView.findViewById(R.id.TransactionNotification);
 
             TextView tvdininghall = (TextView) mView.findViewById(R.id.textViewdininghall);
@@ -118,7 +120,7 @@ public class CalendarDayFragment extends Fragment {
 
             TextView tvtime = (TextView) mView.findViewById(R.id.textViewTime);
             tvtime.setText(startTimeofDay + "—" + endTimeofDay);
-            CircleImageView profile = (CircleImageView) mView.findViewById(R.id.circleImageViewProfile);
+            final CircleImageView profile = (CircleImageView) mView.findViewById(R.id.circleImageViewProfile);
             profile.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -160,6 +162,16 @@ public class CalendarDayFragment extends Fragment {
                         String user = dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class);
                         tvTitle.setText(user + ": " +
                                 final_title + " for $" + Double.toString(swipe.getPrice()));
+                        if (dataSnapshot.child(SwipeDataAuth.PROFILE_URI).getValue(String.class) != null
+                                && dataSnapshot.child(SwipeDataAuth.PROFILE_URI).getValue(String.class).length() > 0) {
+                            Uri uri = Uri.parse(dataSnapshot.child(SwipeDataAuth.PROFILE_URI).getValue(String.class));
+                            try {
+                                Picasso.with(context).load(uri.toString()).fit().centerCrop().into(profile);
+                            }
+                            catch (Exception e){
+
+                            }
+                        }
 
                     }
                 }

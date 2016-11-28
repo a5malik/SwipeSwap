@@ -10,12 +10,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 /**
  * Created by anadendla on 11/27/16.
@@ -53,7 +55,7 @@ public class OtherProfileActivity extends AppCompatActivity {
         paymentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Toast.makeText(OtherProfileActivity.this, "Feature to be implemented", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -81,6 +83,16 @@ public class OtherProfileActivity extends AppCompatActivity {
                     NOR = dataSnapshot.child(SwipeDataAuth.NOR).getValue(Integer.class);
                 if (NOR == 0) NOR = 1;
                 double rating = sum / NOR;
+                if (dataSnapshot.child(SwipeDataAuth.PROFILE_URI).getValue(String.class) != null
+                        && dataSnapshot.child(SwipeDataAuth.PROFILE_URI).getValue(String.class).length() > 0) {
+                    Uri uri = Uri.parse(dataSnapshot.child(SwipeDataAuth.PROFILE_URI).getValue(String.class));
+                    try {
+                        Picasso.with(OtherProfileActivity.this).load(uri.toString()).fit().centerCrop().into(profile);
+                    }
+                    catch (Exception e){
+
+                    }
+                }
                 ratingBar.setRating((float) rating);
                 final String phoneNumber = dataSnapshot.child(SwipeDataAuth.PHONENO).getValue(String.class);
                 messageButton.setOnClickListener(new View.OnClickListener() {

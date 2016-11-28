@@ -166,6 +166,8 @@ public class ProfileFragment extends Fragment {
                 filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Uri url = taskSnapshot.getDownloadUrl();
+                        mDb.setProfileURI(uAuth.uid(), url);
                         Toast.makeText(getContext(), "Upload done", Toast.LENGTH_SHORT).show();
                         progressDialog.dismiss();
                         try {

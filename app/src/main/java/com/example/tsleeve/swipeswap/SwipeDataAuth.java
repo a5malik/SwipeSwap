@@ -1,5 +1,6 @@
 package com.example.tsleeve.swipeswap;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 
 import com.google.android.gms.tasks.Task;
@@ -463,8 +464,8 @@ public class SwipeDataAuth {
      * @return       A task that represents the completion of the operation to save a user's
      *               rating
      */
-    public Task<Void> setProfileURI(String uid, String profile_uri) {
-        return mDatabase.child(ALL_USERS).child(uid).child(PROFILE_URI).setValue(profile_uri);
+    public Task<Void> setProfileURI(String uid, Uri profile_uri) {
+        return mDatabase.child(ALL_USERS).child(uid).child(PROFILE_URI).setValue(profile_uri.toString());
     }
 
     /**
