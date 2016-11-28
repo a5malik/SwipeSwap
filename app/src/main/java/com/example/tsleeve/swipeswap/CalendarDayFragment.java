@@ -10,7 +10,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.Query;
@@ -64,6 +66,7 @@ public class CalendarDayFragment extends Fragment {
             tvTitle.setText(Title + " " + Integer.toString(position) + " for $" + Double.toString(swipe.getPrice()));
             //final TextView tvownerid = (TextView) mView.findViewById(R.id.textViewowner_id);
             //tvownerid.setText(swipe.getOwner_ID());
+            LinearLayout transactionNotification = (LinearLayout) mView.findViewById(R.id.TransactionNotification);
 
             TextView tvdininghall = (TextView) mView.findViewById(R.id.textViewdininghall);
             String diningHallString = "";
@@ -124,10 +127,9 @@ public class CalendarDayFragment extends Fragment {
                 }
             });
 
-            mView.setOnClickListener(new View.OnClickListener() {
+            transactionNotification.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    /*
                     CharSequence text = "Owner has been notified of your interest!";
                     int duration = Toast.LENGTH_SHORT;
 
@@ -143,8 +145,7 @@ public class CalendarDayFragment extends Fragment {
                         n = new Notification(context, mUAuth.uid(), swipe.getOwner_ID(), Notification.Message.ACCEPTED_REQUEST, swipe);
                     }
                     mDb.addNotif(notif, swipe.getOwner_ID());
-                    mUAuth.sendNotification(n);*/
-
+                    mUAuth.sendNotification(n);
                 }
             });
         }
