@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:layout_margin="30dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
     <TextView
-        android:text="TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/ratingtextView" />
-
+        android:layout_gravity="left"
+        android:layout_marginTop="5dp"
+        android:textSize="20dp"
+        android:textColor="@color/gotSwipesRed"
+        android:text="Leave some Feedback" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_marginTop="5dp"
+        android:id="@+id/ratingtextView"
+        android:textSize="15dp"
+        android:textColor="@color/black"
+        android:text="Rate your experience with David Smallberg" />
     <RatingBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/gotSwipesRed"
         android:id="@+id/ratingBar" />
 </LinearLayout>
