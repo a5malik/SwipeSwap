@@ -1,11 +1,7 @@
 package com.example.tsleeve.swipeswap;
 
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -15,6 +11,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
 
 /**
  * Created by anadendla on 11/27/16.
@@ -25,7 +22,7 @@ public class OtherProfileActivity extends AppCompatActivity {
     private UserAuth uAuth = new UserAuth();
     private SwipeDataAuth mDb = new SwipeDataAuth();
     private String other_profile_uid;
-    private static Uri Profile_Uri;
+    private StorageReference storageReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,19 +50,6 @@ public class OtherProfileActivity extends AppCompatActivity {
                 int NOR = 1;
                 if (dataSnapshot.child(SwipeDataAuth.NOR).getValue() != null)
                     NOR = dataSnapshot.child(SwipeDataAuth.NOR).getValue(Integer.class);
-                if (dataSnapshot.child(SwipeDataAuth.PROFILE_URI).getValue(String.class) != null){
-                    String uri = dataSnapshot.child(SwipeDataAuth.PROFILE_URI).getValue(String.class);
-                    if(uri.length() > 0){
-                        try {
-                            Profile_Uri = Uri.parse(uri);
-                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Profile_Uri);
-                            profile.setImageBitmap(bitmap);
-                        } catch (Exception e) {
-                            Log.e("Error", e.getMessage());
-                            e.printStackTrace();
-                        }
-                    }
-                }
                 if (NOR == 0) NOR = 1;
                 double rating = sum / NOR;
                 ratingBar.setRating((float) rating);

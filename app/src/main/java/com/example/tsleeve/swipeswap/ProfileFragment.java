@@ -1,7 +1,7 @@
 package com.example.tsleeve.swipeswap;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,21 +19,23 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.File;
 
 /**
  * Created by footb on 10/18/2016.
@@ -42,10 +44,11 @@ import java.io.InputStream;
 public class ProfileFragment extends Fragment {
     private UserAuth uAuth = new UserAuth();
     private SwipeDataAuth mDb = new SwipeDataAuth();
-    private StorageReference storageReference;
     private static final int SELECT_PICTURE = 1;
     private static final int REQUEST_CODE_PICTURE= 1;
     private static CircleImageView profile;
+    private StorageReference storageReference;
+    private ProgressDialog progressDialog;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,6 +68,8 @@ public class ProfileFragment extends Fragment {
         final ImageButton btnSignOut = (ImageButton) view.findViewById(R.id.buttonSignOut);
         final ImageButton btnNotif = (ImageButton) view.findViewById(R.id.btnNotif);
         storageReference = FirebaseStorage.getInstance().getReference();
+        progressDialog = new ProgressDialog(getContext());
+
         btnNotif.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,18 +105,6 @@ public class ProfileFragment extends Fragment {
                     PhoneNumber.setText(dataSnapshot.child(SwipeDataAuth.PHONENO).getValue(String.class));
                 if (dataSnapshot.child(SwipeDataAuth.VENMOID).getValue() != null)
                     VenmoID.setText(dataSnapshot.child(SwipeDataAuth.VENMOID).getValue(String.class));
-                if (dataSnapshot.child(SwipeDataAuth.PROFILE_URI).getValue(String.class) != null){
-                    String uri = dataSnapshot.child(SwipeDataAuth.PROFILE_URI).getValue(String.class);
-                    if(uri.length() > 0){
-                        try {
-                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), Uri.parse(uri));
-                            profile.setImageBitmap(bitmap);
-                        } catch (Exception e) {
-                            Log.e("Error", e.getMessage());
-                            e.printStackTrace();
-                        }
-                    }
-                }
                 Double sum = 0.0;
                 if (dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue() != null)
                     sum = dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue(Double.class);
@@ -143,43 +136,60 @@ public class ProfileFragment extends Fragment {
                         });
             }
         });
+        StorageReference islandRef = storageReference.child("profiles").child(uAuth.uid());
+        try {
+            final File localFile = File.createTempFile(uAuth.uid(), "jpg");
+            islandRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    if(localFile.exists()){
+                        Bitmap myBitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                        profile.setImageBitmap(myBitmap);
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                }
+            });
+        }
+        catch (Exception e){
+            Log.d("Exception: ", e.toString());
+        }
         return view;
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        progressDialog.setMessage("Changing profile picture");
+        progressDialog.show();
         if (requestCode == REQUEST_CODE_PICTURE && resultCode == Activity.RESULT_OK) {
             if (data == null) {
                 return;
             }
             try {
-                InputStream inputStream = getContext().getContentResolver().openInputStream(data.getData());
-                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                Uri imageUri = getImageUri(getContext(), bitmap);
-                UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
-                        .setDisplayName("displayName")
-                        .setPhotoUri(imageUri)
-                        .build();
-                uAuth.getCurrentUser().updateProfile(userProfileChangeRequest);
-                mDb.setProfileURI(uAuth.uid(), imageUri.toString());
-                try {
-                    profile.setImageBitmap(bitmap);
-                } catch (Exception e) {
-                    Log.e("Error", e.getMessage());
-                    e.printStackTrace();
-                }
-            } catch (FileNotFoundException e) {
+                final Uri uri = data.getData();
+                StorageReference filepath = storageReference.child("profiles").child(uAuth.uid());
+                filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Toast.makeText(getContext(), "Upload done", Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                        try {
+                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+                            profile.setImageBitmap(bitmap);
+                        } catch (Exception e) {
+                            Log.e("Error", e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-    }
-
-    public Uri getImageUri(Context inContext, Bitmap inImage) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-        return Uri.parse(path);
     }
 }
 
