@@ -19,11 +19,11 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static junit.framework.Assert.assertEquals;
 
 /**
- * Created by akshay on 11/29/2016.
+ * Created by akshay on 11/28/2016.
  */
 
 @RunWith(AndroidJUnit4.class)
-public class RegisterUiTest {
+public class MultipleUiTest {
     private Calendar cal = Calendar.getInstance();
     private SwipeDataAuth dAuth = new SwipeDataAuth();
     private UserAuth uAuth = new UserAuth();
@@ -31,8 +31,8 @@ public class RegisterUiTest {
     private String mUsername;
 
     @Rule
-    public ActivityTestRule<RegisterActivity> mActivityRule = new ActivityTestRule<>(
-            RegisterActivity.class);
+    public ActivityTestRule<AuthUiActivity> mActivityRule = new ActivityTestRule<>(
+            AuthUiActivity.class);
 
     @Before
     public void initValidString() {
@@ -45,10 +45,6 @@ public class RegisterUiTest {
         // Type text and then press the button.
         onView(withId(R.id.editTextaddusername))
                 .perform(typeText(mUsername), closeSoftKeyboard());
-        onView(withId(R.id.editTextPhone))
-                .perform(typeText("1234567890"), closeSoftKeyboard());
-        onView(withId(R.id.editTextVenmoID))
-                .perform(typeText("DUMMY_VENMO_ID"), closeSoftKeyboard());
         onView(withId(R.id.buttonsubmitregistration)).perform(click());
 
         // Wait for username to update
@@ -59,6 +55,6 @@ public class RegisterUiTest {
         }
 
         // Check that the username was changed in firebase.
-        assertEquals(mUsername, dAuth.getUserName(uAuth.uid()));
+        assertEquals(mUsername,dAuth.getUserName(uAuth.uid()));
     }
 }

@@ -27,12 +27,11 @@ public class SwipeDataAuthTest {
         Log.d("Testing: SwipeDataAuth", "list size=" +Swipes.size());
         for (Swipe cur: Swipes) {
             if (cur.getStartTime() == original.getStartTime()) {
-                s2 = cur;
                 Log.d("Testing AddSwipe ","cur=s1");
-                break;
+                return s2;
             }
         }
-        return s2;
+        return null;
     }
 
     @Test
