@@ -8,7 +8,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -16,7 +15,7 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Created by akshay on 11/28/2016.
@@ -24,37 +23,56 @@ import static junit.framework.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
 public class MultipleUiTest {
-    private Calendar cal = Calendar.getInstance();
     private SwipeDataAuth dAuth = new SwipeDataAuth();
     private UserAuth uAuth = new UserAuth();
 
-    private String mUsername;
+    private String mEmail;
+    private String mPassword;
 
     @Rule
-    public ActivityTestRule<AuthUiActivity> mActivityRule = new ActivityTestRule<>(
-            AuthUiActivity.class);
+    public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(
+            MainActivity.class);
 
     @Before
     public void initValidString() {
         // Let username be current timestamp (to avoid repetition)
-        mUsername = Long.toString(cal.getTimeInMillis());
+        mEmail = "akshaybhat214@gmail.com";
+        mPassword= "swipeswap";
     }
 
     @Test
-    public void changeUsername() {
-        // Type text and then press the button.
-        onView(withId(R.id.editTextaddusername))
-                .perform(typeText(mUsername), closeSoftKeyboard());
-        onView(withId(R.id.buttonsubmitregistration)).perform(click());
+    public void addSwipe() {
+        // Sign in if not already signed in
+        if(!uAuth.validUser())
+            onView(withId(R.id.buttonSignIn)).perform(click());
 
-        // Wait for username to update
+        //Get a count of total swipes by the user.
+        int totalUserSwipes = dAuth.getAllSwipesByUser(uAuth.uid(), Swipe.Type.SALE).size();
+
+        //Click the floating action button to add a swipe
+        onView(withId(R.id.main_fab)).perform(click());
+
+        //Set date and time to default
+        //onView(withId(R.id.buttonSwipeDate)).perform(click());
+        //onView(withId(R.id.buttonSwipeTime)).perform(click());
+
+        onView(withId(R.id.checkBoxFeast)).perform(click());
+
+        onView(withId(R.id.editTextswipeprice))
+                .perform(typeText("100"), closeSoftKeyboard());
+
+        onView(withId(R.id.buttonaddrequest)).perform(click());
+
+        // Wait for swipe to be updated
         try {
-            TimeUnit.SECONDS.sleep(1);
+            TimeUnit.SECONDS.sleep(2);
         } catch (InterruptedException ie) {
             ie.printStackTrace();
         }
 
-        // Check that the username was changed in firebase.
-        assertEquals(mUsername,dAuth.getUserName(uAuth.uid()));
+        int newSwipeCount = dAuth.getAllSwipesByUser(uAuth.uid(), Swipe.Type.SALE).size();
+
+        //One swipe should have been added.
+        assertTrue(newSwipeCount == totalUserSwipes+1);
     }
 }
