@@ -29,7 +29,7 @@ public class SwipesFragment extends Fragment {
         tabLayout = (TabLayout) view.findViewById(R.id.calendar_tab_layout);
         viewPager = (ViewPager) view.findViewById(R.id.calendar_viewpager);
         viewPager.setAdapter(new CalendarFragmentPagerAdapter(getChildFragmentManager(), getContext()));
-        viewPager.setOffscreenPageLimit(3);
+        viewPager.setOffscreenPageLimit(7);
         tabLayout.setupWithViewPager(viewPager);
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.main_fab);
         fab.setOnClickListener(new View.OnClickListener() {

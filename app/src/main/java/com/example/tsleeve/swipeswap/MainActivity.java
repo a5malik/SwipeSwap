@@ -2,16 +2,12 @@ package com.example.tsleeve.swipeswap;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -26,13 +22,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.RemoteMessage;
 
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
-import static android.R.id.message;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -86,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         }
         ViewPager viewPager = (ViewPager) findViewById(R.id.main_view_pager);
         viewPager.setAdapter(new MainFragmentPagerAdapter(getSupportFragmentManager(), MainActivity.this));
-        viewPager.setOffscreenPageLimit(3);
+        viewPager.setOffscreenPageLimit(7);
         tabLayout = (TabLayout) findViewById(R.id.main_tab_layout);
         tabLayout.setupWithViewPager(viewPager);
         setTabIcons(0);
@@ -150,210 +141,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-            } else {
-                String UID = b.getString("swipe_initiating_user_ID");
-                Log.d("UID", UID);
-                final Swipe swipe = new Swipe(Double.parseDouble(b.getString("swipe_price")),
-                        Long.parseLong(b.getString("swipe_startTime")),
-                        Long.parseLong(b.getString("swipe_endTime")),
-                        b.getString("swipe_owner_ID"),
-                        Integer.parseInt(b.getString("swipe_diningHall")),
-                        Swipe.Type.SALE);
-                DatabaseReference ref = mDb.getUserReference(UID);
-                ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-                        AlertDialog alertDialog;
-
-                        final String username = dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class);
-                        final String swipeDate, swipeTimeofDay;
-                        NumberFormat formatter = NumberFormat.getCurrencyInstance();
-                        final String swipePrice = formatter.format(swipe.getPrice());
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTimeInMillis(swipe.getStartTime());
-                        swipeDate = new SimpleDateFormat("EEE, MMM d").format(cal.getTime());
-                        swipeTimeofDay = new SimpleDateFormat("h:mm a").format(cal.getTime());
-                        final String phoneNumber = dataSnapshot.child(SwipeDataAuth.PHONENO).getValue(String.class);
-
-                        Double sum = 0.0;
-                        if (dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue() != null)
-                            sum = dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue(Double.class);
-
-                        int NOR = 1;
-                        if (dataSnapshot.child(SwipeDataAuth.NOR).getValue() != null)
-                            NOR = dataSnapshot.child(SwipeDataAuth.NOR).getValue(Integer.class);
-                        if (NOR == 0) NOR = 1;
-                        double Rating = sum / NOR;
-                        switch (notifType) {
-
-                            case ACCEPTED_SALE:
-                                alertDialogBuilder.setMessage(String.format("%s (%f)wants to buy your swipe for %s on %s for %s",
-                                        username, Rating, swipeTimeofDay, swipeDate, swipePrice));
-                                alertDialogBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        //Things to do:
-                                        //1. start the alarm to send notifications to 30 minutes after swipe time.
-                                        //2. send the notification to the buyer(ACK_BUYER)
-                                        //3. remove swipe, add transaction to both users
-                                        //4. redirect to messaging
-
-                                        //2.
-                                        Notification n = new Notification(MainActivity.this, mUAuth.uid(),
-                                                b.getString("swipe_initiating_user_ID"),
-                                                Notification.Message.ACK_SALE, swipe
-                                        );
-                                        mUAuth.sendNotification(n);
-
-                                        //1.
-                                        setupRatingNotification(b.getString("swipe_initiating_user_ID"),
-                                                swipe.getStartTime());
-
-                                        //3.
-                                        mDb.removeSwipe(mUAuth.uid(), Long.parseLong(b.getString("swipe_postTime")), Swipe.Type.SALE);
-
-                                        //4.
-                                        SMSIntent(MainActivity.this, phoneNumber, username, swipeTimeofDay, swipeDate, swipePrice);
-
-
-                                    }
-                                });
-                                alertDialogBuilder.setNegativeButton("Reject", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        //send buyer the notification that the seller has rejected(ACK_NO_BUYER)
-                                        Notification n = new Notification(MainActivity.this, mUAuth.uid(),
-                                                b.getString("swipe_initiating_user_ID"),
-                                                Notification.Message.REJECTED_SALE, swipe
-                                        );
-                                        mUAuth.sendNotification(n);
-
-                                    }
-                                });
-                                break;
-                            case ACCEPTED_REQUEST:
-                                alertDialogBuilder.setMessage(String.format("%s (%f) would like to sell you a swipe " +
-                                        "at %s on %s for %s", username, Rating, swipeTimeofDay, swipeDate, swipePrice));
-                                alertDialogBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        //Things to do:
-                                        //1. start the alarm to send notifications to 30 minutes after swipe time.
-                                        //2. send the notification to the seller(ACK_SELLER)
-                                        //3. remove request, add transaction to both users
-                                        //4. redirect to messaging
-
-                                        //2.
-                                        Notification n = new Notification(MainActivity.this, mUAuth.uid(),
-                                                b.getString("swipe_initiating_user_ID"),
-                                                Notification.Message.ACK_REQUEST, swipe
-                                        );
-                                        mUAuth.sendNotification(n);
-
-                                        //1.
-                                        setupRatingNotification(b.getString("swipe_initiating_user_ID"),
-                                                swipe.getStartTime());
-
-                                        //3.
-                                        mDb.removeSwipe(mUAuth.uid(), Long.parseLong(b.getString("swipe_postTime")), Swipe.Type.REQUEST);
-
-
-                                    }
-                                });
-                                alertDialogBuilder.setNegativeButton("Reject", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        //send seller the notification that the buyer has rejected(ACK_NO_SELLER)
-                                        Notification n = new Notification(MainActivity.this, mUAuth.uid(),
-                                                b.getString("swipe_initiating_user_ID"),
-                                                Notification.Message.REJECTED_REQUEST, swipe
-                                        );
-                                        mUAuth.sendNotification(n);
-
-
-                                    }
-                                });
-
-                                break;
-                            case ACK_SALE:
-                                alertDialogBuilder.setMessage(String.format("%s (%f) has agreed to sell to you a swipe " +
-                                        "at %s on %s for %s", username, Rating, swipeTimeofDay, swipeDate, swipePrice));
-                                alertDialogBuilder.setPositiveButton("Got It!", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        //Things to do:
-                                        //1. start the alarm to send notifications to 30 minutes after swipe time.
-                                        //3. redirect to messaging
-
-                                        //1.
-                                        setupRatingNotification(b.getString("swipe_initiating_user_ID"),
-                                                swipe.getStartTime());
-
-
-                                    }
-                                });
-                                break;
-                            case ACK_REQUEST:
-                                alertDialogBuilder.setMessage(String.format("%s (%f) has agreed to buy the swipe " +
-                                        "at %s on %s for %s", username, Rating, swipeTimeofDay, swipeDate, swipePrice));
-                                alertDialogBuilder.setPositiveButton("Got It!", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        //Things to do:
-                                        //1. start the alarm to send notifications to 30 minutes after swipe time.
-                                        //2. redirect to messaging
-
-                                        //1.
-                                        setupRatingNotification(b.getString("swipe_initiating_user_ID"),
-                                                swipe.getStartTime());
-                                        //2.
-                                        SMSIntent(MainActivity.this, phoneNumber, username, swipeTimeofDay, swipeDate, swipePrice);
-
-                                    }
-                                });
-                                break;
-
-                            case REJECTED_SALE:
-                                alertDialogBuilder.setMessage(String.format("%s (%f) has rejected to sell to you a swipe " +
-                                        "at %s on %s for %s", username, Rating, swipeTimeofDay, swipeDate, swipePrice));
-                                alertDialogBuilder.setPositiveButton("Their Loss!", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        //Things to do:
-                                        //Nothing
-                                    }
-                                });
-                                break;
-                            case REJECTED_REQUEST:
-                                alertDialogBuilder.setMessage(String.format("%s (%f) has rejected to buy from you a swipe " +
-                                        "at %s on %s for %s", username, Rating, swipeTimeofDay, swipeDate, swipePrice));
-                                alertDialogBuilder.setPositiveButton("Their Loss!", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        //Things to do:
-                                        //Nothing
-                                    }
-                                });
-                                break;
-                            default:
-                                // TODO
-                                break;
-
-                            }
-                        alertDialog = alertDialogBuilder.create();
-                        alertDialog.setCanceledOnTouchOutside(false);
-                        alertDialog.show();
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-                }
-
+            }
             }
         }
 
@@ -433,13 +221,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void setTabIcons(int tabposition) {
         tabLayout.getTabAt(0).setIcon(R.drawable.calendar_icon);
-        tabLayout.getTabAt(1).setIcon(R.drawable.message_icon);
+        tabLayout.getTabAt(1).setIcon(R.drawable.notification_icon);
         tabLayout.getTabAt(2).setIcon(R.drawable.profile_icon);
         if(tabposition == 0){
             tabLayout.getTabAt(0).setIcon(R.drawable.calendar_icon_highlighted);
         }
         else if(tabposition == 1){
-            tabLayout.getTabAt(1).setIcon(R.drawable.message_icon_highlighted);
+            tabLayout.getTabAt(1).setIcon(R.drawable.notification_icon_highlighted);
         }
         else if(tabposition == 2){
             tabLayout.getTabAt(2).setIcon(R.drawable.profile_icon_highlighted);

@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CalendarView;
-
 import java.util.Calendar;
 
 
@@ -49,7 +48,7 @@ public class CalendarMonthFragment extends Fragment implements CalendarView.OnDa
         cal.set(Calendar.MONTH, month);
         cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-        fragment = CalendarDayFragment.getInstance(cal.getTimeInMillis());
+        fragment = CalendarDayFragment.getInstance(cal.getTimeInMillis(), SwipeDataAuth.ALL_SWIPES, SwipeDataAuth.ALL_REQUESTS);
         if (manager == null) manager = getChildFragmentManager();
         manager.beginTransaction().replace(R.id.month_dayfragment_container, fragment).commit();
     }

@@ -150,6 +150,10 @@ public class Swipe {
      */
     public Type getType() { return type; }
 
+    public void setPostTime(Long pt) {
+        this.postTime = pt;
+    }
+
     /**
      * Converts the swipe to a map data structure, containing the swipe's attributes.
      *

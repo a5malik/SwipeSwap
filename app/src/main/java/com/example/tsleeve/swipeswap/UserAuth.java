@@ -1,27 +1,22 @@
 package com.example.tsleeve.swipeswap;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.AuthResult;
-
-import android.util.Log;
-import android.support.annotation.NonNull;
-import android.content.Context;
-
-import java.io.InputStream;
-
+import android.net.Uri;
 import android.os.AsyncTask;
-import com.amazonaws.services.sns.AmazonSNS;
-import com.amazonaws.services.sns.AmazonSNSClient;
-import com.amazonaws.auth.PropertiesCredentials;
-import com.amazonaws.sns.samples.mobilepush.SNSMobilePush;
-import com.amazonaws.AmazonServiceException;
+import android.support.annotation.NonNull;
+import android.util.Log;
+
 import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.AmazonSNSClient;
+import com.amazonaws.sns.samples.mobilepush.SNSMobilePush;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by victorlai on 10/23/16.
@@ -65,6 +60,34 @@ public class UserAuth {
      */
     public boolean validUser() {
         return mUser != null;
+    }
+
+    /**
+     * Returns the current user
+     *
+     * @return The current user
+     */
+    public FirebaseUser getCurrentUser() {
+        return mUser;
+    }
+
+    /**
+     * Returns current user's email
+     *
+     * @return The user email address
+     */
+    public String getUserEmailAddress() {
+        return mUser.getEmail();
+    }
+
+    /**
+     * Returns current user's profile
+     *
+     * @return The user current profile
+     */
+    public Uri getUserProfile() {
+        //return mUser.getEmail();
+        return mUser.getPhotoUrl();
     }
 
     /**

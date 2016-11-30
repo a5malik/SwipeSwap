@@ -1,6 +1,8 @@
 package com.example.tsleeve.swipeswap;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,7 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RatingBar;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,13 +21,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
-import org.w3c.dom.Text;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * Created by footb on 10/19/2016.
@@ -40,11 +39,17 @@ public class CalendarDayFragment extends Fragment {
     //private DatabaseReference mRef;
     protected SwipeDataAuth mDb = new SwipeDataAuth();
     public final static String DATE_TO_SHOW = "DATE_TO_SHOW";
+    public final static String TARGETSWIPES = "TargetSWIPES";
+    public final static String TARGETREQUESTS = "TargetREQUESTS";
     public final static Long TODAY = new Long(0);
+    protected String mTargetSwipes = SwipeDataAuth.ALL_SWIPES;
+    protected String mTargetRequests = SwipeDataAuth.ALL_REQUESTS;
 
-    public static CalendarDayFragment getInstance(Long time) {
+    public static CalendarDayFragment getInstance(Long time, String targetSwipes, String targetRequests) {
         Bundle bundle = new Bundle();
         bundle.putLong(CalendarDayFragment.DATE_TO_SHOW, time);
+        bundle.putString(CalendarDayFragment.TARGETSWIPES, targetSwipes);
+        bundle.putString(CalendarDayFragment.TARGETREQUESTS, targetRequests);
         CalendarDayFragment fragment = new CalendarDayFragment();
         fragment.setArguments(bundle);
         return fragment;
@@ -54,29 +59,43 @@ public class CalendarDayFragment extends Fragment {
         View mView;
         SwipeDataAuth mDb = new SwipeDataAuth();
         UserAuth mUAuth = new UserAuth();
+        private final Context context;
 
         public SwipeViewHolder(View itemView) {
             super(itemView);
             mView = itemView;
+            context = itemView.getContext();
         }
 
         public void setEverything(final Swipe swipe, int position, String Title, final Context context) {
-            TextView tvTitle = (TextView) mView.findViewById(R.id.textViewTitle);
-            tvTitle.setText(Title + " " + Integer.toString(position) + " for $" + Double.toString(swipe.getPrice()));
-            //final TextView tvownerid = (TextView) mView.findViewById(R.id.textViewowner_id);
-            //tvownerid.setText(swipe.getOwner_ID());
+            final TextView tvTitle = (TextView) mView.findViewById(R.id.textViewTitle);
+            final String final_title = Title;
+            tvTitle.setText(final_title + " for $" + Double.toString(swipe.getPrice()));
+            LinearLayout transactionNotification = (LinearLayout) mView.findViewById(R.id.TransactionNotification);
 
             TextView tvdininghall = (TextView) mView.findViewById(R.id.textViewdininghall);
             String diningHallString = "";
             int diningHall = swipe.getDiningHall();
-            if ((diningHall & SwipeDataAuth.BPLATE_ID) == SwipeDataAuth.BPLATE_ID)
+            int count = 0;
+            if ((diningHall & SwipeDataAuth.BPLATE_ID) == SwipeDataAuth.BPLATE_ID) {
                 diningHallString += "Bruin Plate Dining Hall";
-            if ((diningHall & SwipeDataAuth.COVEL_ID) == SwipeDataAuth.COVEL_ID)
+                count++;
+            }
+            if ((diningHall & SwipeDataAuth.COVEL_ID) == SwipeDataAuth.COVEL_ID) {
+                if (count > 0) diningHallString += "\n";
                 diningHallString += "Covel Dining Hall";
-            if ((diningHall & SwipeDataAuth.DENEVE_ID) == SwipeDataAuth.DENEVE_ID)
+                count++;
+            }
+            if ((diningHall & SwipeDataAuth.DENEVE_ID) == SwipeDataAuth.DENEVE_ID) {
+                if (count > 0) diningHallString += "\n";
                 diningHallString += "De Neve Dining Hall";
-            if ((diningHall & SwipeDataAuth.FEAST_ID) == SwipeDataAuth.FEAST_ID)
+                count++;
+            }
+            if ((diningHall & SwipeDataAuth.FEAST_ID) == SwipeDataAuth.FEAST_ID) {
+                if (count > 0) diningHallString += "\n";
                 diningHallString += "Feast Dining Hall";
+                count++;
+            }
             if (diningHallString.length() == 0)
                 diningHallString = "No Dining Halls Selected.";
             tvdininghall.setText(diningHallString);
@@ -101,13 +120,19 @@ public class CalendarDayFragment extends Fragment {
 
             TextView tvtime = (TextView) mView.findViewById(R.id.textViewTime);
             tvtime.setText(startTimeofDay + "—" + endTimeofDay);
+            final CircleImageView profile = (CircleImageView) mView.findViewById(R.id.circleImageViewProfile);
+            profile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, OtherProfileActivity.class);
+                    intent.putExtra("uid", swipe.getOwner_ID());
+                    context.startActivity(intent);
 
-            final TextView tvUserName = (TextView) mView.findViewById(R.id.textViewUsername);
-            final RatingBar ratingBar = (RatingBar) mView.findViewById(R.id.ratingBarSwipeView);
-            ratingBar.setIsIndicator(true);
 
+                }
+            });
 
-            mView.setOnClickListener(new View.OnClickListener() {
+            transactionNotification.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     CharSequence text = "Owner has been notified of your interest!";
@@ -116,39 +141,45 @@ public class CalendarDayFragment extends Fragment {
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
                     Notification n;
-                    if (swipe.getType() == Swipe.Type.SALE)
+                    Notif notif;
+                    if (swipe.getType() == Swipe.Type.SALE) {
                         n = new Notification(context, mUAuth.uid(), swipe.getOwner_ID(), Notification.Message.ACCEPTED_SALE, swipe);
-                    else
+                        notif = new Notif(mUAuth.uid(), Notification.Message.ACCEPTED_SALE, swipe);
+                    } else {
+                        notif = new Notif(mUAuth.uid(), Notification.Message.ACCEPTED_REQUEST, swipe);
                         n = new Notification(context, mUAuth.uid(), swipe.getOwner_ID(), Notification.Message.ACCEPTED_REQUEST, swipe);
+                    }
+                    mDb.addNotif(notif, swipe.getOwner_ID());
                     mUAuth.sendNotification(n);
                 }
             });
 
-            //final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users").child(swipe.getOwner_ID());
             final DatabaseReference ref = mDb.getUserReference(swipe.getOwner_ID());
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    //tvownerid.setText(dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class));
-                    tvUserName.setText(dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class));
-                    Double sum = 0.0;
-                    if (dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue() != null)
-                        sum = dataSnapshot.child(SwipeDataAuth.RATINGSUM).getValue(Double.class);
+                    if (dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class) != null){
+                        String user = dataSnapshot.child(SwipeDataAuth.USERNAME).getValue(String.class);
+                        tvTitle.setText(user + ": " +
+                                final_title + " for $" + Double.toString(swipe.getPrice()));
+                        if (dataSnapshot.child(SwipeDataAuth.PROFILE_URI).getValue(String.class) != null
+                                && dataSnapshot.child(SwipeDataAuth.PROFILE_URI).getValue(String.class).length() > 0) {
+                            Uri uri = Uri.parse(dataSnapshot.child(SwipeDataAuth.PROFILE_URI).getValue(String.class));
+                            try {
+                                Picasso.with(context).load(uri.toString()).fit().centerCrop().into(profile);
+                            }
+                            catch (Exception e){
 
-                    int NOR = 1;
-                    if (dataSnapshot.child(SwipeDataAuth.NOR).getValue() != null)
-                        NOR = dataSnapshot.child(SwipeDataAuth.NOR).getValue(Integer.class);
-                    if (NOR == 0) NOR = 1;
-                    double rating = sum / NOR;
-                    ratingBar.setRating((float) rating);
+                            }
+                        }
+
+                    }
                 }
-
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
 
                 }
             });
-
         }
     }
 
@@ -162,6 +193,8 @@ public class CalendarDayFragment extends Fragment {
         Long time = TODAY;
         if (bundle != null) {
             time = bundle.getLong(DATE_TO_SHOW, TODAY);
+            mTargetSwipes = bundle.getString(TARGETSWIPES);
+            mTargetRequests = bundle.getString(TARGETREQUESTS);
         }
 
         setStartandEndTimes(time);
@@ -191,7 +224,7 @@ public class CalendarDayFragment extends Fragment {
         recyclerViewRequests.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 
         //mRef = FirebaseDatabase.getInstance().getReference().child("swipes");
-        Query querySwipes = mDb.orderBy(SwipeDataAuth.ALL_SWIPES, SwipeDataAuth.START_TIME, mStartTime, mEndTime);
+        Query querySwipes = mDb.orderBy(mTargetSwipes, SwipeDataAuth.START_TIME, mStartTime, mEndTime);
         //Query query = mRef.orderByChild("startTime").startAt(startTime).endAt(endTime);
         mAdapterSwipes = new FirebaseRecyclerAdapter<Swipe, SwipeViewHolder>(Swipe.class, R.layout.swipe_view,
                 SwipeViewHolder.class, querySwipes) {
@@ -203,7 +236,7 @@ public class CalendarDayFragment extends Fragment {
         mAdapterSwipes.notifyDataSetChanged();
         recyclerViewSwipes.setAdapter(mAdapterSwipes);
 
-        Query queryRequests = mDb.orderBy(SwipeDataAuth.ALL_REQUESTS, SwipeDataAuth.START_TIME, mStartTime, mEndTime);
+        Query queryRequests = mDb.orderBy(mTargetRequests, SwipeDataAuth.START_TIME, mStartTime, mEndTime);
         //Query query = mRef.orderByChild("startTime").startAt(startTime).endAt(endTime);
         mAdapterRequests = new FirebaseRecyclerAdapter<Swipe, SwipeViewHolder>(Swipe.class, R.layout.swipe_view,
                 SwipeViewHolder.class, queryRequests) {
@@ -232,6 +265,7 @@ public class CalendarDayFragment extends Fragment {
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.SECOND, 59);
         mEndTime = calendar.getTimeInMillis();
+
     }
 
 

@@ -109,6 +109,26 @@ public class Notification {
         }
     }
 
+    public static String get_title(Message message) {
+        switch (message) {
+            case ACCEPTED_SALE:
+                return "Buyer Interested";
+            case ACCEPTED_REQUEST:
+                return "Seller Interested";
+            case ACK_REQUEST:
+            case ACK_SALE:
+                return "Confirmed";
+            case REJECTED_SALE:
+            case REJECTED_REQUEST:
+                return "Swipe Rejected";
+            case REVIEW_BUYER:
+            case REVIEW_SELLER:
+                return "Review";
+            default: // OTHER
+                return "Default Message";
+        }
+    }
+
     /**
      * Returns the appropriate message to be included in the notification.
      *
@@ -129,7 +149,33 @@ public class Notification {
             case ACK_REQUEST:
                 return buyer + " has accepted to buy";
             case REJECTED_SALE:
-                return seller + "has rejected to sell";
+                return seller + " has rejected to sell";
+            case REJECTED_REQUEST:
+                return buyer + " has rejected to buy";
+            case REVIEW_BUYER:
+                return "Rate the buyer (" + buyer + ")";
+            case REVIEW_SELLER:
+                return "Rate the seller (" + seller + ")";
+            default: // OTHER
+                return "This is a default notification message.";
+        }
+    }
+
+    public static String get_message(String username, Message message) {
+        String buyer = username;
+        String seller = username;
+
+        switch (message) {
+            case ACCEPTED_SALE:
+                return buyer + " wants to buy your swipe.";
+            case ACK_SALE:
+                return seller + " has accepted to sell";
+            case ACCEPTED_REQUEST:
+                return seller + " wants to sell you a swipe";
+            case ACK_REQUEST:
+                return buyer + " has accepted to buy";
+            case REJECTED_SALE:
+                return seller + " has rejected to sell";
             case REJECTED_REQUEST:
                 return buyer + " has rejected to buy";
             case REVIEW_BUYER:
